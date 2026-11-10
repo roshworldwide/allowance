@@ -60,3 +60,8 @@ Every non-obvious choice, with a one-line why. Newest at the bottom of each sect
 
 ## G1
 - Creating the private GitHub repo with `gh repo create … --private --push` was denied by the session's auto-mode classifier ("public data-sharing upload"). Not worked around; Roshan runs the command (docs/SUBMISSION_CHECKLIST.md).
+
+## Models and cost (S0, Wed 11 Nov 01:15 IST)
+- **Agent model: `gpt-5.4-mini`.** S0 now ranks the key's models newest-first and probes the two newest minis, the four newest full-size models and the newest nano. Passed function calling + strict JSON schema + `reasoning.effort`: `gpt-5.4-mini` (the hackathon boilerplate's default), `gpt-5-mini`, `gpt-5.4-nano`. The `gpt-6` family (`6.1-terra`, `6.1-sol`, `6-luna`, `6-sol`) failed S0's strict-schema probe, so it is not offered. Results: `data/models.json` (local, git-ignored).
+- **Cost estimates are per model.** `priceFor()` uses OpenAI list prices for the models we run (`gpt-5.4-mini` $0.75 / $0.075 cached / $4.50 per 1M tokens, `gpt-5-mini` $0.25 / $0.025 / $2, from the model pages, checked 11 Nov 2026); any other model is priced at the gpt-5 list price, and the lab JSON records which price it used (`meta.pricingAssumption.source`). `OPENAI_PRICE_*_PER_M` overrides all models.
+- **Lab job order is seed-major with families interleaved**, so if `LAB_MAX_USD` stops a run early, the finished part still covers every attack family and the benign set in proportion. `npm run go` reads the quick run first: it stops if more than a quarter of runs errored, and projects the full run's cost against the cap.

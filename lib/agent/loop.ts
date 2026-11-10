@@ -42,7 +42,8 @@ export type RunOptions = {
 
 export type RunResult = { finalText: string; steps: number; usage: Usage; stopReason: StopReason; error?: string };
 
-const isReasoningModel = (m: string) => /^(gpt-5|o\d)/.test(m);
+// gpt-5 and later, and the o-series, take `reasoning.effort` (S0 probes this per model).
+const isReasoningModel = (m: string) => /^(gpt-([5-9]|\d{2,})|o\d)/.test(m);
 
 export async function runAgent(o: RunOptions): Promise<RunResult> {
   const maxSteps = o.maxSteps ?? 12;

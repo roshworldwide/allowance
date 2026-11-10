@@ -88,17 +88,38 @@ export function clientIp(req: Request): string {
 }
 
 // --- Daily OpenAI spend cap ----------------------------------------------------------------------
-// Estimated from token usage with conservative per-1M prices (env-overridable). On cap → replay mode.
-const PRICE = {
-  input: Number(process.env.OPENAI_PRICE_INPUT_PER_M ?? 1.25),
-  cached: Number(process.env.OPENAI_PRICE_CACHED_PER_M ?? 0.125),
-  output: Number(process.env.OPENAI_PRICE_OUTPUT_PER_M ?? 10),
+// Estimated from token usage. On cap → replay mode. USD per 1M tokens, OpenAI standard tier, from the
+// model pages on developers.openai.com (checked 11 Nov 2026). A model not in the table is priced at the
+// gpt-5 list price; OPENAI_PRICE_{INPUT,CACHED,OUTPUT}_PER_M override every model.
+type Price = { input: number; cached: number; output: number };
+const KNOWN_PRICES: Record<string, Price> = {
+  'gpt-5.4-mini': { input: 0.75, cached: 0.075, output: 4.5 },
+  'gpt-5-mini': { input: 0.25, cached: 0.025, output: 2 },
 };
+const FALLBACK_PRICE: Price = { input: 1.25, cached: 0.125, output: 10 };
 let spend = { day: '', usd: 0 };
 let quotaExhausted = false;
 
-export function estimateUsd(u: { inputTokens: number; cachedTokens: number; outputTokens: number }): number {
-  return ((u.inputTokens - u.cachedTokens) * PRICE.input + u.cachedTokens * PRICE.cached + u.outputTokens * PRICE.output) / 1_000_000;
+/** The per-1M prices used for `model` (dated snapshots resolve to their alias), and where they came from. */
+export function priceFor(model?: string): Price & { source: string } {
+  const env = process.env;
+  if (env.OPENAI_PRICE_INPUT_PER_M || env.OPENAI_PRICE_CACHED_PER_M || env.OPENAI_PRICE_OUTPUT_PER_M) {
+    const num = (v: string | undefined, d: number) => (v && Number.isFinite(Number(v)) ? Number(v) : d);
+    return {
+      input: num(env.OPENAI_PRICE_INPUT_PER_M, FALLBACK_PRICE.input),
+      cached: num(env.OPENAI_PRICE_CACHED_PER_M, FALLBACK_PRICE.cached),
+      output: num(env.OPENAI_PRICE_OUTPUT_PER_M, FALLBACK_PRICE.output),
+      source: 'OPENAI_PRICE_*_PER_M',
+    };
+  }
+  const alias = model?.trim().replace(/-\d{4}-\d{2}-\d{2}$/, '');
+  const known = alias ? KNOWN_PRICES[alias] : undefined;
+  return known ? { ...known, source: `${alias} list price` } : { ...FALLBACK_PRICE, source: `${alias || 'unknown model'} not in the price table: gpt-5 list price assumed` };
+}
+
+export function estimateUsd(u: { inputTokens: number; cachedTokens: number; outputTokens: number }, model?: string): number {
+  const p = priceFor(model);
+  return ((u.inputTokens - u.cachedTokens) * p.input + u.cachedTokens * p.cached + u.outputTokens * p.output) / 1_000_000;
 }
 
 export function recordSpend(usd: number, now = new Date()) {

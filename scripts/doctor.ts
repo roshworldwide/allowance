@@ -17,7 +17,7 @@ const offline = process.argv.includes('--offline');
 const env = process.env;
 const has = (name: string) => Boolean(env[name]?.trim());
 
-const REQUIRED = ['PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET', 'AG_STUDIO', 'AG_STUDIO_OPENAI_API_KEY', 'OPENAI_MODELS', 'DEMO_PASSCODE', 'PUBLIC_BASE_URL'];
+const REQUIRED = ['PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET', 'AG_STUDIO_OPENAI_API_KEY', 'OPENAI_MODELS', 'DEMO_PASSCODE', 'PUBLIC_BASE_URL'];
 const OPTIONAL: Record<string, string> = {
   PAYPAL_WEBHOOK_ID: 'set after the webhook is registered on the deployed URL',
   AGENT_MODEL: 'defaults to the first of OPENAI_MODELS',
@@ -44,6 +44,9 @@ async function main() {
 
   // Env vars, by name
   for (const name of REQUIRED) (has(name) ? pass : fail)(`${name} ${has(name) ? 'is set' : 'is empty'}`);
+  // Not blocking: without the licence the Control Room still works, with an AG Studio watermark.
+  if (has('AG_STUDIO')) pass('AG_STUDIO is set');
+  else fail('AG_STUDIO is empty (the Control Room works, with an AG Studio watermark)', false);
   for (const [name, note] of Object.entries(OPTIONAL)) {
     if (has(name)) pass(`${name} is set`);
     else skip(`${name} not set (${note})`);

@@ -4,12 +4,12 @@
 
 | | |
 |---|---|
-| **Now** | All key-free work complete — Tue 23:55 IST. Waiting on keys (then `npm run go`) and on Roshan's G1 push |
+| **Now** | Keys are in and verified (Wed 01:15 IST: PayPal sandbox OAuth ✓, OpenAI ✓, S0 → `gpt-5.4-mini`). Next: Roshan runs `npm run go` (approves the S1 Vault link) · G1 push |
 | **Done** | M0 · **M1** guard (p95 0.87 ms) · corpus 60+40 · **M2** code (vault link, executor, step-up poller, undo, routes, security, webhooks) · **M3** Errand + Firewall Lane + cards + phone page + replay · **M4** runner/metrics · **M5** Control Room: 4 custom widgets (Allowance Ring, Verdict Stream, Attack Lab Matrix, Chain Seal) with Form Configuration, 4-page report, drill-through, live data, PayPal Transaction Search, Auditor (explain_verdict, simulate_policy, draft_policy_change, 2 Tool Components) · **M6** landing, /lab, README + all docs (numbers auto-synced), CI, 6 e2e + axe, render.yaml, DEPLOY + SUBMISSION_CHECKLIST, `npm run go`, `npm run media` |
 | **In flight** | 10-second test (fresh reviewer) |
 | **Next (needs keys)** | `npm run go` (S0, S1, smoke, lab quick + full, docs:sync) → record hero run → `npm run media` → G3 deploy → video (G4) → self-judge → G2 → G5 |
-| **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1**: run the `gh repo create …` command in docs/SUBMISSION_CHECKLIST.md (my attempt was blocked by the session's auto-mode classifier) |
-| **Latest numbers** | 165 vitest tests + 6 e2e green · guard p95 0.87 ms · no lab run yet · holdout: not run (logged cut) |
+| **Blockers (need Roshan)** | 1) `npm run go` from `allowance/` (S1: approve in PayPal with the US sandbox Personal account) · 2) **G1**: run the `gh repo create …` command in docs/SUBMISSION_CHECKLIST.md (my attempt was blocked by the session's auto-mode classifier) |
+| **Latest numbers** | 171 vitest tests + 6 e2e green · guard p95 0.87 ms · no lab run yet · holdout: not run (logged cut) |
 
 ## Milestones
 
@@ -42,3 +42,4 @@
 - **Tue 23:55** Transaction Search ledger, live Control Room, current-allowance ring, Chain Seal, media capture, go orchestrator, deploy + submission docs committed. G1 push blocked by the session classifier.
 - **Wed 00:25** Design pass "Obsidian & Light" (done from the Cowork session, verified live in Chrome at 1710 px and 1200 px): glass/rim-light design system, aurora + grain, living Gate hero canvas with a 1.4 s CSS intro, titanium allowance card (landing, Errand, Replay), Firewall Lane rebuilt as a ring of 12 rule lamps with verdict halo/shockwave and light-trail packets, NowCaption under the lane, restyled verdict cards, budget dock, approve sheet, Attack Lab and Control Room header. tsc, eslint, 165 vitest and `next build` green; e2e selectors preserved (texts unchanged). Re-run `npm run test:e2e` on the Mac before G3.
 - **Wed 00:45** Apple-style pass (Roshan's direction: minimal, uncongested, Apple-like): pure black, SF Pro system font (Geist fallback), #f5f5f7/#86868b text, Apple blue pills + chevron links, flat #161617 cards, 44 px translucent nav; landing rewritten as one idea per screen (hero + Gate, verdicts, card, principle, numbers, PayPal, CTA); Replay and Errand now single-column (lane → caption → verdict grid → transcript in a disclosure); Attack Lab header centred. Aurora/grain/spotlight/intro removed. tsc, eslint, 165 vitest and `next build` green; e2e texts unchanged.
+- **Wed 01:15** Keys in. `go` had stopped at step 1 because `.env.local` wasn't saved yet; step 1 now names the file, its last-saved time and any line that isn't NAME=value, and reads the file with dotenv's grammar (same as Next.js). doctor online: PayPal sandbox OAuth ✓, OpenAI key ✓ (96 models). S0 rebuilt newest-first → `gpt-5.4-mini` (DECISIONS: Models and cost). Cost estimates per model; lab jobs seed-major + interleaved; `go` checks the quick run before the full one; doctor no longer blocks on AG_STUDIO. tsc, eslint, 171 vitest green.

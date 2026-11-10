@@ -77,15 +77,19 @@ async function probe(model: string) {
 
 async function main() {
   const list = await client.models.list();
-  const ids = list.data.map((m) => m.id).sort();
-  const chat = ids.filter((id) => /^(gpt-|o\d)/.test(id) && !/(audio|realtime|transcribe|tts|image|search|embedding|instruct)/.test(id));
-  console.log(`\nModels visible to this key: ${ids.length}. Chat-capable candidates:`);
+  // Newest first. Dated snapshots and pro / codex / live / non-chat variants are skipped.
+  const chat = list.data
+    .filter((m) => /^(gpt-|o\d)/.test(m.id) && !/(audio|realtime|transcribe|tts|image|search|embedding|instruct|codex|pro|live|oss)/.test(m.id) && !/-\d{4}-\d{2}-\d{2}$/.test(m.id))
+    .sort((a, b) => b.created - a.created || a.id.localeCompare(b.id))
+    .map((m) => m.id);
+  console.log(`\nModels visible to this key: ${list.data.length}. Chat-capable candidates, newest first:`);
   console.log('  ' + (chat.join('\n  ') || '(none)'));
 
   const arg = process.argv[2];
-  const preferred = arg
-    ? arg.split(',').map((s) => s.trim())
-    : chat.filter((id) => /mini|nano|^gpt-5\.\d+$|terra|luna|sol/.test(id) && !/\d{4}-\d{2}-\d{2}/.test(id)).slice(0, 6);
+  // Default probe set: the two newest "mini" models (the tier the hackathon boilerplate defaults to), the
+  // four newest full-size models and the newest "nano". Probe order is the tie-break after ranking below.
+  const newest = (re: RegExp, n: number) => chat.filter((id) => re.test(id)).slice(0, n);
+  const preferred = arg ? arg.split(',').map((s) => s.trim()) : [...new Set([...newest(/mini/, 2), ...newest(/^(?!.*(mini|nano))/, 4), ...newest(/nano/, 1)])];
   console.log(`\nProbing ${preferred.length} model(s): function calling + strict JSON schema…`);
   const results = [];
   for (const m of preferred) {

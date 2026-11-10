@@ -83,7 +83,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
     throw e;
   }
   if (result.error) noteOpenAiError(new Error(result.error));
-  recordSpend(estimateUsd(result.usage));
+  recordSpend(estimateUsd(result.usage, model));
   rec?.run('done', { runId, stopReason: result.stopReason, finalText: result.finalText });
   db.prepare('UPDATE agent_runs SET status = ?, ended_at = ? WHERE id = ?').run(result.stopReason.toUpperCase(), new Date().toISOString(), runId);
   return { ...result, runId };

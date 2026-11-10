@@ -25,8 +25,9 @@ async function meter(stream: ReadableStream<Uint8Array>) {
         buf = buf.slice(i + 2);
         const data = chunk.split('\n').find((l) => l.startsWith('data: '))?.slice(6);
         if (!data || !data.includes('response.completed')) continue;
-        const u = (JSON.parse(data) as { response?: { usage?: { input_tokens?: number; output_tokens?: number; input_tokens_details?: { cached_tokens?: number } } } }).response?.usage;
-        if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens ?? 0, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens ?? 0 }));
+        const r = (JSON.parse(data) as { response?: { model?: string; usage?: { input_tokens?: number; output_tokens?: number; input_tokens_details?: { cached_tokens?: number } } } }).response;
+        const u = r?.usage;
+        if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens ?? 0, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens ?? 0 }, r?.model));
       }
     }
   } catch {

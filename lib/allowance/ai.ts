@@ -24,7 +24,7 @@ export function agentModel(): string {
 
 export const aiAvailable = () => Boolean(process.env.AG_STUDIO_OPENAI_API_KEY?.trim()) && aiBudget().ok;
 
-const reasoning = (model: string) => (/^(gpt-5|o\d)/.test(model) ? { reasoning: { effort: 'low' as const } } : {});
+const reasoning = (model: string) => (/^(gpt-([5-9]|\d{2,})|o\d)/.test(model) ? { reasoning: { effort: 'low' as const } } : {});
 
 export function noteOpenAiError(e: unknown) {
   const msg = String((e as Error)?.message ?? e);
@@ -58,7 +58,7 @@ export async function parseTaskWithAi(task: string, vocab: Vocabulary, mandate: 
       ...reasoning(model),
     });
     const u = res.usage;
-    if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens }));
+    if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens }, model));
     if (!res.output_parsed) throw new Error('The task parser returned nothing');
     return res.output_parsed;
   } catch (e) {
@@ -105,7 +105,7 @@ export async function explainVerdict(v: Verdict): Promise<string | undefined> {
       ...reasoning(model),
     });
     const u = res.usage;
-    if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens }));
+    if (u) recordSpend(estimateUsd({ inputTokens: u.input_tokens, cachedTokens: u.input_tokens_details?.cached_tokens ?? 0, outputTokens: u.output_tokens }, model));
     return res.output_text?.trim().slice(0, 300) || undefined;
   } catch (e) {
     noteOpenAiError(e);

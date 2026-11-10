@@ -7,9 +7,9 @@ import type { LabSummary } from '@/lib/lab/metrics';
 
 export const SITE = {
   /** Filled in at G4 (public YouTube video). Empty hides the button. */
-  videoUrl: process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? '',
+  videoUrl: process.env.DEMO_VIDEO_URL ?? '',
   /** Filled in at G2 (public repo). */
-  repoUrl: process.env.NEXT_PUBLIC_REPO_URL ?? '',
+  repoUrl: process.env.REPO_URL ?? '',
   author: 'Roshan Raj',
 };
 

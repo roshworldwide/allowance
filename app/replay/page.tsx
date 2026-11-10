@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Replay' };
 export const dynamic = 'force-dynamic';
 
 function load(preview: boolean, id?: string): ReplayFile | null {
-  if (preview && process.env.NODE_ENV !== 'production') {
+  if (preview && (process.env.NODE_ENV !== 'production' || process.env.E2E === '1')) {
     const f = path.join(process.cwd(), 'tests', 'fixtures', 'replay-preview.json');
     return existsSync(f) ? (JSON.parse(readFileSync(f, 'utf8')) as ReplayFile) : null;
   }

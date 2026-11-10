@@ -1,0 +1,51 @@
+# Render Blueprint for the public ALLOWANCE demo (one free Node web service).
+# Secrets are `sync: false`: Render asks for them in its dashboard; nothing secret lives in this file.
+services:
+  - type: web
+    name: allowance
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: OWNER_MODE
+        value: "false"
+      - key: RECORD_REPLAYS
+        value: "false"
+      - key: DAILY_OPENAI_USD_CAP
+        value: "2"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: AG_STUDIO
+        sync: false
+      - key: AG_STUDIO_OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODELS
+        sync: false
+      - key: AGENT_MODEL
+        sync: false
+      - key: DEMO_PASSCODE
+        sync: false
+      - key: DEMO_VAULT_TOKEN_ID
+        sync: false
+      - key: DEMO_VAULT_CUSTOMER_ID
+        sync: false
+      - key: DEMO_VIDEO_URL
+        sync: false
+      - key: REPO_URL
+        sync: false

@@ -63,7 +63,7 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
           </p>
           {compressed && <p className="mt-1 text-[11.5px] text-muted">Waiting time (e.g. approving on the phone) is shortened.</p>}
           <div className="mt-3 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuemin={0} aria-valuemax={timeline.length} aria-valuenow={pos}>
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-label="Replay progress" aria-valuemin={0} aria-valuemax={timeline.length} aria-valuenow={pos}>
               <div className="h-full bg-accent transition-[width]" style={{ width: `${(pos / Math.max(1, timeline.length)) * 100}%` }} />
             </div>
             <Button tone="quiet" size="sm" onClick={() => { setPos(0); setRun((r) => r + 1); }}>

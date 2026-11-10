@@ -16,6 +16,7 @@ next-env.d.ts
 
 # local data (SQLite, vault token handoff file) — never committed
 /data/
+/.e2e/
 *.db
 *.db-wal
 *.db-shm

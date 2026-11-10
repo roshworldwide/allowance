@@ -90,7 +90,7 @@ export function FirewallLane({ cards, order, model }: { cards: Record<string, Ca
         </AnimatePresence>
 
         {!recent.length && (
-          <p className="absolute inset-x-0 bottom-5 text-center font-mono text-[11px] tracking-[0.18em] text-muted/70 uppercase">Waiting for the agent’s first money-moving tool call</p>
+          <p className="absolute inset-x-0 bottom-5 text-center font-mono text-[11px] tracking-[0.18em] text-muted uppercase">Waiting for the agent’s first money-moving tool call</p>
         )}
       </div>
       <p className="sr-only" aria-live="polite">

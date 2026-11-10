@@ -8,7 +8,9 @@ export default defineConfig({
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
-  use: { baseURL: 'http://localhost:3300', viewport: { width: 1280, height: 800 } },
+  // Reduced motion: every element is checked at its resting state (full opacity), so the axe
+  // contrast checks are deterministic instead of depending on where an entrance animation is.
+  use: { baseURL: 'http://localhost:3300', viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' },
   webServer: {
     command: 'npx next start -p 3300',
     url: 'http://localhost:3300/api/health',

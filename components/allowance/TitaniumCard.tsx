@@ -81,9 +81,9 @@ export function TitaniumCard({ amount, period, lines, status, statusTone, vault,
             <div>
               <div className="flex items-baseline gap-2">
                 <span className={`display text-platinum tabular ${compact ? 'text-[30px]' : 'text-[clamp(30px,4.2vw,46px)]'}`}>{amount}</span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/50">{period}</span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/70">{period}</span>
               </div>
-              <div className={`mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono uppercase text-white/55 ${compact ? 'text-[9px] tracking-[0.1em]' : 'text-[10.5px] tracking-[0.14em]'}`}>
+              <div className={`mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono uppercase text-white/75 ${compact ? 'text-[9px] tracking-[0.1em]' : 'text-[10.5px] tracking-[0.14em]'}`}>
                 {lines.map((l) => (
                   <span key={l}>{l}</span>
                 ))}
@@ -92,7 +92,7 @@ export function TitaniumCard({ amount, period, lines, status, statusTone, vault,
             <Chip small={compact} />
           </div>
 
-          <div className={`flex items-end justify-between gap-2 whitespace-nowrap font-mono uppercase text-white/45 ${compact ? 'text-[8.5px] tracking-[0.12em]' : 'text-[10px] tracking-[0.18em]'}`}>
+          <div className={`flex items-end justify-between gap-2 whitespace-nowrap font-mono uppercase text-white/65 ${compact ? 'text-[8.5px] tracking-[0.12em]' : 'text-[10px] tracking-[0.18em]'}`}>
             <span className="truncate">{vault ? `${compact ? 'Vault' : 'PayPal Vault'} ${vault}` : compact ? 'Vault · not linked' : 'PayPal Vault · not linked'}</span>
             {expires && <span>{compact ? 'thru' : 'valid thru'} {expires}</span>}
           </div>

@@ -215,7 +215,7 @@ function Transcript({ steps, status, error }: { steps: Step[]; status: string; e
         {steps.map((s) => (
           <li key={s.id} className="leading-snug">
             {s.kind === 'search' && <span className="text-muted">searched <span className="text-text">“{s.query}”</span></span>}
-            {s.kind === 'view' && <span className="text-muted">read the {s.what === 'page' ? 'page' : 'reviews'} of <span className="font-mono text-[12px] text-text">{s.sku}</span> <span className="font-mono text-[10px] text-muted/80">untrusted</span></span>}
+            {s.kind === 'view' && <span className="text-muted">read the {s.what === 'page' ? 'page' : 'reviews'} of <span className="font-mono text-[12px] text-text">{s.sku}</span> <span className="font-mono text-[10px] text-muted">untrusted</span></span>}
             {s.kind === 'money' && <span className="text-text">→ tried to pay: <span className="font-mono text-[12px]">{s.label}</span></span>}
             {s.kind === 'say' && <p className="mt-1 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-text">{s.text}</p>}
             {s.kind === 'note' && <span className="text-muted">{s.text}</span>}

@@ -76,7 +76,7 @@ export default function Home() {
                 Run it live
               </Link>
             </div>
-            <p className="mt-4 text-[12.5px] text-muted/80 animate-rise [animation-delay:1.25s]">Replay needs no login. Run it live needs the passcode in the Devpost testing instructions. The free server can take about a minute to wake up.</p>
+            <p className="mt-4 text-[12.5px] text-muted animate-rise [animation-delay:1.25s]">Replay needs no login. Run it live needs the passcode in the Devpost testing instructions. The free server can take about a minute to wake up.</p>
           </div>
 
           {/* proof strip */}

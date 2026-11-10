@@ -6,7 +6,7 @@
 
 <!--media:hero--><!--/media-->
 
-**A spending firewall for AI agents on PayPal.** You give your agent a scoped *allowance* — budget, per-purchase cap, allowed categories, no subscriptions, an "ask me above $40" line — instead of your wallet. Every money-moving tool call the agent makes passes **12 deterministic rules** and comes back **ALLOW** (paid from your saved PayPal wallet), **STEP-UP** (PayPal asks you on your phone) or **BLOCK** (with the exact rule that fired). Anything paid can be **undone for 10 minutes** — a real PayPal refund.
+**A spending firewall for AI agents on PayPal.** You give your agent a scoped *allowance* — budget, per-purchase cap, allowed categories, no subscriptions, an "ask me above $40" line — instead of your wallet. Every money-moving tool call the agent makes passes **12 deterministic rules** and comes back **ALLOW** (paid from your saved PayPal wallet), **STEP-UP — PayPal asks you first**, on your phone, or **BLOCK** (with the exact rule that fired). Anything paid can be **undone for 10 minutes** — a real PayPal refund.
 
 | Attacks that fooled the unguarded agent | Attacks that got past ALLOWANCE | Normal errands falsely blocked |
 |:---:|:---:|:---:|
@@ -16,7 +16,7 @@
 
 **▶ Watch** the 3-minute demo · **Try it**: replay a recorded sandbox run (no login) or run it live (passcode in the Devpost testing instructions) · **[Judge guide](docs/JUDGE_GUIDE.md)** (90 seconds)
 
-**Built with PayPal** (Vault v3, Orders v2, Refunds, Webhooks, the PayPal Agent Toolkit — all in sandbox) **+ OpenAI** (the shopping agent, task parsing, explanations, the Control Room's Auditor) **+ AG Studio** (the Control Room).
+**Built with PayPal** (Vault v3, Orders v2, Refunds, Webhooks, the PayPal Agent Toolkit — all in sandbox) **+ OpenAI** (the shopping agent, task parsing, explanations, the Control Room's Auditor) **+ AG Studio** (the Control Room: a live dashboard of every decision, with an AI Auditor that explains verdicts and tests policy changes).
 
 ---
 

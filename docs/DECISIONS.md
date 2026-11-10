@@ -54,3 +54,9 @@ Every non-obvious choice, with a one-line why. Newest at the bottom of each sect
 - **Contract lines carry a `productType`** from the trusted registry's controlled vocabulary (e.g. `usb-c-cable`, `usb-c-hub`, `desk-lamp`), in addition to `category`. Why: binding a purchase only by category would let a cheap off-task item in the same category (a $12 hub instead of a $12 cable) pass R02. The parser can only emit product types that exist in the registry, and the human confirms the card.
 - R02 resolves the contract line from the agent's `contractLineId` when valid; otherwise it may infer the single line whose `productType` matches the registry item (trusted data only), to avoid false blocks when the agent fumbles the id.
 - The unguarded baseline tool gets an optional `payee` field (a typical "pay" tool has one), so payee-swap attacks are expressible against the baseline.
+
+## Attack Lab holdout
+- **Not run (logged cut, reversible).** The isolated holdout subagent (kit in the session scratchpad: schema copy + catalog copy + validator + sealer, no access to `lib/guard`) was stopped by a safety filter before writing any scenario, so no file was produced and independence was never compromised. We do not regenerate it another way. The main corpus (60 attacks) was written by a separate agent that read only rule *names and one-line summaries*, never the rule code. README, `/lab` and the video report the holdout as "not run". `npm run lab:holdout` verifies a SHA-256 seal (`lab/holdout.sha256`) before running if a human-written set is added later.
+
+## G1
+- Creating the private GitHub repo with `gh repo create … --private --push` was denied by the session's auto-mode classifier ("public data-sharing upload"). Not worked around; Roshan runs the command (docs/SUBMISSION_CHECKLIST.md).

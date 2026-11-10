@@ -8,7 +8,7 @@
 | **Done** | M0 (except key-dependent spikes) · **M1** guard (12 rules, atomic ledger, chain, wrap; p95 0.87 ms) · catalog + **corpus 60+40** · **M2 code complete** (agent loop, vault link, executor, step-up poller, undo, routes, passcode/rate-limit/spend-cap, webhooks) · **M3** Errand console + Firewall Lane + verdict cards + phone approve page + replay (verified in Chromium at 1280×800 and 390×844) · **M4 runner ready** (needs key) · **M5** Control Room on real data + simulate_policy / draft_policy_change + proposal card · landing + /lab · README + all docs (numbers auto-synced) · CI + 6 e2e (prod build, axe) · render.yaml |
 | **In flight** | nothing (all key-free work done) |
 | **Next (needs keys)** | S0 models → OPENAI_MODELS · S1 Vault link + $1 charge/refund · lab:quick → full lab · record replays · G1 repo · G3 deploy |
-| **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1** yes · 3) holdout decision (write H01–H20 yourself with the kit, or log a cut) |
+| **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1**: the repo push was blocked by the session's auto-mode classifier — Roshan runs the one `gh repo create` command (docs/SUBMISSION_CHECKLIST.md) or allows it |
 | **Latest numbers** | 161 vitest tests green (unit, property, integration) + 6 e2e · guard p95 0.87 ms · no lab run yet |
 
 ## Milestones
@@ -28,7 +28,7 @@
 | M9 Submit (G5) by 23:30 IST | Thu 21:00–23:30 | — |
 
 ## Cuts log
-_None yet._
+- **Tue 23:40 — Holdout H01–H20: not run (reversible).** The independent holdout author was stopped by a safety filter before writing anything (independence intact) and no human-written holdout exists yet. Effect: README/`/lab`/video report the holdout as "not run" (via `lib/lab` markers); DoD #4 is met without a holdout row; the video script's holdout line is omitted. If Roshan writes H01–H20 with the kit, `npm run lab:holdout` (seal-checked) fills the row and the docs re-sync.
 
 ## Log
 - **Tue 16:16** Session start. Read the master prompt, Devpost pages, boilerplate.

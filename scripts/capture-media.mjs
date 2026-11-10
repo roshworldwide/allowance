@@ -74,4 +74,17 @@ if (process.env.APPROVE_URL) {
   await phone.screenshot({ path: path.join(out, 'approve-phone.png') });
 }
 await browser.close();
+
+// Fill the README's media markers with exactly the files produced (only when writing into docs/media).
+if (out === 'docs/media') {
+  const { existsSync, readFileSync, writeFileSync } = await import('node:fs');
+  const img = (f, alt) => (existsSync(path.join(out, f)) ? `![${alt}](docs/media/${f})` : '');
+  const blocks = {
+    hero: img('lane.gif', 'The Firewall Lane: cables allowed and paid, an injected USB-C hub blocked by R02, a lamp sent to PayPal for approval'),
+    studio: [img('control-room.png', 'AG Studio Control Room — overview'), img('control-room-paypal.png', 'AG Studio Control Room — PayPal ledger next to ours')].filter(Boolean).join('\n'),
+  };
+  const readme = readFileSync('README.md', 'utf8').replace(/<!--media:(\w+)-->[\s\S]*?<!--\/media-->/g, (m, k) => (k in blocks ? `<!--media:${k}-->${blocks[k] ? `\n${blocks[k]}\n` : ''}<!--/media-->` : m));
+  writeFileSync('README.md', readme);
+  console.log('README media markers updated');
+}
 console.log(`media → ${out}`);

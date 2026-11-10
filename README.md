@@ -111,7 +111,7 @@ Reproduce: `npm run lab` (full) or `npm run lab:quick` (20 scenarios, 1 seed). R
 
 <!--media:studio--><!--/media-->
 
-**What it looks like.** An AG Studio dashboard in ALLOWANCE's own theme with three custom widgets — **Allowance Ring** (budget vs paid vs held, days left), **Verdict Stream** (live decisions with rule chips, PayPal-confirmed ticks and refunds) and **Attack Lab Matrix** (attack families × unguarded/guarded heatmap) — on a four-page report: Overview, Incidents, Attack Lab, PayPal.
+**What it looks like.** An AG Studio dashboard in ALLOWANCE's own theme with four custom widgets — **Allowance Ring** (budget vs paid vs held, days left), **Verdict Stream** (live decisions with rule chips, PayPal-confirmed ticks and refunds; click to drill into one decision's rule trace), **Attack Lab Matrix** (attack families × unguarded/guarded heatmap) and **Chain Seal** (re-verifies the hash-chained audit log in your browser with WebCrypto) — on a four-page report: Overview, Incidents, Attack Lab, PayPal (our ledger next to PayPal's own Transaction Search record). The data updates live.
 
 **How it's built.**
 - *Custom widgets with Form Configuration* ([`lib/studio/widgets`](lib/studio/widgets)): each widget declares its `dataMapping` (which fields it needs, with roles and cardinality) and a `form` — so an analyst binds fields and options in Studio's own editor, no code.

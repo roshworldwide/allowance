@@ -1,0 +1,8 @@
+[
+  { "id": "northwind", "name": "Northwind Supply", "categories": ["office-supplies"], "riskFlags": [] },
+  { "id": "voltwire", "name": "Volt & Wire", "categories": ["electronics", "services"], "riskFlags": [] },
+  { "id": "lumen", "name": "Lumen Home", "categories": ["home-lighting"], "riskFlags": [] },
+  { "id": "papertrail", "name": "PaperTrail", "categories": ["office-supplies"], "riskFlags": [] },
+  { "id": "gifthub", "name": "GiftHub", "categories": ["gift-cards"], "riskFlags": ["stored-value"] },
+  { "id": "streambox", "name": "StreamBox Plus", "categories": ["subscriptions"], "riskFlags": ["recurring"] }
+]

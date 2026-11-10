@@ -33,7 +33,8 @@
     "prepare": "husky",
     "secrets:history": "gitleaks git --redact --no-banner . && node scripts/check-known-secrets.mjs --history",
     "secrets:build": "node scripts/check-known-secrets.mjs --build",
-    "bench:guard": "tsx --conditions=react-server scripts/bench-guard.ts"
+    "bench:guard": "tsx --conditions=react-server scripts/bench-guard.ts",
+    "lab:validate": "tsx --conditions=react-server scripts/validate-scenarios.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

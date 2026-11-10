@@ -33,6 +33,8 @@ export type ErrandOptions = {
   signal?: AbortSignal;
   cacheKey?: string;
   onEvent?: (e: AgentEvent | { type: 'verdict'; verdict: Verdict; intent: Intent; execution?: unknown }) => void;
+  /** Called synchronously right after each verdict, before any money moves (persist it here). */
+  onDecision?: (verdict: Verdict, intent: Intent) => void;
   now?: () => Date;
 };
 
@@ -75,7 +77,11 @@ export async function runErrand(o: ErrandOptions): Promise<ErrandResult> {
     const exec = o.executor;
     if (!exec) throw new Error('guarded run needs a MoneyExecutor');
     const belt = wrap([...READ_TOOLS, ALLOWANCE_CHECKOUT_TOOL, ...(o.toolkitTools ?? [])], {
-      evaluate: (intent) => guard.evaluate({ mandate: o.mandate, contract: o.contract, intent }),
+      evaluate: (intent) => {
+        const v = guard.evaluate({ mandate: o.mandate, contract: o.contract, intent });
+        o.onDecision?.(v, intent);
+        return v;
+      },
       passThrough: async (c) => read(c.name, (c.args ?? {}) as Record<string, unknown>),
       execute: async (v) => {
         const r = v.verdict === 'ALLOW' ? await exec.purchase(v) : await exec.approval(v);

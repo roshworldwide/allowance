@@ -34,11 +34,13 @@
     "secrets:history": "gitleaks git --redact --no-banner . && node scripts/check-known-secrets.mjs --history",
     "secrets:build": "node scripts/check-known-secrets.mjs --build",
     "bench:guard": "tsx --conditions=react-server scripts/bench-guard.ts",
-    "lab:validate": "tsx --conditions=react-server scripts/validate-scenarios.ts"
+    "lab:validate": "tsx --conditions=react-server scripts/validate-scenarios.ts",
+    "lab:sanity": "tsx --conditions=react-server scripts/lab-sanity.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
     "@paypal/agent-toolkit": "^1.11.0",
+    "ag-grid-community": "36.3.0",
     "ag-studio": "3.1.0",
     "ag-studio-react": "3.1.0",
     "better-sqlite3": "^13.0.3",

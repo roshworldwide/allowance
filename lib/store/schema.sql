@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS decisions (
   explanation      TEXT,                           -- AI-written from the rule trace; never changes the verdict
   status           TEXT NOT NULL,                  -- EVALUATED | EXECUTED | PENDING_APPROVAL | FAILED | REFUNDED | BLOCKED | DECLINED
   latency_us       INTEGER,
+  source           TEXT NOT NULL DEFAULT 'live',   -- live | replay
   at               TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS decisions_mandate_at ON decisions(mandate_id, at);

@@ -39,7 +39,7 @@ async function main() {
     mandateId: sm.mandate.id,
     dir: 'tests/fixtures',
     fileName: 'replay-preview.json',
-    meta: { task, model: 'scripted preview', allowance: { name: sm.mandate.name, budgetCents: sm.mandate.budgetCents, perPurchaseCapCents: sm.mandate.perPurchaseCapCents, stepUpAboveCents: sm.mandate.stepUpAboveCents }, synthetic: true, note: 'Synthetic preview for UI development: scripted agent, fake PayPal.' },
+    meta: { task, model: 'scripted preview', contract, mandate: sm.mandate, allowance: { name: sm.mandate.name, budgetCents: sm.mandate.budgetCents, perPurchaseCapCents: sm.mandate.perPurchaseCapCents, stepUpAboveCents: sm.mandate.stepUpAboveCents }, synthetic: true, note: 'Synthetic preview for UI development: scripted agent, fake PayPal.' },
   });
   const base = scripted([
     ['search_catalog', { query: 'usb-c cable' }],

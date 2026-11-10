@@ -16,6 +16,7 @@ export function openDb(file: string): Db {
   db.pragma('busy_timeout = 5000');
   db.pragma('synchronous = NORMAL');
   db.exec(readFileSync(path.join(process.cwd(), 'lib', 'store', 'schema.sql'), 'utf8'));
+  migrate(db);
   return db;
 }
 
@@ -23,4 +24,10 @@ export function openDb(file: string): Db {
 export function getDb(): Db {
   shared ??= openDb(process.env.ALLOWANCE_DB_PATH ?? path.join(process.cwd(), 'data', 'allowance.db'));
   return shared;
+}
+
+/** Additive migrations for databases created by an older schema. */
+function migrate(db: Db) {
+  const cols = (db.prepare('PRAGMA table_info(decisions)').all() as { name: string }[]).map((c) => c.name);
+  if (!cols.includes('source')) db.exec("ALTER TABLE decisions ADD COLUMN source TEXT NOT NULL DEFAULT 'live'");
 }

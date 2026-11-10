@@ -4,6 +4,7 @@
 import 'server-only';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import type { Mandate, TaskContract } from '@/lib/guard';
 import { ctx, type LiveEvent } from './context';
 
 export type ReplayEvent = { t: number; source: 'run' | 'bus'; type: string; data: unknown };
@@ -13,6 +14,9 @@ export type ReplayMeta = {
   task: string;
   model: string;
   allowance: { name: string; budgetCents: number; perPurchaseCapCents: number; stepUpAboveCents: number };
+  /** The confirmed task contract and the allowance's full policy, so a replay can be re-evaluated. */
+  contract?: TaskContract;
+  mandate?: Mandate;
   /** true only for previews made against a fake PayPal; never shown as a sandbox run. */
   synthetic?: boolean;
   note?: string;

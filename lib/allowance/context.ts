@@ -9,6 +9,7 @@ import type { CatalogOverlay } from '@/lib/catalog';
 import { paypal, type PayPalClient } from '@/lib/paypal/client';
 import { getDb, type Db } from '@/lib/store/db';
 import { kv } from '@/lib/store/repo';
+import { importReplays } from '@/lib/store/seed';
 import { SqliteChainStore } from '@/lib/store/sqlite-chain';
 import { SqliteLedger } from '@/lib/store/sqlite-ledger';
 
@@ -37,6 +38,12 @@ export function ctx(): Ctx {
     paypal,
   };
   seedDemoVault(db);
+  // Rebuild history from recorded sandbox runs (the deployed disk is ephemeral).
+  try {
+    importReplays(db);
+  } catch (e) {
+    console.error(`[ALLOWANCE] replay import failed: ${(e as Error).message}`);
+  }
   return g.__allowance;
 }
 

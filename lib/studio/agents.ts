@@ -12,6 +12,8 @@ import { createAiHarness, directLlmRunner, type AgAiHarnessSetup, type AgAiPromp
 import type { AgAiToolDisplay } from 'ag-studio-react';
 import { openaiAdapter } from './openai-adapter';
 import { RuleLampStrip } from './tool-components/RuleLampStrip';
+import { PolicyProposalCard } from './tool-components/PolicyProposalCard';
+import { describeSimulation, isPolicyProposal, simulatePolicyChange, type PolicyChangeUsd, type PolicyProposal } from './policy';
 import { createTraceIndex, explainDecision, isExplainVerdictData, recentDecisionsDigest } from './trace';
 import type { ControlRoomData } from './types';
 
@@ -33,7 +35,8 @@ Every money-moving agent tool call gets a deterministic verdict from twelve rule
 R01 MANDATE_ACTIVE, R02 TASK_BINDING, R03 CATALOG_INTEGRITY, R04 MERCHANT_SCOPE, R05 PER_PURCHASE_CAP, R06 BUDGET_REMAINING, R07 VELOCITY_SPLIT, R08 NO_RECURRING, R09 CURRENCY_LOCK (block rules), R10 PRICE_DRIFT and R11 STEP_UP_THRESHOLD (step-up rules), R12 MONEY_OUT_SCOPE (block).
 BLOCK if any block rule FAILs (firstBlock is the first one in order); else STEP_UP if a step-up rule triggers (the person approves in PayPal); else ALLOW.
 Always call explain_verdict before explaining a decision, and quote rule ids and numbers from it. Never guess a verdict.
-You may suggest policy changes (caps, ask-me line, allowed merchants), but only as proposals for the person: you cannot apply them, and you must say so.
+For any policy what-if ("what if I raise the cap to $80?"), call simulate_policy: it replays every recorded agent decision (live runs, recorded sandbox runs and the Attack Lab) through the real guard under the proposed policy. Report its numbers, especially attacks that would get through without asking and legitimate purchases newly blocked.
+When the person wants to change the policy, call draft_policy_change with the change and a one-sentence rationale. It shows them a proposal card with an "Apply in ALLOWANCE" button that only they can press. You can never apply a change yourself, and you must say so.
 Use execute_query (after view_schema) for counts across decisions. Amounts are US dollars. Be concise.`;
 
 /** Presentation of our tools in the chat panel, keyed by tool name (the `aiToolDisplay` Studio property). */
@@ -51,7 +54,30 @@ export const AI_TOOL_DISPLAY: Record<string, AgAiToolDisplay> = {
     },
     detail: RuleLampStrip,
   },
+  simulate_policy: {
+    label: ({ result }) => {
+      if (!result) return { text: 'Replaying recorded decisions under the proposed policy' };
+      if (!result.success) return { text: 'Simulation failed' };
+      const d = result.data as { flipped?: number; decisions?: number } | undefined;
+      return { text: `Replayed ${d?.decisions ?? '?'} recorded decisions`, pill: `${d?.flipped ?? 0} would change` };
+    },
+  },
+  draft_policy_change: {
+    label: ({ result }) => {
+      if (!result) return { text: 'Drafting a policy proposal' };
+      if (!result.success) return { text: 'Could not draft the proposal' };
+      return { text: 'Policy proposal (you decide)', pill: isPolicyProposal(result.data) ? `${result.data.simulation.flipped} changes` : undefined };
+    },
+    detail: PolicyProposalCard,
+  },
 };
+
+function pickChanges(args: Record<string, unknown>): PolicyChangeUsd {
+  const out: PolicyChangeUsd = {};
+  for (const k of ['perPurchaseCapUsd', 'stepUpAboveUsd', 'budgetUsd', 'maxPerMerchantWindowUsd'] as const) if (typeof args[k] === 'number') out[k] = args[k];
+  if (typeof args.allowRecurring === 'boolean') out.allowRecurring = args.allowRecurring;
+  return out;
+}
 
 /** The `ai` Studio property. `models` are the OPENAI_MODELS ids (first = default); never a key. */
 export function buildAi(models: string[], data: ControlRoomData): AgAiHarnessSetup {
@@ -70,6 +96,53 @@ export function buildAi(models: string[], data: ControlRoomData): AgAiHarnessSet
         const trace = explainDecision(index, args.decisionId);
         if (!trace) return ctx.error(`No decision "${args.decisionId}". Recent ids: ${index.decisions.slice(0, 5).map((d) => d.id).join(', ')}.`);
         return ctx.success(trace.summary, trace);
+      },
+    });
+    const simulatePolicy = api.defineAiTool({
+      name: 'simulate_policy',
+      description: 'Replay every recorded agent decision through the real guard under a proposed policy (read-only). Returns how many decisions would change, attacks let through, new false blocks and step-ups saved.',
+      params: (s) =>
+        s.object({
+          perPurchaseCapUsd: s.number({ description: 'Proposed per-purchase cap in US dollars' }).optional(),
+          stepUpAboveUsd: s.number({ description: 'Proposed ask-me line in US dollars (above it, PayPal asks the person)' }).optional(),
+          budgetUsd: s.number({ description: 'Proposed budget for the period in US dollars' }).optional(),
+          maxPerMerchantWindowUsd: s.number({ description: 'Proposed per-merchant limit per hour in US dollars' }).optional(),
+          allowRecurring: s.boolean({ description: 'Allow subscriptions / recurring charges' }).optional(),
+        }),
+      execute: async (args, ctx) => {
+        const changes = pickChanges(args as Record<string, unknown>);
+        if (!Object.keys(changes).length) return ctx.error('Give at least one change, e.g. perPurchaseCapUsd: 80.');
+        try {
+          const sim = await simulatePolicyChange(changes);
+          return ctx.success(describeSimulation(sim), sim);
+        } catch (e) {
+          return ctx.error((e as Error).message);
+        }
+      },
+    });
+    const current = data.mandates[0] ? { perPurchaseCapUsd: data.mandates[0].perPurchaseCapUsd, stepUpAboveUsd: data.mandates[0].stepUpAboveUsd, budgetUsd: data.mandates[0].budgetUsd } : null;
+    const draftPolicyChange = api.defineAiTool({
+      name: 'draft_policy_change',
+      description: 'Show the person a proposal card for a policy change, with the simulation result and an Apply button only they can press. This does NOT apply anything.',
+      params: (s) =>
+        s.object({
+          perPurchaseCapUsd: s.number({ description: 'Proposed per-purchase cap (USD)' }).optional(),
+          stepUpAboveUsd: s.number({ description: 'Proposed ask-me line (USD)' }).optional(),
+          budgetUsd: s.number({ description: 'Proposed budget (USD)' }).optional(),
+          maxPerMerchantWindowUsd: s.number({ description: 'Proposed per-merchant hourly limit (USD)' }).optional(),
+          allowRecurring: s.boolean({ description: 'Allow subscriptions' }).optional(),
+          rationale: s.string({ description: 'One sentence: why this change, citing the simulation' }),
+        }),
+      execute: async (args, ctx) => {
+        const changes = pickChanges(args as Record<string, unknown>);
+        if (!Object.keys(changes).length) return ctx.error('Give at least one change.');
+        try {
+          const simulation = await simulatePolicyChange(changes);
+          const proposal: PolicyProposal = { kind: 'policy-proposal', changes, current, rationale: String((args as { rationale?: unknown }).rationale ?? ''), simulation };
+          return ctx.success(`Proposal shown to the person (not applied). ${describeSimulation(simulation)}`, proposal);
+        } catch (e) {
+          return ctx.error((e as Error).message);
+        }
       },
     });
 
@@ -94,7 +167,7 @@ export function buildAi(models: string[], data: ControlRoomData): AgAiHarnessSet
         adapter,
         maxTurns: 12,
         instructions: () => `${AUDITOR_INSTRUCTIONS}\n\nNow: ${data.asOf}. Most recent decisions (newest first):\n${recentDecisionsDigest(index)}`,
-        tools: ({ studio }) => [explainVerdict, studio.viewSchema(), studio.executeQuery()],
+        tools: ({ studio }) => [explainVerdict, simulatePolicy, draftPolicyChange, studio.viewSchema(), studio.executeQuery()],
       });
       return {
         agents: [controller, auditor, ...Object.values(builtIn).map((definition) => directLlmRunner({ ...definition, adapter }))],

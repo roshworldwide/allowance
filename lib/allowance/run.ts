@@ -36,7 +36,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
   // Owner mode: record this run (and the approvals/undo that follow) as a judge-mode replay.
   const rec =
     process.env.RECORD_REPLAYS === 'true' && process.env.OWNER_MODE === 'true'
-      ? startRecording({ mandateId: sm.mandate.id, meta: { task: contract.taskText, model, allowance: { name: sm.mandate.name, budgetCents: sm.mandate.budgetCents, perPurchaseCapCents: sm.mandate.perPurchaseCapCents, stepUpAboveCents: sm.mandate.stepUpAboveCents } } })
+      ? startRecording({ mandateId: sm.mandate.id, meta: { task: contract.taskText, model, allowance: { name: sm.mandate.name, budgetCents: sm.mandate.budgetCents, perPurchaseCapCents: sm.mandate.perPurchaseCapCents, stepUpAboveCents: sm.mandate.stepUpAboveCents }, contract: { id: contract.id, mandateId: contract.mandateId, confirmedAt: contract.confirmedAt, lines: contract.lines }, mandate: sm.mandate } })
       : null;
   const onEvent = (e: LaneEvent) => {
     rec?.run(e.type, e);
@@ -63,7 +63,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
       onDecision: (v, intent) => {
         insertDecision(db, v, { mandateId: sm.mandate.id, contractId: contract.id, runId, intent, tool: intent.toolName });
         chain.record('decision', { decisionId: v.decisionId, verdict: v.verdict, firstBlock: v.firstBlock ?? null, stepUp: v.stepUpReasons, amountCents: v.amountCents, tool: intent.toolName, sku: v.binding?.sku ?? null, rawArgsHash: intent.rawArgsHash }, v.at);
-        emit({ mandateId: sm.mandate.id, type: 'decision', data: decisionView(v, intent.toolName) });
+        emit({ mandateId: sm.mandate.id, type: 'decision', data: decisionView(v, intent.toolName, intent) });
         if (v.verdict !== 'ALLOW') {
           void explainVerdict(v).then((text) => {
             if (!text) return;

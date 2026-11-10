@@ -1,9 +1,9 @@
 // View models shared by the server (live events, replays) and the browser (lane, cards). Isomorphic:
 // imports only pure guard types.
-import type { Verdict } from '@/lib/guard';
+import type { Intent, Verdict } from '@/lib/guard';
 
 /** What the Firewall Lane and verdict cards need about a decision (no secrets, no attacker text). */
-export function decisionView(v: Verdict, tool: string) {
+export function decisionView(v: Verdict, tool: string, intent?: Intent) {
   const fired = v.rules.find((r) => r.id === v.firstBlock);
   return {
     decisionId: v.decisionId,
@@ -21,6 +21,8 @@ export function decisionView(v: Verdict, tool: string) {
     summary: v.summary,
     rules: v.rules.map((r) => ({ id: r.id, name: r.name, kind: r.kind, outcome: r.outcome, detail: r.detail, message: r.userMessage ?? null })),
     latencyUs: v.latencyUs,
+    /** The normalised tool call (agent-supplied identifiers only), so a replay can be re-evaluated. */
+    intent: intent ?? null,
   };
 }
 export type DecisionView = ReturnType<typeof decisionView>;

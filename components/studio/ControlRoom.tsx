@@ -26,9 +26,11 @@ type Props = {
   /** OPENAI_MODELS ids; empty when the assistant is not configured, which hides the chat panel. */
   aiModels: string[];
   initialMode: AgStudioMode;
+  /** True when nothing has been recorded yet and the dashboard shows sample rows. */
+  sample?: boolean;
 };
 
-export function ControlRoom({ data, licenseKey, aiModels, initialMode }: Props) {
+export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }: Props) {
   const [mode, setMode] = useState<AgStudioMode>(initialMode);
   const studioData = useMemo(() => buildDataSources(data), [data]);
   const modelKey = aiModels.join(',');
@@ -40,7 +42,7 @@ export function ControlRoom({ data, licenseKey, aiModels, initialMode }: Props) 
       <header className="flex h-12 shrink-0 items-center gap-4 border-b border-line px-4">
         <span className="wordmark text-sm text-text">ALLOWANCE</span>
         <h1 className="text-sm text-muted">Control Room</h1>
-        <span className="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] text-muted">seed data</span>
+        <span className={`rounded-full border px-2 py-0.5 font-mono text-[11px] ${sample ? 'border-stepup/50 text-stepup' : 'border-allow/50 text-allow'}`}>{sample ? 'sample data' : 'live · sandbox'}</span>
         {!ai && <span className="font-mono text-[11px] text-muted">assistant off (no model configured)</span>}
         <div role="group" aria-label="Mode" className="ml-auto flex overflow-hidden rounded-lg border border-line text-xs">
           {(['view', 'edit'] as const).map((m) => (

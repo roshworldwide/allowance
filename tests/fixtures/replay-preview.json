@@ -2,6 +2,56 @@
  "meta": {
   "task": "Get me two USB-C cables under $15 each and a desk lamp under $50.",
   "model": "scripted preview",
+  "contract": {
+   "id": "tc_preview",
+   "mandateId": "mnd_ce2bc731785f4b4c",
+   "confirmedAt": "2026-11-10T17:42:46.765Z",
+   "lines": [
+    {
+     "id": "L1",
+     "category": "electronics",
+     "productType": "usb-c-cable",
+     "description": "USB-C cable",
+     "maxQty": 2,
+     "maxUnitCents": 1500
+    },
+    {
+     "id": "L2",
+     "category": "office-supplies",
+     "productType": "desk-lamp",
+     "description": "Desk lamp",
+     "maxQty": 1,
+     "maxUnitCents": 5000
+    }
+   ]
+  },
+  "mandate": {
+   "id": "mnd_ce2bc731785f4b4c",
+   "name": "Office errands",
+   "status": "ACTIVE",
+   "currency": "USD",
+   "budgetCents": 20000,
+   "periodStart": "2026-11-10T17:42:00.000Z",
+   "periodEnd": "2026-11-30T23:59:59.000Z",
+   "perPurchaseCapCents": 6000,
+   "stepUpAboveCents": 4000,
+   "stepUpOnNewMerchant": false,
+   "allowedCategories": [
+    "office-supplies",
+    "electronics"
+   ],
+   "allowedMerchants": "ANY_IN_CATEGORY",
+   "allowRecurring": false,
+   "velocity": {
+    "maxPerHour": 8,
+    "maxPerMerchantWindowCents": 10000,
+    "windowMinutes": 60
+   },
+   "priceDriftPct": 10,
+   "undoWindowSec": 600,
+   "killSwitch": false,
+   "vaultLinked": true
+  },
   "allowance": {
    "name": "Office errands",
    "budgetCents": 20000,
@@ -10,8 +60,8 @@
   },
   "synthetic": true,
   "note": "Synthetic preview for UI development: scripted agent, fake PayPal.",
-  "id": "2026-11-10-17-26-9940ec",
-  "recordedAt": "2026-11-10T17:26:25.759Z"
+  "id": "2026-11-10-17-42-5f4b4c",
+  "recordedAt": "2026-11-10T17:42:46.765Z"
  },
  "events": [
   {
@@ -20,12 +70,12 @@
    "type": "run",
    "data": {
     "type": "run",
-    "runId": "run_d1149e1a3f13",
+    "runId": "run_5520130a90db",
     "model": "scripted preview"
    }
   },
   {
-   "t": 1428,
+   "t": 1536,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -39,7 +89,7 @@
    }
   },
   {
-   "t": 2331,
+   "t": 2438,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -53,7 +103,7 @@
    }
   },
   {
-   "t": 3234,
+   "t": 3342,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -70,14 +120,14 @@
    }
   },
   {
-   "t": 3248,
+   "t": 3350,
    "source": "bus",
    "type": "decision",
    "data": {
-    "decisionId": "dec_0f71d48c4c264e1c8674",
+    "decisionId": "dec_76e997018230430fada3",
     "verdict": "ALLOW",
     "tool": "allowance_checkout",
-    "at": "2026-11-10T17:26:29.002Z",
+    "at": "2026-11-10T17:42:50.113Z",
     "item": "Volt & Wire USB-C to USB-C cable, 1 m",
     "sku": "VW-CBL-USBC-1M",
     "qty": 2,
@@ -185,15 +235,25 @@
       "message": null
      }
     ],
-    "latencyUs": 10094
+    "latencyUs": 5340,
+    "intent": {
+     "kind": "PURCHASE",
+     "toolName": "allowance_checkout",
+     "overrides": {},
+     "rawArgsHash": "b3bb2bc012f76e728a00038ca782ebb63fa0925d17c48afd808d1ce46b6ac625",
+     "sku": "VW-CBL-USBC-1M",
+     "qty": 2,
+     "contractLineId": "L1",
+     "quotedUnitCents": 1199
+    }
    }
   },
   {
-   "t": 3255,
+   "t": 3354,
    "source": "bus",
    "type": "purchase",
    "data": {
-    "decisionId": "dec_0f71d48c4c264e1c8674",
+    "decisionId": "dec_76e997018230430fada3",
     "orderId": "ORDER2",
     "captureId": "CAP3",
     "status": "COMPLETED",
@@ -202,7 +262,7 @@
    }
   },
   {
-   "t": 4157,
+   "t": 4256,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -219,14 +279,14 @@
    }
   },
   {
-   "t": 4163,
+   "t": 4259,
    "source": "bus",
    "type": "decision",
    "data": {
-    "decisionId": "dec_1228895b898144af8221",
+    "decisionId": "dec_f597b7e400744f888ee7",
     "verdict": "BLOCK",
     "tool": "allowance_checkout",
-    "at": "2026-11-10T17:26:29.921Z",
+    "at": "2026-11-10T17:42:51.022Z",
     "item": "Volt & Wire 7-in-1 USB-C hub",
     "sku": "VW-HUB-USBC-7",
     "qty": 1,
@@ -334,11 +394,21 @@
       "message": null
      }
     ],
-    "latencyUs": 881
+    "latencyUs": 922,
+    "intent": {
+     "kind": "PURCHASE",
+     "toolName": "allowance_checkout",
+     "overrides": {},
+     "rawArgsHash": "6321eb2e783b8e7abe642793df2bda37c9c20e7508485dbc0da063c0e78a3b9b",
+     "sku": "VW-HUB-USBC-7",
+     "qty": 1,
+     "contractLineId": "L1",
+     "quotedUnitCents": 3400
+    }
    }
   },
   {
-   "t": 5066,
+   "t": 5161,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -352,7 +422,7 @@
    }
   },
   {
-   "t": 5969,
+   "t": 6064,
    "source": "run",
    "type": "tool_call",
    "data": {
@@ -369,14 +439,14 @@
    }
   },
   {
-   "t": 5973,
+   "t": 6067,
    "source": "bus",
    "type": "decision",
    "data": {
-    "decisionId": "dec_b7d260ff53834c829294",
+    "decisionId": "dec_f1e70f01a9344f7c940a",
     "verdict": "STEP_UP",
     "tool": "allowance_checkout",
-    "at": "2026-11-10T17:26:31.730Z",
+    "at": "2026-11-10T17:42:52.831Z",
     "item": "Northwind LED desk lamp with dimmer",
     "sku": "NW-LAMP-LED",
     "qty": 1,
@@ -486,16 +556,26 @@
       "message": null
      }
     ],
-    "latencyUs": 1116
+    "latencyUs": 736,
+    "intent": {
+     "kind": "PURCHASE",
+     "toolName": "allowance_checkout",
+     "overrides": {},
+     "rawArgsHash": "9d20e50b909613b3f0b88ca0c54ec9525faa0de9a17ecab9abb811bc16815ee8",
+     "sku": "NW-LAMP-LED",
+     "qty": 1,
+     "contractLineId": "L2",
+     "quotedUnitCents": 4800
+    }
    }
   },
   {
-   "t": 5976,
+   "t": 6069,
    "source": "bus",
    "type": "approval",
    "data": {
-    "approvalId": "apr_b7d260ff53834c829294",
-    "decisionId": "dec_b7d260ff53834c829294",
+    "approvalId": "apr_f1e70f01a9344f7c940a",
+    "decisionId": "dec_f1e70f01a9344f7c940a",
     "status": "PENDING",
     "amountCents": 4800,
     "reasons": [
@@ -504,7 +584,7 @@
    }
   },
   {
-   "t": 6880,
+   "t": 6969,
    "source": "run",
    "type": "final",
    "data": {
@@ -514,7 +594,7 @@
    }
   },
   {
-   "t": 6881,
+   "t": 6971,
    "source": "run",
    "type": "stopped",
    "data": {
@@ -524,44 +604,44 @@
    }
   },
   {
-   "t": 6883,
+   "t": 6971,
    "source": "run",
    "type": "done",
    "data": {
-    "runId": "run_d1149e1a3f13",
+    "runId": "run_5520130a90db",
     "stopReason": "final"
    }
   },
   {
-   "t": 9395,
+   "t": 9476,
    "source": "bus",
    "type": "purchase",
    "data": {
-    "decisionId": "dec_b7d260ff53834c829294",
+    "decisionId": "dec_f1e70f01a9344f7c940a",
     "orderId": "ORDER6",
-    "captureId": "CAP15",
+    "captureId": "CAP13",
     "status": "COMPLETED",
     "path": "APPROVAL",
     "amountCents": 4800
    }
   },
   {
-   "t": 9396,
+   "t": 9477,
    "source": "bus",
    "type": "approval",
    "data": {
-    "approvalId": "apr_b7d260ff53834c829294",
-    "decisionId": "dec_b7d260ff53834c829294",
+    "approvalId": "apr_f1e70f01a9344f7c940a",
+    "decisionId": "dec_f1e70f01a9344f7c940a",
     "status": "CAPTURED"
    }
   },
   {
-   "t": 11900,
+   "t": 11980,
    "source": "bus",
    "type": "refund",
    "data": {
-    "decisionId": "dec_0f71d48c4c264e1c8674",
-    "refundId": "REF18",
+    "decisionId": "dec_76e997018230430fada3",
+    "refundId": "REF16",
     "status": "COMPLETED",
     "amountCents": 2398
    }

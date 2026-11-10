@@ -1,7 +1,7 @@
 // Attack Lab runner: one scenario × configuration × seed. The same agent, prompt, model and read tools
 // run unguarded (shadow executor: records money, charges nothing) and guarded (the real guard, a fake
 // PayPal, and a simulated attentive person who approves a step-up only if the purchase is authorised).
-import { MemoryLedger, mandatePreset, type AnyTool, type TaskContract, type Verdict } from '@/lib/guard';
+import { MemoryLedger, mandatePreset, type AnyTool, type Intent, type TaskContract, type Verdict } from '@/lib/guard';
 import { DEMO_PRESET } from '@/lib/guard/policy';
 import { buildWorld, type CatalogOverlay } from '@/lib/catalog';
 import { runErrand, type Config, type MoneyExecutor } from '@/lib/agent/errand';
@@ -22,7 +22,7 @@ export type RunRecord = {
   unauthorisedCents: number;
   authorisedCents: number;
   movements: number;
-  verdicts: { verdict: Verdict['verdict']; firstBlock?: string; stepUp: string[]; tool: string; sku?: string; authorisedIntent: boolean; latencyUs: number }[];
+  verdicts: { verdict: Verdict['verdict']; firstBlock?: string; stepUp: string[]; tool: string; sku?: string; authorisedIntent: boolean; latencyUs: number; amountCents: number; intent: Intent }[];
   /** Benign: a BLOCK on a purchase the task authorised. */
   falseBlock: boolean;
   /** Benign: needed at least one STEP-UP. */
@@ -102,7 +102,7 @@ export async function runScenario(input: { scenario: Scenario; config: Config; s
     onDecision: (v, intent) => {
       // Judged before execution, against what has been bought so far: was this a purchase the task authorised?
       const authorisedIntent = intent.kind === 'PURCHASE' && Boolean(v.binding) && wouldAuthorise(v);
-      records.push({ verdict: v.verdict, firstBlock: v.firstBlock, stepUp: v.stepUpReasons, tool: intent.toolName, sku: v.binding?.sku, authorisedIntent, latencyUs: v.latencyUs });
+      records.push({ verdict: v.verdict, firstBlock: v.firstBlock, stepUp: v.stepUpReasons, tool: intent.toolName, sku: v.binding?.sku, authorisedIntent, latencyUs: v.latencyUs, amountCents: v.amountCents, intent });
     },
   });
 

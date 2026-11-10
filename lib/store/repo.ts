@@ -95,13 +95,13 @@ export function confirmContractRow(db: Db, id: string, at = now()) {
 // --- Decisions ----------------------------------------------------------------------------------------
 export type DecisionStatus = 'EVALUATED' | 'EXECUTED' | 'PENDING_APPROVAL' | 'FAILED' | 'REFUNDED' | 'BLOCKED' | 'DECLINED';
 
-export function insertDecision(db: Db, v: Verdict, ctx: { mandateId: string; contractId?: string; runId?: string; intent: Intent; tool: string }) {
+export function insertDecision(db: Db, v: Verdict, ctx: { mandateId: string; contractId?: string; runId?: string; intent: Intent; tool: string; source?: 'live' | 'replay'; status?: DecisionStatus }) {
   db.transaction(() => {
     db.prepare(
-      `INSERT INTO decisions (id, mandate_id, contract_id, run_id, tool_name, intent, verdict, amount_cents, merchant_id, sku, qty, first_block, step_up_reasons, explanation, status, latency_us, at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO decisions (id, mandate_id, contract_id, run_id, tool_name, intent, verdict, amount_cents, merchant_id, sku, qty, first_block, step_up_reasons, explanation, status, latency_us, source, at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     ).run(v.decisionId, ctx.mandateId, ctx.contractId ?? null, ctx.runId ?? null, ctx.tool, json(ctx.intent), v.verdict, v.amountCents, v.binding?.merchantId ?? null, v.binding?.sku ?? null, v.binding?.qty ?? null,
-      v.firstBlock ?? null, json(v.stepUpReasons), v.explanation ?? null, v.verdict === 'BLOCK' ? 'BLOCKED' : 'EVALUATED', v.latencyUs, v.at);
+      v.firstBlock ?? null, json(v.stepUpReasons), v.explanation ?? null, ctx.status ?? (v.verdict === 'BLOCK' ? 'BLOCKED' : 'EVALUATED'), v.latencyUs, ctx.source ?? 'live', v.at);
     const rr = db.prepare('INSERT INTO rule_results (decision_id, rule_id, name, kind, outcome, detail) VALUES (?,?,?,?,?,?)');
     for (const r of v.rules) rr.run(v.decisionId, r.id, r.name, r.kind, r.outcome, r.userMessage && r.outcome !== 'PASS' && r.outcome !== 'SKIP' ? `${r.detail} — ${r.userMessage}` : r.detail);
   })();
@@ -118,7 +118,7 @@ export function setExplanation(db: Db, id: string, text: string) {
 export type DecisionRow = {
   id: string; mandate_id: string; contract_id: string | null; run_id: string | null; tool_name: string; intent: string; verdict: Verdict['verdict'];
   amount_cents: number; merchant_id: string | null; sku: string | null; qty: number | null; first_block: string | null; step_up_reasons: string;
-  explanation: string | null; status: DecisionStatus; latency_us: number | null; at: string;
+  explanation: string | null; status: DecisionStatus; latency_us: number | null; source: 'live' | 'replay'; at: string;
 };
 
 export function getDecision(db: Db, id: string) {

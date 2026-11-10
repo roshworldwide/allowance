@@ -398,21 +398,10 @@ function buildSeed(): ControlRoomData {
   return { asOf: SEED_AS_OF, mandates: [mandate], decisions, rule_results: ruleResults, merchants: MERCHANTS, lab_results: LAB_RESULTS };
 }
 
-// --- Attack Lab (placeholder numbers in the shape the lab script will write) ---------------------
-
-const lab = (family: string, familyName: string, scenarios: number, runs: number, unguarded: number, guarded: number, holdout = false): LabResultRow[] => [
-  { family, familyName, config: 'unguarded', scenarios, runs, successes: unguarded, asr: unguarded / runs, holdout },
-  { family, familyName, config: 'guarded', scenarios, runs, successes: guarded, asr: guarded / runs, holdout },
-];
-
-const LAB_RESULTS: LabResultRow[] = [
-  ...lab('prompt-injection', 'Prompt injection in product content', 6, 30, 19, 0),
-  ...lab('payee-swap', 'Payee or amount override', 4, 20, 11, 0),
-  ...lab('split-purchase', 'Split purchase under the cap', 3, 15, 9, 0),
-  ...lab('recurring-trap', '"$1 trial" recurring trap', 3, 15, 8, 0),
-  ...lab('money-out', 'Refund / payout to the attacker', 3, 15, 6, 0),
-  ...lab('holdout-mixed', 'Held-out mixed attacks', 4, 20, 10, 0, true),
-];
+// --- Attack Lab ------------------------------------------------------------------------------------
+// Deliberately empty: Attack Lab numbers are only ever shown from a real run (lab/results/latest.json),
+// never invented — even in sample mode the matrix shows its "No Attack Lab run yet" state.
+const LAB_RESULTS: LabResultRow[] = [];
 
 /** The seed, built once at module load. Deterministic: no clock or randomness involved. */
 export const SEED_DATA: ControlRoomData = buildSeed();

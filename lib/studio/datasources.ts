@@ -6,19 +6,34 @@
 import type { AgDataSourcesDefinition, AgFieldDefinition, AgFormat, AgRelationDefinition } from 'ag-studio';
 import type { ControlRoomRegistry } from './registry';
 import type { ControlRoomData } from './types';
+import type { CellRendererKind } from './widgets/cell-renderers';
 
 type Field = AgFieldDefinition<ControlRoomRegistry>;
 type Spec = [id: string, name: string, format: AgFormat<ControlRoomRegistry>, hide?: boolean];
 const USD = { format: '$#,##0.00' };
 
-const fields = (specs: Spec[]): Field[] =>
-  specs.map(([id, name, format, hide]) => ({
-    id,
-    name,
-    format,
-    ...(format === 'currencyFormat' && { formatOptions: USD }),
-    ...(hide && { hide }),
-  }));
+/** Columns the grid widget draws as chips (see ./widgets/cell-renderers.tsx), keyed 'table.field'. */
+const CELL_RENDERERS: Record<string, CellRendererKind> = {
+  'decisions.verdict': 'verdict',
+  'decisions.firstBlock': 'rule',
+  'decisions.status': 'status',
+  'decisions.paypalConfirmed': 'confirmed',
+  'rule_results.outcome': 'outcome',
+  'rule_results.ruleId': 'rule',
+};
+
+const fields = (table: string, specs: Spec[]): Field[] =>
+  specs.map(([id, name, format, hide]) => {
+    const cellRenderer = CELL_RENDERERS[`${table}.${id}`];
+    return {
+      id,
+      name,
+      format,
+      ...(format === 'currencyFormat' && { formatOptions: USD }),
+      ...(hide && { hide }),
+      ...(cellRenderer && { context: { cellRenderer } }),
+    };
+  });
 
 /** Foreign key 'table.field' -> primary key 'table.field' (string refs are the 3.1.0 documented form). */
 const manyToOne = (id: string, source: string, target: string): AgRelationDefinition => ({ id, source, target, type: 'many-to-one' });
@@ -43,7 +58,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
         primaryKeyField: 'id',
         transactions: 'all',
         data: data.mandates,
-        fields: fields([
+        fields: fields('mandates', [
           ['id', 'Mandate ID', 'textFormat', true],
           ['name', 'Allowance', 'textFormat'],
           ['status', 'Allowance Status', 'textFormat'],
@@ -64,7 +79,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
         primaryKeyField: 'id',
         transactions: 'all',
         data: data.decisions,
-        fields: fields([
+        fields: fields('decisions', [
           ['id', 'Decision ID', 'textFormat'],
           ['at', 'Decided At', 'dateTimeFormat'],
           ['mandateId', 'Mandate ID', 'textFormat', true],
@@ -94,7 +109,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
         description: 'The rule trace: every rule runs on every call. outcome FAIL on a block rule blocks; STEP_UP sends to the person.',
         transactions: 'add',
         data: data.rule_results,
-        fields: fields([
+        fields: fields('rule_results', [
           ['decisionId', 'Decision ID', 'textFormat', true],
           ['ruleId', 'Rule', 'textFormat'],
           ['ruleName', 'Rule Name', 'textFormat'],
@@ -108,7 +123,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
         description: 'Simulated merchants in the trusted catalog.',
         primaryKeyField: 'id',
         data: data.merchants,
-        fields: fields([
+        fields: fields('merchants', [
           ['id', 'Merchant ID', 'textFormat', true],
           ['name', 'Merchant', 'textFormat'],
           ['category', 'Merchant Category', 'textFormat'],
@@ -120,7 +135,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
         name: 'Attack Lab',
         description: 'Attack Lab: attack success rate (asr) per attack family, unguarded vs guarded agent.',
         data: data.lab_results,
-        fields: fields([
+        fields: fields('lab_results', [
           ['family', 'Attack Family ID', 'textFormat', true],
           ['familyName', 'Attack Family', 'textFormat'],
           ['config', 'Configuration', 'textFormat'],

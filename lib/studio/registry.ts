@@ -36,9 +36,74 @@ export interface AllowanceRingWidget extends AgWidgetData<AllowanceRingDataMappi
 
 export type AllowanceRingDefinition = AgWidgetDefinition<'allowance-ring', AllowanceRingWidget>;
 
+// --- Verdict Stream -------------------------------------------------------------------------------
+
+export interface VerdictStreamStyle {
+  /** Most rows shown (newest first). */
+  maxRows?: number;
+  /** Show only BLOCK and STEP_UP decisions. */
+  onlyAlerts?: boolean;
+  /** Show the "PayPal confirmed" tick. */
+  showConfirmed?: boolean;
+  /** Clicking a row drills the report through to that decision (its rule trace). */
+  clickToDrill?: boolean;
+}
+
+export interface VerdictStreamDataMapping {
+  id: AgWidgetFieldReference[];
+  at: AgWidgetFieldReference[];
+  verdict: AgWidgetFieldReference[];
+  firstBlock?: AgWidgetFieldReference[];
+  firstBlockName?: AgWidgetFieldReference[];
+  amount?: AgWidgetFieldReference[];
+  merchant?: AgWidgetFieldReference[];
+  item?: AgWidgetFieldReference[];
+  status?: AgWidgetFieldReference[];
+  confirmed?: AgWidgetFieldReference[];
+}
+
+export interface VerdictStreamWidget extends AgWidgetData<VerdictStreamDataMapping, AgWidgetDataFormat<VerdictStreamStyle>> {
+  type: 'verdict-stream';
+}
+
+export type VerdictStreamDefinition = AgWidgetDefinition<'verdict-stream', VerdictStreamWidget>;
+
+// --- Attack Lab Matrix ----------------------------------------------------------------------------
+
+export interface AttackLabMatrixStyle {
+  /** Show "k/n" under each percentage. */
+  showCounts?: boolean;
+  /** Decimal places on the percentages. */
+  decimals?: number;
+  /** Row order. */
+  sortBy?: 'name' | 'unguardedAsr';
+}
+
+export interface AttackLabMatrixDataMapping {
+  family: AgWidgetFieldReference[];
+  config: AgWidgetFieldReference[];
+  successes: AgWidgetFieldReference[];
+  runs: AgWidgetFieldReference[];
+  holdout?: AgWidgetFieldReference[];
+}
+
+export interface AttackLabMatrixWidget extends AgWidgetData<AttackLabMatrixDataMapping, AgWidgetDataFormat<AttackLabMatrixStyle>> {
+  type: 'attack-lab-matrix';
+}
+
+export type AttackLabMatrixDefinition = AgWidgetDefinition<'attack-lab-matrix', AttackLabMatrixWidget>;
+
+// --- Studio `context` -----------------------------------------------------------------------------
+
+/** What ControlRoom passes on Studio's `context` property; custom widgets read it from their params. */
+export interface ControlRoomContext {
+  /** Drill the whole report through to one decision (null clears it). */
+  drillToDecision?: (target: { id: string; fieldId: string } | null) => void;
+}
+
 // --- Registry -------------------------------------------------------------------------------------
 
 /** `AgRegistry` (from ag-studio-react) narrows custom components and tool displays to React. */
 export interface ControlRoomRegistry extends AgRegistry {
-  widgets: readonly (AgDefaultWidgetDefinition | AllowanceRingDefinition)[];
+  widgets: readonly (AgDefaultWidgetDefinition | AllowanceRingDefinition | VerdictStreamDefinition | AttackLabMatrixDefinition)[];
 }

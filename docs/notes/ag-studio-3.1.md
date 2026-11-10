@@ -6,15 +6,39 @@ index at `https://www.ag-grid.com/studio/archive/3.1.0/llms.txt`), example sourc
 `node_modules/ag-studio/dist/types` + `ag-studio-react/dist/types` (ground truth). Read 2026-11-10.
 "✓ types" = checked by `tsc` against the installed 3.1.0 types. "UNVERIFIED" = not run in a browser.
 
-## BLOCKER: `ag-grid-community` is not resolvable from `ag-studio`
-`node_modules/ag-studio/dist/package/main.esm.mjs` imports `ag-grid-community` (AgCheckboxSelector,
-AgToggleButton, KeyCode) but `ag-studio`'s package.json does not list it; after the direct
-`ag-grid-community` dep was removed, the lockfile only installs it nested under
-`ag-studio-react/node_modules/` and `ag-grid-enterprise/node_modules/`. Result: `next dev` fails
-`/control-room` with `Module not found: Can't resolve 'ag-grid-community'`.
-Fix (package.json, owner's call): add `"ag-grid-community": "36.3.0"` (exactly the version
-ag-grid-enterprise 36.3.0 pins) so npm hoists it. This contradicts the ag-dev advice "don't install
-grid yourself" only in letter: the skill also says *if* you declare it, pin the exact Studio-matched version.
+## Resolved: `ag-grid-community` must be a root dependency
+`ag-studio`'s bundle imports `ag-grid-community` without listing it; it is now pinned at the root
+(`36.3.0`, the version ag-grid-enterprise 36.3.0 pins). Without it `next dev` fails with
+`Can't resolve 'ag-grid-community'`.
+
+## Verified in a browser (2026-11-10, dev and `next build && next start`, 1280×800)
+- Four-page report, Allowance Ring, Verdict Stream, Attack Lab Matrix, chip cell renderers, drill-through,
+  edit-mode Form Configuration (options change the widget live), prod CSP (no `'unsafe-eval'`) all work;
+  only console errors are the no-licence banner.
+- CSS variables in theme params (`var(--al-accent)`) do colour chart canvases.
+
+## Pages and navigation (`state` #changing-pages)
+- No built-in page switcher in 3.1: pages live in `initialState.pages`, the host shows tabs and calls
+  `api.setState({ ...api.getState(), selectedPageId })`. State has no page names: keep your own map.
+  `onStateUpdated(event)` gives `event.state` to follow pages an agent adds.
+
+## Drill-through from a custom widget (`drill-through`) - verified
+- A widget can trigger it: `params.api.setProperty('drillThrough', { filter: { field: { id: field.fieldId }, operator: 'equals', value } })`
+  (or the host sets the React `drillThrough` prop). It constrains every data request on every page, so
+  a rule_results grid joined to decisions shows that decision's 12 rules. The Filters-panel card is
+  read-only: provide your own clear control (`setProperty('drillThrough', undefined)` / prop `undefined`).
+- `params.api.getProperty('drillThrough')` lets the widget highlight the drilled row.
+- Host → widget callbacks: Studio's `context` property (`@initial`, keep it stable) arrives as `params.context`.
+
+## Grid cell renderers (`widget-configuration` #cell-renderers) - verified
+- `createWidgets({ overrides: [{ id: 'grid', options: { createCellRenderer: (field) => Comp | undefined } }] })`;
+  opt fields in with `context` on the field definition (`field.context`). React renderer props:
+  `AgWidgetCustomCellRendererProps` (ag-studio-react). The total row calls the renderer with `value` null.
+
+## Field roles (from the 3.1 bundle source)
+- boolean fields have role `category` (aggregations count/countd/first/last); numbers `numeric`+`category`.
+- Custom widget queries: `widgetApi.getData({ fields, filter: [{ field, operator: 'isIn', value }], sort: [{ field, direction }], limit: { count } })` - verified.
+- `createDefaults` always adds a Cross-Filtering section, even for widgets that do not cross-filter.
 
 ## Licence / modules
 - `<AgStudioProvider licenseKey modules={[AgStudioAiModule]}>` (ag-studio-react). Without a key: watermark + console warning. ✓ types. Docs: `licence-install`, `ai-quickstart`.
@@ -22,7 +46,7 @@ grid yourself" only in letter: the skill also says *if* you declare it, pin the 
 
 ## Theme (`theming`, `studio-theme`)
 - `studioTheme.withParams({...}, mode?)`; params are shared (no prefix), `studio*`, `grid*`, `chart*`. Names used in `lib/studio/theme.ts` all ✓ types (incl. `browserColorScheme: 'dark'`, `chartPaletteFills{n}Color`).
-- CSS var values (`var(--al-ink)`) in params: worked in the 3.0 boilerplate; UNVERIFIED for 3.1 chart canvas colours.
+- CSS var values (`var(--al-ink)`) in params: verified in 3.1, including chart canvas colours.
 - No per-widget chart palette in 3.1 chart format types (`AgChartStyle` = `theme.common` legend/navigator/zoom + `custom`); series colours come from the global palette by index.
 
 ## Data (`data`, `data-modelling`, `loading-data`, `live-data`)
@@ -64,7 +88,7 @@ grid yourself" only in letter: the skill also says *if* you declare it, pin the 
 - `drillThrough={{ filter }}` or `api.setProperty('drillThrough', { filter })`; read-only card in Filters panel, not saved in state. Trigger from `getContextMenuItems(params)` using `params.filter`. Tables can highlight instead (`format.drillThrough: 'highlight'`).
 
 ## CSP (`security`)
-- Needs `style-src 'unsafe-inline'` (or `styleNonce`), `img-src data:`. Chat renders images as links. Our CSP satisfies both. Whether the production bundle needs `'unsafe-eval'`: UNVERIFIED (blocked by the issue above).
+- Needs `style-src 'unsafe-inline'` (or `styleNonce`), `img-src data:`. Chat renders images as links. Our CSP satisfies both; the production build runs without `'unsafe-eval'` (verified).
 
 ## OpenAI adapter
 - 3.1.0 example `shared/openaiAdapter.tsx` is byte-identical to the 3.0.0 one. It always sends `reasoning.effort` (default `'medium'`): OPENAI_MODELS must be reasoning models, or the proxy must drop `reasoning`.

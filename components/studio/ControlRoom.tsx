@@ -18,6 +18,8 @@ import type { ControlRoomContext, ControlRoomRegistry } from '@/lib/studio/regis
 import { controlRoomTheme } from '@/lib/studio/theme';
 import type { ControlRoomData } from '@/lib/studio/types';
 import { controlRoomWidgets } from '@/lib/studio/widgets';
+import { Wordmark } from '@/components/brand/Mark';
+import Link from 'next/link';
 
 if (process.env.NODE_ENV !== 'production') enableStudioDevValidations();
 
@@ -91,9 +93,12 @@ export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }:
 
   return (
     <div className="flex h-dvh w-full flex-col bg-ink">
-      <header className="flex h-12 shrink-0 items-center gap-4 border-b border-line px-4">
-        <span className="wordmark text-sm text-text">ALLOWANCE</span>
-        <h1 className="text-sm text-muted">Control Room</h1>
+      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-white/[0.07] bg-[rgba(8,10,18,0.85)] px-5 backdrop-blur-xl">
+        <Link href="/" aria-label="ALLOWANCE home" className="rounded-full">
+          <Wordmark />
+        </Link>
+        <span aria-hidden className="h-5 w-px bg-white/10" />
+        <h1 className="text-[13px] font-medium tracking-[-0.01em] text-text">Control Room</h1>
         <span className={`rounded-full border px-2 py-0.5 font-mono text-[11px] ${sample ? 'border-stepup/50 text-stepup' : 'border-allow/50 text-allow'}`}>{sample ? 'sample data' : 'live · sandbox'}</span>
         <nav role="tablist" aria-label="Pages" className="flex items-center gap-1">
           {pages.map((id, i) => (
@@ -103,7 +108,7 @@ export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }:
               role="tab"
               aria-selected={id === pageId}
               onClick={() => selectPage(id)}
-              className={`rounded-md px-2.5 py-1 text-xs ${id === pageId ? 'bg-surface-2 text-text shadow-[inset_0_-2px_0_var(--al-accent)]' : 'text-muted hover:text-text'}`}
+              className={`rounded-full px-3 py-1 text-xs transition-colors ${id === pageId ? 'bg-white/[0.08] text-text shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]' : 'text-muted hover:text-text'}`}
             >
               {PAGE_TITLES[id] ?? `Page ${i + 1}`}
             </button>
@@ -118,14 +123,14 @@ export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }:
           </span>
         )}
         {!ai && <span className="font-mono text-[11px] text-muted">assistant off (no model configured)</span>}
-        <div role="group" aria-label="Mode" className="ml-auto flex overflow-hidden rounded-lg border border-line text-xs">
+        <div role="group" aria-label="Mode" className="ml-auto flex overflow-hidden rounded-full border border-white/10 bg-white/[0.03] p-0.5 text-xs">
           {(['view', 'edit'] as const).map((m) => (
             <button
               key={m}
               type="button"
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
-              className={`px-3 py-1.5 capitalize ${mode === m ? 'bg-surface-2 text-accent' : 'text-muted hover:text-text'}`}
+              className={`rounded-full px-3 py-1 capitalize transition-colors ${mode === m ? 'bg-white text-ink' : 'text-muted hover:text-text'}`}
             >
               {m}
             </button>

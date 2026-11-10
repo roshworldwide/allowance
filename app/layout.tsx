@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
+import { Ambient } from '@/components/fx/Ambient';
+import { Spotlight } from '@/components/fx/Spotlight';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,14 +15,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0f1e',
+  themeColor: '#05070d',
   colorScheme: 'dark',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} h-full`}>
-      <body className="min-h-full bg-ink text-text">{children}</body>
+      <body className="min-h-full text-text">
+        <Ambient />
+        <Spotlight />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 
 // Judge mode: plays a recorded run through the same reducer, lane and cards as the live console.
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { FirewallLane } from '@/components/lane/FirewallLane';
+import { FirewallLane, NowCaption } from '@/components/lane/FirewallLane';
 import { Button, usd } from '@/components/ui';
 import { VerdictCard } from '@/components/verdict/VerdictCard';
 import { errandReducer, initialErrand, type Step } from './state';
@@ -63,35 +63,36 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
   const compressed = timeline.some((e) => e.compressed);
 
   return (
-    <main className="mx-auto grid w-full max-w-[1400px] gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)_320px]">
+    <main className="mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
       <aside className="space-y-4">
-        <section className={`rounded-card border p-4 ${replay.meta.synthetic ? 'border-block/60 bg-block/5' : 'border-line bg-surface'}`}>
-          <p className={`font-mono text-[11px] uppercase tracking-[0.12em] ${replay.meta.synthetic ? 'text-block' : 'text-accent'}`}>
+        <section className={`glass p-5 ${replay.meta.synthetic ? 'rim-block' : 'rim-accent'}`}>
+          <p className={`font-mono text-[10.5px] uppercase tracking-[0.16em] ${replay.meta.synthetic ? 'text-block' : 'text-accent'}`}>
             {replay.meta.synthetic ? 'Synthetic preview · fake PayPal · not a sandbox run' : `Replay of a live sandbox run · ${recorded} IST`}
           </p>
-          <p className="mt-2 text-sm text-text">“{replay.meta.task}”</p>
+          <p className="mt-3 text-[17px] leading-snug tracking-[-0.01em] text-platinum">“{replay.meta.task}”</p>
           <p className="mt-2 text-[12.5px] text-muted">
             {replay.meta.allowance.name}: {usd(replay.meta.allowance.budgetCents)} · max {usd(replay.meta.allowance.perPurchaseCapCents)} per purchase · ask above {usd(replay.meta.allowance.stepUpAboveCents)} · agent {replay.meta.model}
           </p>
           {compressed && <p className="mt-1 text-[11.5px] text-muted">Timing is adjusted for readability (e.g. the wait while approving on the phone is shortened).</p>}
           <div className="mt-3 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-label="Replay progress" aria-valuemin={0} aria-valuemax={timeline.length} aria-valuenow={pos}>
-              <div className="h-full bg-accent transition-[width]" style={{ width: `${(pos / Math.max(1, timeline.length)) * 100}%` }} />
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]" role="progressbar" aria-label="Replay progress" aria-valuemin={0} aria-valuemax={timeline.length} aria-valuenow={pos}>
+              <div className="h-full rounded-full bg-[linear-gradient(90deg,var(--al-accent),#ffffff)] shadow-[0_0_12px_var(--al-accent)] transition-[width] duration-700" style={{ width: `${(pos / Math.max(1, timeline.length)) * 100}%` }} />
             </div>
             <Button tone="quiet" size="sm" onClick={() => { setPos(0); setRun((r) => r + 1); }}>
               Replay
             </Button>
           </div>
-          <p className="mt-2 font-mono text-[11px] text-muted">spent {usd(committed)} of {usd(replay.meta.allowance.budgetCents)}</p>
+          <p className="mt-3 font-mono text-[11px] text-muted">spent <span className="text-allow">{usd(committed)}</span> of {usd(replay.meta.allowance.budgetCents)}</p>
         </section>
         <ReplayTranscript steps={state.steps} />
       </aside>
       <section className="min-w-0 space-y-3">
         <FirewallLane cards={state.cards} order={state.order} model={replay.meta.model} />
+        <NowCaption cards={state.cards} order={state.order} />
         {replay.meta.note && <p className="text-[12.5px] text-muted">{replay.meta.note}</p>}
       </section>
       <aside className="space-y-3">
-        <h2 className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Verdicts {cards.length ? `· ${cards.length}` : ''}</h2>
+        <h2 className="eyebrow">Verdicts {cards.length ? `· ${cards.length}` : ''}</h2>
         {cards.map((c) => (
           <VerdictCard key={c.decision.decisionId} card={c} readOnly />
         ))}
@@ -103,15 +104,15 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
 function ReplayTranscript({ steps }: { steps: Step[] }) {
   if (!steps.length) return null;
   return (
-    <section className="rounded-card border border-line bg-surface p-4" aria-label="Agent transcript">
-      <h2 className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Agent</h2>
+    <section className="glass p-5" aria-label="Agent transcript">
+      <h2 className="eyebrow">Agent</h2>
       <ol className="mt-2 space-y-1.5 text-[13px]">
         {steps.map((s) => (
           <li key={s.id}>
             {s.kind === 'search' && <span className="text-muted">searched <span className="text-text">“{s.query}”</span></span>}
             {s.kind === 'view' && <span className="text-muted">read the {s.what === 'page' ? 'page' : 'reviews'} of <span className="font-mono text-[12px] text-text">{s.sku}</span> <span className="font-mono text-[10px]">untrusted</span></span>}
             {s.kind === 'money' && <span className="text-text">→ tried to pay: <span className="font-mono text-[12px]">{s.label}</span></span>}
-            {s.kind === 'say' && <p className="mt-1 rounded-lg bg-ink/60 px-2.5 py-2 text-text">{s.text}</p>}
+            {s.kind === 'say' && <p className="mt-1 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-text">{s.text}</p>}
           </li>
         ))}
       </ol>

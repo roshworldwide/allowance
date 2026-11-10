@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { AllowanceCard, BudgetBar, type PublicAllowance } from '@/components/allowance/AllowanceCard';
-import { FirewallLane } from '@/components/lane/FirewallLane';
+import { FirewallLane, NowCaption } from '@/components/lane/FirewallLane';
 import { Button, usd } from '@/components/ui';
 import { VerdictCard } from '@/components/verdict/VerdictCard';
 import { readSse } from '@/lib/client/sse';
@@ -119,15 +119,15 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
 
   return (
     <>
-      <main className="mx-auto grid w-full max-w-[1400px] gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)_320px]">
+      <main className="mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
         <aside className="space-y-4" aria-label="Allowance and task">
           <AllowanceCard allowance={allowance} owner={owner} busy={busy} onCreate={create} onLink={link} onRevoke={revoke} />
           {allowance?.status === 'ACTIVE' && (
-            <section className="rounded-card border border-line bg-surface p-4">
-              <label htmlFor="task" className="text-sm font-semibold text-text">
+            <section className="glass spot p-5">
+              <label htmlFor="task" className="eyebrow">
                 Errand
               </label>
-              <textarea id="task" value={task} onChange={(e) => setTask(e.target.value)} rows={3} maxLength={400} disabled={running || confirmed} className="mt-2 w-full resize-none rounded-xl border border-line bg-ink px-3 py-2 text-sm text-text placeholder:text-muted focus:border-accent/60 focus:outline-none disabled:opacity-70" />
+              <textarea id="task" value={task} onChange={(e) => setTask(e.target.value)} rows={3} maxLength={400} disabled={running || confirmed} className="field mt-2.5 w-full resize-none px-3.5 py-2.5 text-[14px] leading-relaxed text-text placeholder:text-muted disabled:opacity-70" />
               {!plan && (
                 <Button className="mt-2 w-full" onClick={makePlan} disabled={busy || task.trim().length < 5}>
                   Turn into a task contract
@@ -156,18 +156,19 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
               )}
             </section>
           )}
-          {notice && <p role="status" className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-[13px] text-text">{notice}</p>}
+          {notice && <p role="status" className="glass rim-accent px-4 py-2.5 text-[13px] text-text">{notice}</p>}
           <Transcript steps={state.steps} status={state.status} error={state.error} />
         </aside>
 
         <section className="min-w-0 space-y-3" aria-label="Firewall">
           <FirewallLane cards={state.cards} order={state.order} model={state.model} />
+          <NowCaption cards={state.cards} order={state.order} />
           <Legend />
         </section>
 
         <aside className="space-y-3" aria-label="Verdicts">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Verdicts {cards.length ? `· ${cards.length}` : ''}</h2>
-          {cards.length === 0 && <p className="rounded-card border border-dashed border-line p-4 text-[13px] text-muted">Every money-moving tool call the agent makes lands here with its verdict and the rule that decided it.</p>}
+          <h2 className="eyebrow">Verdicts {cards.length ? `· ${cards.length}` : ''}</h2>
+          {cards.length === 0 && <p className="rounded-[20px] border border-dashed border-white/10 p-5 text-[13px] leading-relaxed text-muted">Every money-moving tool call the agent makes lands here with its verdict and the rule that decided it.</p>}
           {cards.map((c) => (
             <VerdictCard key={c.decision.decisionId} card={c} onUndo={undo} onDecline={decline} onApproveInApp={approveInApp} />
           ))}
@@ -180,7 +181,7 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
 
 function ContractCard({ plan }: { plan: ContractResp }) {
   return (
-    <div className="mt-3 rounded-xl border border-accent/40 bg-ink/60 p-3">
+    <div className="glass rim-accent mt-3 !rounded-2xl bg-[rgba(10,13,22,0.6)] p-3.5">
       <div className="flex items-center justify-between">
         <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent">Task contract</span>
         <span className="font-mono text-[10px] text-muted">{plan.contract.confirmedAt ? '✓ confirmed · locked' : plan.parser === 'ai' ? 'parsed by AI · check it' : 'parsed without AI (fallback)'}</span>
@@ -208,19 +209,19 @@ function ContractCard({ plan }: { plan: ContractResp }) {
 function Transcript({ steps, status, error }: { steps: Step[]; status: string; error?: string }) {
   if (!steps.length && status === 'idle') return null;
   return (
-    <section className="rounded-card border border-line bg-surface p-4" aria-label="Agent transcript" aria-live="polite">
-      <h2 className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">Agent</h2>
+    <section className="glass p-5" aria-label="Agent transcript" aria-live="polite">
+      <h2 className="eyebrow flex items-center gap-2">{status === 'running' && <span className="h-1.5 w-1.5 rounded-full bg-allow breathe shadow-[0_0_8px_var(--al-allow)]" />}Agent</h2>
       <ol className="mt-2 space-y-1.5 text-[13px]">
         {steps.map((s) => (
           <li key={s.id} className="leading-snug">
             {s.kind === 'search' && <span className="text-muted">searched <span className="text-text">“{s.query}”</span></span>}
             {s.kind === 'view' && <span className="text-muted">read the {s.what === 'page' ? 'page' : 'reviews'} of <span className="font-mono text-[12px] text-text">{s.sku}</span> <span className="font-mono text-[10px] text-muted/80">untrusted</span></span>}
             {s.kind === 'money' && <span className="text-text">→ tried to pay: <span className="font-mono text-[12px]">{s.label}</span></span>}
-            {s.kind === 'say' && <p className="mt-1 rounded-lg bg-ink/60 px-2.5 py-2 text-text">{s.text}</p>}
+            {s.kind === 'say' && <p className="mt-1 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-text">{s.text}</p>}
             {s.kind === 'note' && <span className="text-muted">{s.text}</span>}
           </li>
         ))}
-        {status === 'running' && <li className="animate-pulse text-muted">…</li>}
+        {status === 'running' && <li className="shimmer w-24 rounded-full bg-white/[0.04] text-transparent">thinking</li>}
         {error && <li className="text-block">{error}</li>}
       </ol>
     </section>
@@ -230,15 +231,15 @@ function Transcript({ steps, status, error }: { steps: Step[]; status: string; e
 function Legend() {
   const item = (c: string, icon: string, t: string, d: string) => (
     <li className="flex items-center gap-2">
-      <span className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-ink" style={{ background: c }} aria-hidden>
+      <span className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-ink" style={{ background: c, boxShadow: `0 0 10px ${c}` }} aria-hidden>
         {icon}
       </span>
-      <span className="text-text">{t}</span>
+      <span className="whitespace-nowrap font-mono text-[11px] font-semibold tracking-[0.08em] text-text">{t}</span>
       <span className="text-muted">{d}</span>
     </li>
   );
   return (
-    <ul className="grid gap-1.5 rounded-card border border-line bg-surface px-4 py-3 text-[12.5px] sm:grid-cols-2">
+    <ul className="glass grid gap-2 px-5 py-3.5 text-[12.5px] sm:grid-cols-2">
       {item('var(--al-allow)', '✓', 'ALLOW', 'paid from the saved PayPal wallet')}
       {item('var(--al-stepup)', '!', 'STEP-UP', 'PayPal asks you first')}
       {item('var(--al-block)', '✕', 'BLOCK', 'stopped, with the rule that fired')}
@@ -252,9 +253,9 @@ function PasscodeGate({ onOk }: { onOk: () => void }) {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-4">
+    <main className="mx-auto flex min-h-[75vh] w-full max-w-md flex-col justify-center px-4">
       <form
-        className="rounded-card border border-line bg-surface p-5"
+        className="glass rim-accent p-7"
         onSubmit={async (e) => {
           e.preventDefault();
           setBusy(true);
@@ -265,12 +266,12 @@ function PasscodeGate({ onOk }: { onOk: () => void }) {
           else setErr(r.status === 429 ? 'Too many attempts — wait a minute.' : 'That passcode is not right.');
         }}
       >
-        <h1 className="text-base font-semibold text-text">Run it live</h1>
-        <p className="mt-1 text-[13px] text-muted">Live runs use real PayPal sandbox payments and a real model. The passcode is in the Devpost testing instructions. No passcode? Watch a recorded run instead.</p>
-        <label htmlFor="pc" className="mt-4 block text-[12px] text-muted">
+        <h1 className="display text-platinum text-[32px]">Run it live</h1>
+        <p className="mt-3 text-[13.5px] leading-relaxed text-muted">Live runs use real PayPal sandbox payments and a real model. The passcode is in the Devpost testing instructions. No passcode? Watch a recorded run instead.</p>
+        <label htmlFor="pc" className="eyebrow mt-6 block">
           Passcode
         </label>
-        <input id="pc" type="password" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} className="mt-1 h-10 w-full rounded-xl border border-line bg-ink px-3 text-sm text-text focus:border-accent/60 focus:outline-none" />
+        <input id="pc" type="password" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} className="field mt-1.5 h-11 w-full px-3.5 text-sm text-text" />
         {err && <p role="alert" className="mt-2 text-[12px] text-block">{err}</p>}
         <Button className="mt-3 w-full" disabled={busy || !code}>
           Enter

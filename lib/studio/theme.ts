@@ -42,7 +42,7 @@ export const controlRoomTheme = studioTheme.withParams({
 
   studioWidgetBackgroundColor: v('slate'),
   studioWidgetBorder: line('line'),
-  studioWidgetBorderRadius: 14,
+  studioWidgetBorderRadius: 18,
   studioWidgetPadding: 10,
   studioWidgetTitleFontFamily: SANS,
   studioWidgetTitleFontSize: 14,

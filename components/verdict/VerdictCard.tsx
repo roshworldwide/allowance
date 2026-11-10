@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { Button, CopyId, usd, VerdictChip } from '@/components/ui';
@@ -32,23 +33,30 @@ export function VerdictCard({
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const fired = d.rules.filter((r) => r.outcome === 'FAIL' || r.outcome === 'STEP_UP');
-  const accent = phase === 'BLOCK' || phase === 'FAILED' ? 'before:bg-block' : phase === 'STEP_UP' ? 'before:bg-stepup' : phase === 'REFUNDED' ? 'before:bg-refund' : phase === 'DECLINED' ? 'before:bg-line' : 'before:bg-allow';
+  const rim = phase === 'BLOCK' || phase === 'FAILED' ? 'rim-block' : phase === 'STEP_UP' ? 'rim-stepup' : phase === 'REFUNDED' ? 'rim-refund' : phase === 'DECLINED' ? '' : 'rim-allow';
+  const reduce = useReducedMotion();
 
   return (
-    <article className={`relative overflow-hidden rounded-card border border-line bg-surface p-3.5 before:absolute before:inset-y-0 before:left-0 before:w-1 ${accent}`}>
+    <motion.article
+      layout={!reduce}
+      initial={reduce ? false : { opacity: 0, x: 24, filter: 'blur(8px)' }}
+      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className={`glass spot ${rim} !rounded-[20px] bg-[rgba(10,13,22,0.6)] p-4`}
+    >
       <div className="flex items-start justify-between gap-2">
         <VerdictChip kind={phase} />
         <time className="font-mono text-[11px] text-muted" dateTime={d.at}>
           {new Date(d.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </time>
       </div>
-      <h3 className="mt-2 text-sm font-medium leading-snug text-text">
+      <h3 className="mt-3 text-[14px] font-medium leading-snug tracking-[-0.005em] text-text">
         {d.item ? `${d.qty ?? 1} × ${d.item}` : <span className="font-mono">{d.tool}</span>}
-        <span className="float-right ml-2 font-mono text-text">{usd(d.amountCents)}</span>
+        <span className="float-right ml-2 font-mono text-[15px] text-platinum tabular">{usd(d.amountCents)}</span>
       </h3>
       <p className={`mt-1 text-[13px] leading-snug ${phase === 'BLOCK' ? 'text-block' : phase === 'STEP_UP' ? 'text-stepup' : 'text-muted'}`}>{d.summary}</p>
       {card.explanation && (
-        <p className="mt-2 rounded-lg bg-ink/60 px-2.5 py-1.5 text-[13px] text-text">
+        <p className="mt-2.5 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-[13px] leading-snug text-text">
           {card.explanation}
           <span className="ml-1.5 whitespace-nowrap font-mono text-[10px] text-muted">AI-written from the rule trace</span>
         </p>
@@ -81,7 +89,7 @@ export function VerdictCard({
         <span aria-hidden>{open ? '▴' : '▾'}</span>
       </button>
       {open && (
-        <ol className="mt-1.5 space-y-0.5 border-t border-line pt-1.5">
+        <ol className="mt-2 space-y-0.5 border-t border-white/[0.07] pt-2">
           {d.rules.map((r) => (
             <li key={r.id} className="grid grid-cols-[34px_120px_62px_1fr] gap-1.5 font-mono text-[10.5px] leading-snug">
               <span className="text-muted">{r.id}</span>
@@ -92,7 +100,7 @@ export function VerdictCard({
           ))}
         </ol>
       )}
-    </article>
+    </motion.article>
   );
 }
 
@@ -107,7 +115,7 @@ function UndoButton({ capturedAt, windowSec, busy, onUndo }: { capturedAt: numbe
   const mm = String(Math.floor(left / 60)).padStart(2, '0');
   const ss = String(left % 60).padStart(2, '0');
   return (
-    <Button tone="quiet" size="sm" onClick={onUndo} disabled={busy} className="ml-auto border-refund/50 text-refund">
+    <Button tone="quiet" size="sm" onClick={onUndo} disabled={busy} className="ml-auto !border-refund/50 !text-refund shadow-[0_0_24px_-10px_var(--al-refund)]">
       ↺ Undo <span className="font-mono">{mm}:{ss}</span>
     </Button>
   );
@@ -118,7 +126,7 @@ function StepUpBox({ card, busy, setBusy, onDecline, onApproveInApp }: { card: C
   const [svg, setSvg] = useState('');
   useEffect(() => {
     if (!a.approvePage) return;
-    void QRCode.toString(a.approvePage, { type: 'svg', margin: 1, color: { dark: '#0A0F1E', light: '#E8ECF6' } }).then(setSvg);
+    void QRCode.toString(a.approvePage, { type: 'svg', margin: 1, color: { dark: '#05070D', light: '#EEF1F8' } }).then(setSvg);
   }, [a.approvePage]);
   const run = (fn?: (id: string) => Promise<void>) => async () => {
     if (!fn) return;
@@ -130,14 +138,14 @@ function StepUpBox({ card, busy, setBusy, onDecline, onApproveInApp }: { card: C
     }
   };
   return (
-    <div className="mt-3 flex gap-3 rounded-xl border border-stepup/40 bg-stepup/5 p-2.5">
-      {svg ? <div className="h-[92px] w-[92px] shrink-0 overflow-hidden rounded-lg" role="img" aria-label="QR code to approve on your phone" dangerouslySetInnerHTML={{ __html: svg }} /> : <div className="h-[92px] w-[92px] shrink-0 rounded-lg bg-surface-2" />}
+    <div className="mt-3 flex gap-3 rounded-2xl border border-stepup/35 bg-[linear-gradient(180deg,rgba(246,195,91,0.08),rgba(246,195,91,0.02))] p-3 shadow-[0_0_40px_-18px_var(--al-stepup)]">
+      {svg ? <div className="h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl ring-1 ring-stepup/40 shadow-[0_0_24px_-6px_var(--al-stepup)]" role="img" aria-label="QR code to approve on your phone" dangerouslySetInnerHTML={{ __html: svg }} /> : <div className="h-[92px] w-[92px] shrink-0 rounded-lg bg-surface-2" />}
       <div className="min-w-0 text-[12.5px]">
         <p className="font-medium text-stepup">PayPal is asking you</p>
         <p className="mt-0.5 text-muted">Scan to approve on your phone, in PayPal (sandbox).</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {a.approvePage && (
-            <a href={a.approvePage} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center rounded-xl bg-stepup px-3 text-xs font-medium text-ink">
+            <a href={a.approvePage} target="_blank" rel="noreferrer" className="btn-gold inline-flex h-8 items-center rounded-full px-3.5 text-xs">
               Open approval
             </a>
           )}

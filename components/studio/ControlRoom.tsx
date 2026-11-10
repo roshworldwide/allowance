@@ -44,7 +44,7 @@ export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }:
   const [rows, setRows] = useState(data);
   useEffect(() => {
     if (sample) return;
-    const sig = (d: ControlRoomData) => `${d.decisions.length}|${d.decisions.map((x) => `${x.id}:${x.status}:${x.paypalConfirmed ? 1 : 0}`).join(',')}|${d.paypal_transactions.length}|${d.lab_results.length}`;
+    const sig = (d: ControlRoomData) => `${d.decisions.length}|${d.decisions.map((x) => `${x.id}:${x.status}:${x.paypalConfirmed ? 1 : 0}`).join(',')}|${d.paypal_transactions.length}|${d.lab_results.length}|${d.chain_events?.length ?? 0}`;
     let last = sig(data);
     const timer = setInterval(async () => {
       if (document.visibilityState !== 'visible') return;

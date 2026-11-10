@@ -93,6 +93,30 @@ export interface AttackLabMatrixWidget extends AgWidgetData<AttackLabMatrixDataM
 
 export type AttackLabMatrixDefinition = AgWidgetDefinition<'attack-lab-matrix', AttackLabMatrixWidget>;
 
+// --- Chain Seal -----------------------------------------------------------------------------------
+
+export interface ChainSealStyle {
+  /** How many of the latest events to list under the seal. */
+  showLast?: number;
+  /** Show each listed event's short hash. */
+  showHashes?: boolean;
+}
+
+export interface ChainSealDataMapping {
+  seq: AgWidgetFieldReference[];
+  at: AgWidgetFieldReference[];
+  type: AgWidgetFieldReference[];
+  payload: AgWidgetFieldReference[];
+  prevHash: AgWidgetFieldReference[];
+  hash: AgWidgetFieldReference[];
+}
+
+export interface ChainSealWidget extends AgWidgetData<ChainSealDataMapping, AgWidgetDataFormat<ChainSealStyle>> {
+  type: 'chain-seal';
+}
+
+export type ChainSealDefinition = AgWidgetDefinition<'chain-seal', ChainSealWidget>;
+
 // --- Studio `context` -----------------------------------------------------------------------------
 
 /** What ControlRoom passes on Studio's `context` property; custom widgets read it from their params. */
@@ -105,5 +129,5 @@ export interface ControlRoomContext {
 
 /** `AgRegistry` (from ag-studio-react) narrows custom components and tool displays to React. */
 export interface ControlRoomRegistry extends AgRegistry {
-  widgets: readonly (AgDefaultWidgetDefinition | AllowanceRingDefinition | VerdictStreamDefinition | AttackLabMatrixDefinition)[];
+  widgets: readonly (AgDefaultWidgetDefinition | AllowanceRingDefinition | VerdictStreamDefinition | AttackLabMatrixDefinition | ChainSealDefinition)[];
 }

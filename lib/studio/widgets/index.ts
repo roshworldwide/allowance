@@ -8,13 +8,14 @@ import { createWidgets } from 'ag-studio-react';
 import type { ControlRoomRegistry } from '../registry';
 import { allowanceRingDefinition } from './AllowanceRing';
 import { attackLabMatrixDefinition } from './AttackLabMatrix';
+import { chainSealDefinition } from './ChainSeal';
 import { GRID_OPTIONS } from './cell-renderers';
 import { verdictStreamDefinition } from './VerdictStream';
 
 /** Function form: Studio passes its defaults, so the built-in menu is kept. Pass by reference (module constant). */
 export const controlRoomWidgets = (defaults: AgWidgetsConfig<AgCoreDefaultRegistry>): AgWidgetsConfig<ControlRoomRegistry> =>
   createWidgets<ControlRoomRegistry>({
-    additionalTypes: [allowanceRingDefinition, verdictStreamDefinition, attackLabMatrixDefinition],
+    additionalTypes: [allowanceRingDefinition, verdictStreamDefinition, attackLabMatrixDefinition, chainSealDefinition],
     overrides: [{ id: 'grid', options: GRID_OPTIONS }],
-    menu: [{ label: 'ALLOWANCE', widgetIds: ['allowance-ring', 'verdict-stream', 'attack-lab-matrix'] }, ...defaults.menu],
+    menu: [{ label: 'ALLOWANCE', widgetIds: ['allowance-ring', 'verdict-stream', 'attack-lab-matrix', 'chain-seal'] }, ...defaults.menu],
   });

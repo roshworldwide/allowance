@@ -12,8 +12,10 @@
 // verdict, first block, budget figure and velocity count is consistent with the rows around it.
 // It is a stand-in for display only; the guard itself is the source of truth.
 
+import { appendEvent, MemoryChainStore } from '@/lib/guard/chain';
 import { RULES } from '@/lib/guard/rules/meta';
 import type {
+  ChainEventRow,
   ControlRoomData,
   DecisionRow,
   DecisionSource,
@@ -318,6 +320,11 @@ function buildSeed(): ControlRoomData {
   const ledger: LedgerEntry[] = [];
   // Ledger changes that happen after a decision: a step-up answered, a purchase undone.
   const pending: { atMs: number; apply: () => void }[] = [];
+  // Audit-chain events, in the shapes lib/allowance records them; hashed in time order below.
+  const chainInputs: { at: string; type: string; payload: unknown }[] = [
+    { at: '2026-11-01T08:00:00.000Z', type: 'mandate.created', payload: { mandateId: MANDATE.id, budgetCents: MANDATE.budgetCents, perPurchaseCapCents: MANDATE.perPurchaseCapCents, stepUpAboveCents: MANDATE.stepUpAboveCents, linked: false } },
+    { at: '2026-11-01T08:01:30.000Z', type: 'mandate.linked', payload: { mandateId: MANDATE.id, vaultToken: '9xk…3f2' } },
+  ];
 
   for (const spec of SPECS) {
     const nowMs = Date.parse(spec.at);
@@ -375,6 +382,17 @@ function buildSeed(): ControlRoomData {
       source,
     });
     ruleResults.push(...t.rules.map((r) => ({ decisionId: spec.id, ...r })));
+
+    // Only live calls are chained: replays and the lab are dry runs that move no money.
+    if (source === 'live') {
+      const stepUp = t.rules.filter((r) => r.outcome === 'STEP_UP').map((r) => r.ruleId);
+      chainInputs.push({ at: spec.at, type: 'decision', payload: { decisionId: spec.id, verdict: t.verdict, firstBlock: t.firstBlock ?? null, stepUp, amountCents: t.amountCents, tool: t.tool, sku: t.item?.sku ?? null } });
+      if (captureId && paidAt !== undefined) {
+        chainInputs.push({ at: new Date(paidAt).toISOString(), type: 'capture', payload: { decisionId: spec.id, captureId, status: 'COMPLETED', amountCents: t.amountCents, path: 'VAULT' } });
+      }
+      if (status === 'REFUNDED' && resolvedAt) chainInputs.push({ at: resolvedAt, type: 'refund', payload: { decisionId: spec.id, captureId, refundId, status: 'COMPLETED', amountCents: t.amountCents } });
+      if (status === 'DECLINED' && resolvedAt) chainInputs.push({ at: resolvedAt, type: 'approval.declined', payload: { decisionId: spec.id } });
+    }
   }
   for (const p of pending.filter((x) => x.atMs <= Date.parse(SEED_AS_OF))) p.apply();
 
@@ -396,7 +414,24 @@ function buildSeed(): ControlRoomData {
     current: true,
   };
 
-  return { asOf: SEED_AS_OF, mandates: [mandate], decisions, rule_results: ruleResults, merchants: MERCHANTS, lab_results: LAB_RESULTS, paypal_transactions: [] };
+  return {
+    asOf: SEED_AS_OF,
+    mandates: [mandate],
+    decisions,
+    rule_results: ruleResults,
+    merchants: MERCHANTS,
+    lab_results: LAB_RESULTS,
+    paypal_transactions: [],
+    chain_events: buildChain(chainInputs),
+  };
+}
+
+/** A valid chain, hashed by the real code (lib/guard/chain.ts, isomorphic @noble/hashes). */
+function buildChain(inputs: { at: string; type: string; payload: unknown }[]): ChainEventRow[] {
+  const store = new MemoryChainStore();
+  // Stable sort: events at the same instant keep the order they happened in.
+  for (const input of [...inputs].sort((a, b) => Date.parse(a.at) - Date.parse(b.at))) appendEvent(store, input);
+  return store.all().map(({ seq, at, type, payload, prevHash, hash }) => ({ seq, at, type, payload, prevHash, hash }));
 }
 
 // --- Attack Lab ------------------------------------------------------------------------------------

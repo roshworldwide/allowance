@@ -35,6 +35,16 @@ index at `https://www.ag-grid.com/studio/archive/3.1.0/llms.txt`), example sourc
   opt fields in with `context` on the field definition (`field.context`). React renderer props:
   `AgWidgetCustomCellRendererProps` (ag-studio-react). The total row calls the renderer with `value` null.
 
+## Chain Seal: exact values through Studio, async work in a widget - verified
+- Values that must reach a widget byte for byte (the hashed `at` timestamp, canonical JSON payloads) are
+  declared `textFormat`: a `dateTimeFormat` field is parsed, and the original string cannot be rebuilt.
+- A page filter on a table with no relationship to the widget's table does not reduce its rows: the
+  Chain Seal on Incidents (page filter `decisions.verdict = BLOCK`) still reads all of `chain_events`.
+  Cross filters are switched off per request with `getData(query, { crossFilter: 'none' })`.
+- Async work after `use(getData)` (WebCrypto here) goes in `useEffect` keyed on `response.results.rows`
+  (stable while the query is unchanged); creating the promise during render and passing it to `use`
+  re-suspends forever.
+
 ## Field roles (from the 3.1 bundle source)
 - boolean fields have role `category` (aggregations count/countd/first/last); numbers `numeric`+`category`.
 - Custom widget queries: `widgetApi.getData({ fields, filter: [{ field, operator: 'isIn', value }], sort: [{ field, direction }], limit: { count } })` - verified.

@@ -167,6 +167,24 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
           ['holdout', 'Held Out', 'booleanFormat'],
         ]),
       },
+      {
+        id: 'chain_events',
+        name: 'Audit Chain',
+        description:
+          'Hash-chained audit log of every decision, capture, refund, approval and mandate change. ' +
+          'hash = SHA-256 of "seq\\nat\\ntype\\nprevHash\\npayload"; any edit breaks the chain at that seq. at and payload are kept as exact text.',
+        primaryKeyField: 'seq',
+        transactions: 'add',
+        data: data.chain_events,
+        fields: fields('chain_events', [
+          ['seq', 'Seq', 'integerFormat'],
+          ['at', 'Event Time (as hashed)', 'textFormat'],
+          ['type', 'Event Type', 'textFormat'],
+          ['payload', 'Payload', 'textFormat'],
+          ['prevHash', 'Previous Hash', 'textFormat'],
+          ['hash', 'Hash', 'textFormat'],
+        ]),
+      },
     ],
     relationships: CONTROL_ROOM_RELATIONSHIPS,
   };

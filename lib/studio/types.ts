@@ -139,6 +139,21 @@ export interface PayPalTransactionRow {
   matched: boolean;
 }
 
+/**
+ * `chain_events`: ALLOWANCE's hash-chained audit log, exactly as stored (lib/guard/chain.ts).
+ * hash = SHA-256 hex of `${seq}\n${at}\n${type}\n${prevHash}\n${payload}`; the first prevHash is 64 zeros.
+ * `at` and `payload` must reach the verifier byte for byte, so Studio reads them as text.
+ */
+export interface ChainEventRow {
+  seq: number;
+  at: string;
+  type: string;
+  /** Canonical JSON of the event payload. */
+  payload: string;
+  prevHash: string;
+  hash: string;
+}
+
 /** Everything the Control Room shows: the props the page passes in, and the body of /api/studio/data. */
 export interface ControlRoomData {
   /** When these rows were built (ISO-8601 UTC); "today" for the dashboard and the agents. */
@@ -149,4 +164,5 @@ export interface ControlRoomData {
   merchants: MerchantRow[];
   lab_results: LabResultRow[];
   paypal_transactions: PayPalTransactionRow[];
+  chain_events: ChainEventRow[];
 }

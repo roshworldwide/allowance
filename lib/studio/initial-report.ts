@@ -132,6 +132,18 @@ const incidents: Page = {
       sort: [{ field: countd('decisions.id'), direction: 'desc' }],
       format: title('Blocks by rule', 'The first blocking rule that failed'),
     },
+    'chain-seal': {
+      type: 'chain-seal',
+      dataMapping: {
+        seq: [{ id: 'chain_events.seq' }],
+        at: [{ id: 'chain_events.at' }],
+        type: [{ id: 'chain_events.type' }],
+        payload: [{ id: 'chain_events.payload' }],
+        prevHash: [{ id: 'chain_events.prevHash' }],
+        hash: [{ id: 'chain_events.hash' }],
+      },
+      format: { ...title('Audit chain', 'Every hash re-checked in your browser'), style: { showLast: 5, showHashes: true } },
+    },
     'blocks-by-merchant': {
       type: 'donut-chart',
       dataMapping: { categoryKey: [{ id: 'decisions.merchantName' }], valueKey: [countd('decisions.id')] },
@@ -160,8 +172,9 @@ const incidents: Page = {
     'kpi-stopped': at(6, 0, 6, 7),
     'kpi-rules': at(12, 0, 6, 7),
     'kpi-merchants': at(18, 0, 6, 7),
-    'blocks-by-rule': at(0, 7, 14, 18),
-    'blocks-by-merchant': at(14, 7, 10, 18),
+    'blocks-by-rule': at(0, 7, 10, 18),
+    'chain-seal': at(10, 7, 7, 18),
+    'blocks-by-merchant': at(17, 7, 7, 18),
     blocked: at(0, 25, 24, 24),
   },
   // A page filter: shown (and removable in edit mode) in the Filters panel, applied to every widget.

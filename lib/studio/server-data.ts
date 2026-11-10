@@ -10,7 +10,7 @@ import { FAMILIES } from '@/lib/lab/scenario-schema';
 import { getPurchase, getRefund, listDecisions, listMandates } from '@/lib/store/repo';
 import { searchTransactions } from '@/lib/paypal/reporting';
 import { SEED_DATA } from './seed-data';
-import type { ControlRoomData, DecisionRow, LabResultRow, MandateRow, MerchantRow, PayPalTransactionRow, RuleResultRow } from './types';
+import type { ChainEventRow, ControlRoomData, DecisionRow, LabResultRow, MandateRow, MerchantRow, PayPalTransactionRow, RuleResultRow } from './types';
 
 const usd = (cents: number) => Math.round(cents) / 100;
 
@@ -138,5 +138,7 @@ export async function controlRoomData(viewerSessionId?: string): Promise<{ data:
   }));
 
   const merchants: MerchantRow[] = world.merchants().map((m) => ({ id: m.id, name: m.name, category: m.categories[0] ?? '', riskFlags: m.riskFlags.join(',') }));
-  return { data: { asOf: now.toISOString(), mandates, decisions, rule_results, merchants, lab_results: lab, paypal_transactions }, sample: false };
+  // The audit chain as stored (fields match ChainEvent); the Chain Seal widget re-verifies it in the browser.
+  const chain_events: ChainEventRow[] = ctx().chain.all();
+  return { data: { asOf: now.toISOString(), mandates, decisions, rule_results, merchants, lab_results: lab, paypal_transactions, chain_events }, sample: false };
 }

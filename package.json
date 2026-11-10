@@ -37,7 +37,9 @@
     "lab:validate": "tsx --conditions=react-server scripts/validate-scenarios.ts",
     "lab:sanity": "tsx --conditions=react-server scripts/lab-sanity.ts",
     "lab:holdout": "tsx --conditions=react-server scripts/lab-run.ts --holdout",
-    "webhook:register": "tsx --conditions=react-server scripts/register-webhook.ts"
+    "webhook:register": "tsx --conditions=react-server scripts/register-webhook.ts",
+    "docs:sync": "tsx scripts/sync-docs.ts",
+    "docs:check": "tsx scripts/sync-docs.ts --check"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

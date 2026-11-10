@@ -107,6 +107,7 @@ const overview: Page = {
   },
   filter: {
     widget: {
+      ring: [isTrue('mandates.current')],
       'kpi-spent': [isIn('decisions.status', 'EXECUTED')],
       'kpi-blocked': [isIn('decisions.verdict', 'BLOCK')],
       'kpi-stepups': [isIn('decisions.verdict', 'STEP_UP')],
@@ -215,10 +216,26 @@ const paypal: Page = {
     'kpi-confirmed': kpi('Confirmed by PayPal', countd('decisions.id'), 'var(--al-allow)', 'webhook or GET reconcile'),
     'kpi-awaiting': kpi('Awaiting approval', countd('decisions.id'), 'var(--al-stepup)', 'step-ups open in PayPal'),
     latency: note(
-      "This is ALLOWANCE's own ledger of what PayPal returned: capture and refund ids from the Orders and Payments APIs, " +
-        "confirmed by webhook or a GET reconcile. PayPal's Transaction Search API can take up to 3 hours to show a new " +
-        'transaction, so reconcile against it later rather than expecting a just-made purchase to appear there.',
+      "Left: ALLOWANCE's own ledger of what PayPal returned (capture and refund ids from the Orders and Payments APIs, " +
+        "confirmed by webhook or a GET reconcile). Right: PayPal's own record from the Transaction Search API, matched by " +
+        'invoice id = decision id. Transaction Search can take up to 3 hours to show new activity, so a just-made purchase appears on the left first.',
     ),
+    transactions: {
+      type: 'grid',
+      dataMapping: {
+        cols: [
+          { id: 'paypal_transactions.at' },
+          { id: 'paypal_transactions.eventName' },
+          { id: 'paypal_transactions.status' },
+          sum('paypal_transactions.amountUsd'),
+          { id: 'paypal_transactions.invoiceId' },
+          { id: 'paypal_transactions.matched' },
+          { id: 'paypal_transactions.id' },
+        ],
+      },
+      sort: [{ field: { id: 'paypal_transactions.at' }, direction: 'desc' }],
+      format: title('PayPal Transaction Search', "PayPal's own record (can lag up to 3 hours)"),
+    },
     ledger: {
       type: 'grid',
       dataMapping: {
@@ -243,8 +260,9 @@ const paypal: Page = {
     'kpi-refunded': at(6, 0, 6, 7),
     'kpi-confirmed': at(12, 0, 6, 7),
     'kpi-awaiting': at(18, 0, 6, 7),
-    latency: at(0, 7, 24, 6),
-    ledger: at(0, 13, 24, 28),
+    latency: at(0, 7, 24, 5),
+    ledger: at(0, 12, 12, 30),
+    transactions: at(12, 12, 12, 30),
   },
   filter: {
     widget: {

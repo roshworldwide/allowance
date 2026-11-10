@@ -8,7 +8,7 @@
 // `selectedPageId` (docs: state/#changing-pages). The tabs below do that, and follow Studio's state
 // through onStateUpdated, so a page an agent adds shows up as a tab too.
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AgStudioAiModule, enableStudioDevValidations, type AgDrillThroughOptions, type AgStudioApi, type AgStudioMode } from 'ag-studio';
 import { AgStudio, AgStudioProvider } from 'ag-studio-react';
 import { AI_TOOL_DISPLAY, buildAi } from '@/lib/studio/agents';
@@ -39,7 +39,31 @@ type DrillTarget = { id: string; fieldId: string };
 
 export function ControlRoom({ data, licenseKey, aiModels, initialMode, sample }: Props) {
   const [mode, setMode] = useState<AgStudioMode>(initialMode);
-  const studioData = useMemo(() => buildDataSources(data), [data]);
+  // Live data: poll while visible and swap the rows in only when something changed (Studio re-loads
+  // synchronous sources when the `data` prop changes). Sample mode never polls.
+  const [rows, setRows] = useState(data);
+  useEffect(() => {
+    if (sample) return;
+    const sig = (d: ControlRoomData) => `${d.decisions.length}|${d.decisions.map((x) => `${x.id}:${x.status}:${x.paypalConfirmed ? 1 : 0}`).join(',')}|${d.paypal_transactions.length}|${d.lab_results.length}`;
+    let last = sig(data);
+    const timer = setInterval(async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const r = await fetch('/api/studio/data', { cache: 'no-store' });
+        if (!r.ok) return;
+        const next = (await r.json()) as ControlRoomData;
+        const s = sig(next);
+        if (s !== last) {
+          last = s;
+          setRows(next);
+        }
+      } catch {
+        /* offline: keep the current rows */
+      }
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [data, sample]);
+  const studioData = useMemo(() => buildDataSources(rows), [rows]);
   const modelKey = aiModels.join(',');
   // `ai` is read once, at creation.
   const ai = useMemo(() => (modelKey ? buildAi(modelKey.split(','), data) : undefined), [modelKey, data]);

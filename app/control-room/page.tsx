@@ -4,7 +4,9 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { ControlRoom } from '@/components/studio/ControlRoom';
 import { aiEnabled, allowedModels } from '@/lib/ai/config';
+import { cookies } from 'next/headers';
 import { controlRoomData } from '@/lib/studio/server-data';
+import { SESSION_COOKIE, liveAccess } from '@/lib/security/access';
 
 export const metadata: Metadata = { title: 'Control Room' };
 
@@ -12,7 +14,8 @@ export default async function ControlRoomPage({ searchParams }: { searchParams: 
   // Env is read per request, not baked in at build time.
   await connection();
   const { mode } = await searchParams;
-  const { data, sample } = controlRoomData();
+  const access = liveAccess((await cookies()).get(SESSION_COOKIE)?.value);
+  const { data, sample } = await controlRoomData(access.ok ? access.sessionId : undefined);
   return (
     <ControlRoom
       data={data}

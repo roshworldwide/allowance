@@ -46,6 +46,8 @@ export interface MandateRow {
   periodEnd: string;
   /** Whole days until periodEnd, as of when the row was built. */
   daysLeft: number;
+  /** The allowance the Allowance Ring shows: the viewer's own, else the most recently used. */
+  current: boolean;
 }
 
 /** `decisions`: one row per money-moving tool call the guard judged. */
@@ -119,6 +121,24 @@ export interface LabResultRow {
   holdout: boolean;
 }
 
+/** `paypal_transactions`: PayPal's own record from Transaction Search (can lag up to ~3 hours). */
+export interface PayPalTransactionRow {
+  id: string;
+  at: string;
+  /** PayPal T-code, e.g. 'T0006'. */
+  eventCode: string;
+  eventName: string;
+  status: string;
+  /** Signed: refunds are negative. */
+  amountUsd: number;
+  currency: string;
+  /** invoice_id on the PayPal order: ALLOWANCE sets it to the decision id. */
+  invoiceId: string;
+  /** The ALLOWANCE decision this transaction belongs to ('' when not matched). */
+  decisionId: string;
+  matched: boolean;
+}
+
 /** Everything the Control Room shows: the props the page passes in, and the body of /api/studio/data. */
 export interface ControlRoomData {
   /** When these rows were built (ISO-8601 UTC); "today" for the dashboard and the agents. */
@@ -128,4 +148,5 @@ export interface ControlRoomData {
   rule_results: RuleResultRow[];
   merchants: MerchantRow[];
   lab_results: LabResultRow[];
+  paypal_transactions: PayPalTransactionRow[];
 }

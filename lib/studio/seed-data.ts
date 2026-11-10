@@ -393,9 +393,10 @@ function buildSeed(): ControlRoomData {
     periodStart: MANDATE.periodStart,
     periodEnd: MANDATE.periodEnd,
     daysLeft: Math.floor((Date.parse(MANDATE.periodEnd) - Date.parse(SEED_AS_OF)) / 86_400_000),
+    current: true,
   };
 
-  return { asOf: SEED_AS_OF, mandates: [mandate], decisions, rule_results: ruleResults, merchants: MERCHANTS, lab_results: LAB_RESULTS };
+  return { asOf: SEED_AS_OF, mandates: [mandate], decisions, rule_results: ruleResults, merchants: MERCHANTS, lab_results: LAB_RESULTS, paypal_transactions: [] };
 }
 
 // --- Attack Lab ------------------------------------------------------------------------------------

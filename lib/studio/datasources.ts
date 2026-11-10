@@ -42,6 +42,7 @@ export const CONTROL_ROOM_RELATIONSHIPS: AgRelationDefinition[] = [
   manyToOne('decision-mandate', 'decisions.mandateId', 'mandates.id'),
   manyToOne('decision-merchant', 'decisions.merchantId', 'merchants.id'),
   manyToOne('rule-result-decision', 'rule_results.decisionId', 'decisions.id'),
+  manyToOne('paypal-transaction-decision', 'paypal_transactions.decisionId', 'decisions.id'),
 ];
 
 export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition<ControlRoomRegistry> {
@@ -71,6 +72,7 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
           ['periodStart', 'Period Start', 'dateTimeFormat'],
           ['periodEnd', 'Period End', 'dateTimeFormat'],
           ['daysLeft', 'Days Left', 'integerFormat'],
+          ['current', 'Current Allowance', 'booleanFormat'],
         ]),
       },
       {
@@ -128,6 +130,25 @@ export function buildDataSources(data: ControlRoomData): AgDataSourcesDefinition
           ['name', 'Merchant', 'textFormat'],
           ['category', 'Merchant Category', 'textFormat'],
           ['riskFlags', 'Risk Flags', 'textFormat'],
+        ]),
+      },
+      {
+        id: 'paypal_transactions',
+        name: 'PayPal Transactions',
+        description: "PayPal's own record from the Transaction Search API (new activity can take up to 3 hours to appear). invoiceId is the ALLOWANCE decision id; refunds have negative amounts.",
+        primaryKeyField: 'id',
+        data: data.paypal_transactions,
+        fields: fields('paypal_transactions', [
+          ['id', 'PayPal Transaction ID', 'textFormat'],
+          ['at', 'PayPal Time', 'dateTimeFormat'],
+          ['eventCode', 'Event Code', 'textFormat'],
+          ['eventName', 'PayPal Event', 'textFormat'],
+          ['status', 'PayPal Status', 'textFormat'],
+          ['amountUsd', 'PayPal Amount', 'currencyFormat'],
+          ['currency', 'Currency', 'textFormat', true],
+          ['invoiceId', 'Invoice ID', 'textFormat'],
+          ['decisionId', 'Decision ID', 'textFormat', true],
+          ['matched', 'Matched to a decision', 'booleanFormat'],
         ]),
       },
       {

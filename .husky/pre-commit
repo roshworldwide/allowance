@@ -1,0 +1,8 @@
+# ALLOWANCE pre-commit: refuse to commit secrets.
+# 1) secretlint: pattern-based (API keys, private keys, tokens) on staged files.
+# 2) known-secrets: value-based, compares staged changes to the real values in .env.local.
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+if [ -n "$files" ]; then
+  git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 npx --no-install secretlint --maskSecrets || exit 1
+fi
+node scripts/check-known-secrets.mjs --staged || exit 1

@@ -1,0 +1,70 @@
+@import 'tailwindcss';
+
+/*
+ * ALLOWANCE design tokens (single source of truth: the app shell, the Firewall Lane and the AG Studio
+ * theme in lib/studio/theme.ts all read these). Dark by default.
+ */
+:root {
+  --al-ink: #0a0f1e; /* page background */
+  --al-slate: #121a2e; /* surfaces */
+  --al-slate-2: #172139; /* raised surfaces */
+  --al-line: #24304d; /* borders */
+  --al-text: #e8ecf6;
+  --al-muted: #8a94ad;
+  --al-accent: #7c9cff; /* our own accent, deliberately not PayPal blue */
+  --al-allow: #3ddc97;
+  --al-stepup: #f5b544;
+  --al-block: #ff5a6e;
+  --al-refund: #5ac8fa;
+  --al-radius: 14px;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--al-ink);
+  --color-surface: var(--al-slate);
+  --color-surface-2: var(--al-slate-2);
+  --color-line: var(--al-line);
+  --color-text: var(--al-text);
+  --color-muted: var(--al-muted);
+  --color-accent: var(--al-accent);
+  --color-allow: var(--al-allow);
+  --color-stepup: var(--al-stepup);
+  --color-block: var(--al-block);
+  --color-refund: var(--al-refund);
+  --radius-card: var(--al-radius);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+html,
+body {
+  background: var(--al-ink);
+  color: var(--al-text);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--al-accent);
+  outline-offset: 2px;
+}
+
+.wordmark {
+  letter-spacing: 0.18em;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

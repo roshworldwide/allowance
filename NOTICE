@@ -1,0 +1,31 @@
+ALLOWANCE
+Copyright (c) 2026 Roshan Raj
+
+The original code in this repository is licensed under the MIT License (see LICENSE).
+The MIT License covers only that original code, not the third-party material listed below.
+
+Third-party material
+====================
+
+1. paypaldev/hackathon-paypal-ag-grid-boilerplate
+   https://github.com/paypaldev/hackathon-paypal-ag-grid-boilerplate (commit 5de114e, 2026-10-12)
+   (c) PayPal. No licence declared (GitHub reports `license: null`, checked 2026-11-10).
+   It is the official boilerplate of the PayPal AI Hackathon and is used here under the hackathon's
+   rules, as a reference. Files copied from it or closely derived from it:
+
+   - lib/studio/openai-adapter.ts
+       Copied from the boilerplate's app/dashboard/studio/openai-adapter.ts, which is itself copied
+       verbatim from the AG Studio documentation example (Direct LLM Runner).
+   - lib/paypal/client.ts
+       Our own code; its behaviour (OAuth client-credentials token caching, paging, retries on
+       401/429/5xx) is modelled on the boilerplate's lib/paypal.ts.
+   - app/api/ai/responses/route.ts and lib/ai/config.ts
+       Our own code modelled on the boilerplate's OpenAI proxy (model allowlist, output-token cap,
+       SSE pass-through). Adds passcode auth, per-IP rate limiting and a daily spend cap.
+
+2. AG Studio (ag-studio, ag-studio-react) and AG Grid
+   AG Studio is commercial software by AG Grid Ltd, used under its free 45-day trial licence. It is
+   installed from npm and not redistributed in this repository; the licence key is not in git.
+
+3. Open-source dependencies
+   Listed in package.json; each keeps its own licence.

@@ -1,0 +1,35 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+/playwright-report
+/test-results
+/blob-report
+
+# next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# local data (SQLite, vault token handoff file) — never committed
+/data/
+*.db
+*.db-wal
+*.db-shm
+
+# env files: every real value lives only in .env.local / the host's env settings
+.env
+.env.*
+!env.example
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+.claude/worktrees/
+/lab/results/raw/
+/lab/results/runs/*.partial.json

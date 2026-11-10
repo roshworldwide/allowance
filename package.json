@@ -35,7 +35,8 @@
     "secrets:build": "node scripts/check-known-secrets.mjs --build",
     "bench:guard": "tsx --conditions=react-server scripts/bench-guard.ts",
     "lab:validate": "tsx --conditions=react-server scripts/validate-scenarios.ts",
-    "lab:sanity": "tsx --conditions=react-server scripts/lab-sanity.ts"
+    "lab:sanity": "tsx --conditions=react-server scripts/lab-sanity.ts",
+    "lab:holdout": "tsx --conditions=react-server scripts/lab-run.ts --holdout"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

@@ -5,6 +5,7 @@
 //   npm run spike:models               probe the default candidates
 //   npm run spike:models -- gpt-x,gpt-y probe these ids
 import './_env';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import OpenAI from 'openai';
 
 const key = process.env.AG_STUDIO_OPENAI_API_KEY;
@@ -84,8 +85,12 @@ async function main() {
     results.push(r);
     console.log(`  ${r.ok ? '✓' : '✗'} ${m.padEnd(28)} tool=${r.toolOk ? 'ok' : 'no'} schema=${r.schemaOk ? 'ok' : 'no'} ${r.ms}ms ${r.tokens} tok${'error' in r && r.error ? `  (${r.error})` : ''}`);
   }
-  const good = results.filter((r) => r.ok).map((r) => r.model);
+  // Cheapest first: the agent and the lab default to the first model.
+  const rank = (m: string) => (/nano/.test(m) ? 2 : /mini/.test(m) ? 0 : 1);
+  const good = results.filter((r) => r.ok).map((r) => r.model).sort((a, b) => rank(a) - rank(b));
   console.log(`\nSuggested OPENAI_MODELS=${good.join(',') || '(none passed)'}`);
+  mkdirSync('data', { recursive: true });
+  writeFileSync('data/models.json', JSON.stringify({ probedAt: new Date().toISOString(), suggested: good, results }, null, 2) + '\n');
 }
 
 main().catch((e) => {

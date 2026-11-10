@@ -39,7 +39,8 @@
     "lab:holdout": "tsx --conditions=react-server scripts/lab-run.ts --holdout",
     "webhook:register": "tsx --conditions=react-server scripts/register-webhook.ts",
     "docs:sync": "tsx scripts/sync-docs.ts",
-    "docs:check": "tsx scripts/sync-docs.ts --check"
+    "docs:check": "tsx scripts/sync-docs.ts --check",
+    "go": "tsx scripts/go.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

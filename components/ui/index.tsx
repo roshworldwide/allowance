@@ -71,23 +71,26 @@ export function SandboxBadge() {
 }
 
 export function TopBar({ current }: { current?: 'errand' | 'lab' | 'control-room' | 'home' }) {
-  const link = (href: string, key: string, text: string) => (
-    <Link href={href} aria-current={current === key ? 'page' : undefined} className={`rounded-lg px-2.5 py-1.5 text-sm ${current === key ? 'bg-surface-2 text-text' : 'text-muted hover:text-text'}`}>
-      {text}
+  const link = (href: string, key: string, text: string, short: string) => (
+    <Link href={href} aria-current={current === key ? 'page' : undefined} className={`whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] sm:px-2.5 sm:text-sm ${current === key ? 'bg-surface-2 text-text' : 'text-muted hover:text-text'}`}>
+      <span className="sm:hidden">{short}</span>
+      <span className="hidden sm:inline">{text}</span>
     </Link>
   );
   return (
-    <header className="flex h-14 items-center justify-between border-b border-line px-4 sm:px-6">
+    <header className="flex h-14 items-center justify-between gap-2 border-b border-line px-4 sm:px-6">
       <div className="flex items-center gap-3">
         <Link href="/" className="wordmark text-sm text-text">
           ALLOWANCE
         </Link>
-        <SandboxBadge />
+        <span className="hidden sm:inline-flex">
+          <SandboxBadge />
+        </span>
       </div>
-      <nav aria-label="Main" className="flex items-center gap-1">
-        {link('/errand', 'errand', 'Errand')}
-        {link('/lab', 'lab', 'Attack Lab')}
-        {link('/control-room', 'control-room', 'Control Room')}
+      <nav aria-label="Main" className="flex items-center gap-0.5 sm:gap-1">
+        {link('/errand', 'errand', 'Errand', 'Errand')}
+        {link('/lab', 'lab', 'Attack Lab', 'Lab')}
+        {link('/control-room', 'control-room', 'Control Room', 'Studio')}
       </nav>
     </header>
   );

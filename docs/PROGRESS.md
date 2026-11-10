@@ -9,7 +9,7 @@
 | **In flight** | Studio track: Verdict Stream + Attack Lab Matrix widgets, 4-page report |
 | **Next (needs keys)** | S0 models → OPENAI_MODELS · S1 Vault link + $1 charge/refund · lab:quick → full lab · record replays · G1 repo · G3 deploy |
 | **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1** yes · 3) holdout decision (write H01–H20 yourself with the kit, or log a cut) |
-| **Latest numbers** | 170 tests green (unit, property, integration) + 6 e2e · guard p95 0.87 ms · no lab run yet |
+| **Latest numbers** | 161 vitest tests green (unit, property, integration) + 6 e2e · guard p95 0.87 ms · no lab run yet |
 
 ## Milestones
 

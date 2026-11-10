@@ -1,0 +1,27 @@
+{
+  "measuredAt": "2026-11-10T11:31:28.817Z",
+  "gitSha": "d0c1c9c",
+  "node": "26.13.0",
+  "cpu": "Apple M3",
+  "target": "p95 < 15 ms",
+  "results": [
+    {
+      "ledger": "sqlite (file)",
+      "evaluations": 3000,
+      "historyEntries": 300,
+      "p50Ms": 0.663,
+      "p95Ms": 0.865,
+      "p99Ms": 1.032,
+      "maxMs": 3.409
+    },
+    {
+      "ledger": "memory",
+      "evaluations": 3000,
+      "historyEntries": 300,
+      "p50Ms": 0.023,
+      "p95Ms": 0.032,
+      "p99Ms": 0.038,
+      "maxMs": 0.269
+    }
+  ]
+}

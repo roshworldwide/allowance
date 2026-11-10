@@ -32,7 +32,8 @@
     "secrets:scan": "secretlint --maskSecrets \"**/*\"",
     "prepare": "husky",
     "secrets:history": "gitleaks git --redact --no-banner . && node scripts/check-known-secrets.mjs --history",
-    "secrets:build": "node scripts/check-known-secrets.mjs --build"
+    "secrets:build": "node scripts/check-known-secrets.mjs --build",
+    "bench:guard": "tsx --conditions=react-server scripts/bench-guard.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

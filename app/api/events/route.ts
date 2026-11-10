@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
     new Promise<void>((resolve) => {
       const { bus } = ctx();
       const onEvent = (e: LiveEvent) => {
-        if (!mandateId || e.mandateId === mandateId) send(e.type, e);
+        // Only this session's allowance: sessions never see each other's activity.
+        if (mandateId && e.mandateId === mandateId) send(e.type, e);
       };
       bus.on('event', onEvent);
       send('hello', { mandateId: mandateId ?? null });

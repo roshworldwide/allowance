@@ -11,6 +11,8 @@ import { getContract, getMandate, insertDecision, setExplanation } from '@/lib/s
 import { agentModel, explainVerdict, noteOpenAiError, openaiClient } from './ai';
 import { ctx, emit } from './context';
 import { ensureApprovalPoller, payPalExecutor } from './executor';
+import { decisionView } from '@/lib/views';
+import { startRecording } from './recorder';
 
 export type LaneEvent = AgentEvent | { type: 'verdict'; verdict: Verdict; intent: Intent; execution?: unknown } | { type: 'run'; runId: string; model: string };
 
@@ -31,7 +33,16 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
   const runId = `run_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
   const startedAt = new Date().toISOString();
   db.prepare("INSERT INTO agent_runs (id, mandate_id, contract_id, mode, model, status, started_at) VALUES (?, ?, ?, 'guarded', ?, 'RUNNING', ?)").run(runId, sm.mandate.id, contract.id, model, startedAt);
-  input.onEvent({ type: 'run', runId, model });
+  // Owner mode: record this run (and the approvals/undo that follow) as a judge-mode replay.
+  const rec =
+    process.env.RECORD_REPLAYS === 'true' && process.env.OWNER_MODE === 'true'
+      ? startRecording({ mandateId: sm.mandate.id, meta: { task: contract.taskText, model, allowance: { name: sm.mandate.name, budgetCents: sm.mandate.budgetCents, perPurchaseCapCents: sm.mandate.perPurchaseCapCents, stepUpAboveCents: sm.mandate.stepUpAboveCents } } })
+      : null;
+  const onEvent = (e: LaneEvent) => {
+    rec?.run(e.type, e);
+    input.onEvent(e);
+  };
+  onEvent({ type: 'run', runId, model });
 
   const toolkitTools = await loadToolkitTools();
   let result: ErrandResult;
@@ -52,7 +63,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
       onDecision: (v, intent) => {
         insertDecision(db, v, { mandateId: sm.mandate.id, contractId: contract.id, runId, intent, tool: intent.toolName });
         chain.record('decision', { decisionId: v.decisionId, verdict: v.verdict, firstBlock: v.firstBlock ?? null, stepUp: v.stepUpReasons, amountCents: v.amountCents, tool: intent.toolName, sku: v.binding?.sku ?? null, rawArgsHash: intent.rawArgsHash }, v.at);
-        emit({ mandateId: sm.mandate.id, type: 'decision', data: { decisionId: v.decisionId, verdict: v.verdict, firstBlock: v.firstBlock, amountCents: v.amountCents, sku: v.binding?.sku } });
+        emit({ mandateId: sm.mandate.id, type: 'decision', data: decisionView(v, intent.toolName) });
         if (v.verdict !== 'ALLOW') {
           void explainVerdict(v).then((text) => {
             if (!text) return;
@@ -62,7 +73,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
         }
       },
       onEvent: (e) => {
-        input.onEvent(e);
+        onEvent(e);
         if (e.type !== 'verdict') emit({ mandateId: sm.mandate.id, type: 'agent', data: e });
       },
     });
@@ -73,6 +84,7 @@ export async function startLiveRun(input: { mandateId: string; contractId: strin
   }
   if (result.error) noteOpenAiError(new Error(result.error));
   recordSpend(estimateUsd(result.usage));
+  rec?.run('done', { runId, stopReason: result.stopReason, finalText: result.finalText });
   db.prepare('UPDATE agent_runs SET status = ?, ended_at = ? WHERE id = ?').run(result.stopReason.toUpperCase(), new Date().toISOString(), runId);
   return { ...result, runId };
 }

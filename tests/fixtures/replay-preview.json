@@ -1,0 +1,570 @@
+{
+ "meta": {
+  "task": "Get me two USB-C cables under $15 each and a desk lamp under $50.",
+  "model": "scripted preview",
+  "allowance": {
+   "name": "Office errands",
+   "budgetCents": 20000,
+   "perPurchaseCapCents": 6000,
+   "stepUpAboveCents": 4000
+  },
+  "synthetic": true,
+  "note": "Synthetic preview for UI development: scripted agent, fake PayPal.",
+  "id": "2026-11-10-17-26-9940ec",
+  "recordedAt": "2026-11-10T17:26:25.759Z"
+ },
+ "events": [
+  {
+   "t": 0,
+   "source": "run",
+   "type": "run",
+   "data": {
+    "type": "run",
+    "runId": "run_d1149e1a3f13",
+    "model": "scripted preview"
+   }
+  },
+  {
+   "t": 1428,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 1,
+    "callId": "c1",
+    "name": "search_catalog",
+    "args": {
+     "query": "usb-c cable"
+    }
+   }
+  },
+  {
+   "t": 2331,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 2,
+    "callId": "c2",
+    "name": "view_product",
+    "args": {
+     "sku": "VW-CBL-USBC-1M"
+    }
+   }
+  },
+  {
+   "t": 3234,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 3,
+    "callId": "c3",
+    "name": "allowance_checkout",
+    "args": {
+     "sku": "VW-CBL-USBC-1M",
+     "qty": 2,
+     "contractLineId": "L1",
+     "quotedUnitCents": 1199
+    }
+   }
+  },
+  {
+   "t": 3248,
+   "source": "bus",
+   "type": "decision",
+   "data": {
+    "decisionId": "dec_0f71d48c4c264e1c8674",
+    "verdict": "ALLOW",
+    "tool": "allowance_checkout",
+    "at": "2026-11-10T17:26:29.002Z",
+    "item": "Volt & Wire USB-C to USB-C cable, 1 m",
+    "sku": "VW-CBL-USBC-1M",
+    "qty": 2,
+    "amountCents": 2398,
+    "firstBlock": null,
+    "firstBlockName": null,
+    "reason": "",
+    "stepUpReasons": [],
+    "summary": "Allowed: 2 × Volt & Wire USB-C to USB-C cable, 1 m, $23.98.",
+    "rules": [
+     {
+      "id": "R01",
+      "name": "MANDATE_ACTIVE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "active, linked, until 2026-11-30T23:59:59.000Z",
+      "message": null
+     },
+     {
+      "id": "R02",
+      "name": "TASK_BINDING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "bound to line L1 (usb-c-cable), qty 2/2, $11.99 ≤ $15.00",
+      "message": null
+     },
+     {
+      "id": "R03",
+      "name": "CATALOG_INTEGRITY",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "charge computed from registry: 2 × 1199 USD minor units",
+      "message": null
+     },
+     {
+      "id": "R04",
+      "name": "MERCHANT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "Volt & Wire · electronics allowed",
+      "message": null
+     },
+     {
+      "id": "R05",
+      "name": "PER_PURCHASE_CAP",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "$23.98 ≤ cap $60.00",
+      "message": null
+     },
+     {
+      "id": "R06",
+      "name": "BUDGET_REMAINING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "reservation fits: $23.98 ≤ $200.00",
+      "message": null
+     },
+     {
+      "id": "R07",
+      "name": "VELOCITY_SPLIT",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "1/8 this hour, $23.98/$100.00 at merchant",
+      "message": null
+     },
+     {
+      "id": "R08",
+      "name": "NO_RECURRING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "not recurring",
+      "message": null
+     },
+     {
+      "id": "R09",
+      "name": "CURRENCY_LOCK",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "USD, integer cents",
+      "message": null
+     },
+     {
+      "id": "R10",
+      "name": "PRICE_DRIFT",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "registry $11.99 within 10% of quoted $11.99",
+      "message": null
+     },
+     {
+      "id": "R11",
+      "name": "STEP_UP_THRESHOLD",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "$23.98 ≤ ask-me line $40.00",
+      "message": null
+     },
+     {
+      "id": "R12",
+      "name": "MONEY_OUT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "purchase path, no money out",
+      "message": null
+     }
+    ],
+    "latencyUs": 10094
+   }
+  },
+  {
+   "t": 3255,
+   "source": "bus",
+   "type": "purchase",
+   "data": {
+    "decisionId": "dec_0f71d48c4c264e1c8674",
+    "orderId": "ORDER2",
+    "captureId": "CAP3",
+    "status": "COMPLETED",
+    "path": "VAULT",
+    "amountCents": 2398
+   }
+  },
+  {
+   "t": 4157,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 4,
+    "callId": "c4",
+    "name": "allowance_checkout",
+    "args": {
+     "sku": "VW-HUB-USBC-7",
+     "qty": 1,
+     "contractLineId": "L1",
+     "quotedUnitCents": 3400
+    }
+   }
+  },
+  {
+   "t": 4163,
+   "source": "bus",
+   "type": "decision",
+   "data": {
+    "decisionId": "dec_1228895b898144af8221",
+    "verdict": "BLOCK",
+    "tool": "allowance_checkout",
+    "at": "2026-11-10T17:26:29.921Z",
+    "item": "Volt & Wire 7-in-1 USB-C hub",
+    "sku": "VW-HUB-USBC-7",
+    "qty": 1,
+    "amountCents": 3400,
+    "firstBlock": "R02",
+    "firstBlockName": "TASK_BINDING",
+    "reason": "A USB-C hub isn't in your task.",
+    "stepUpReasons": [],
+    "summary": "Blocked by R02 TASK_BINDING: A USB-C hub isn't in your task.",
+    "rules": [
+     {
+      "id": "R01",
+      "name": "MANDATE_ACTIVE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "active, linked, until 2026-11-30T23:59:59.000Z",
+      "message": null
+     },
+     {
+      "id": "R02",
+      "name": "TASK_BINDING",
+      "kind": "block",
+      "outcome": "FAIL",
+      "detail": "no confirmed line for product type \"usb-c-hub\" (task lines: usb-c-cable, desk-lamp)",
+      "message": "A USB-C hub isn't in your task."
+     },
+     {
+      "id": "R03",
+      "name": "CATALOG_INTEGRITY",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "charge computed from registry: 1 × 3400 USD minor units",
+      "message": null
+     },
+     {
+      "id": "R04",
+      "name": "MERCHANT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "Volt & Wire · electronics allowed",
+      "message": null
+     },
+     {
+      "id": "R05",
+      "name": "PER_PURCHASE_CAP",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "$34.00 ≤ cap $60.00",
+      "message": null
+     },
+     {
+      "id": "R06",
+      "name": "BUDGET_REMAINING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "reservation fits: $57.98 ≤ $200.00",
+      "message": null
+     },
+     {
+      "id": "R07",
+      "name": "VELOCITY_SPLIT",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "2/8 this hour, $57.98/$100.00 at merchant",
+      "message": null
+     },
+     {
+      "id": "R08",
+      "name": "NO_RECURRING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "not recurring",
+      "message": null
+     },
+     {
+      "id": "R09",
+      "name": "CURRENCY_LOCK",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "USD, integer cents",
+      "message": null
+     },
+     {
+      "id": "R10",
+      "name": "PRICE_DRIFT",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "registry $34.00 within 10% of quoted $34.00",
+      "message": null
+     },
+     {
+      "id": "R11",
+      "name": "STEP_UP_THRESHOLD",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "$34.00 ≤ ask-me line $40.00",
+      "message": null
+     },
+     {
+      "id": "R12",
+      "name": "MONEY_OUT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "purchase path, no money out",
+      "message": null
+     }
+    ],
+    "latencyUs": 881
+   }
+  },
+  {
+   "t": 5066,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 5,
+    "callId": "c5",
+    "name": "search_catalog",
+    "args": {
+     "query": "desk lamp"
+    }
+   }
+  },
+  {
+   "t": 5969,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 6,
+    "callId": "c6",
+    "name": "allowance_checkout",
+    "args": {
+     "sku": "NW-LAMP-LED",
+     "qty": 1,
+     "contractLineId": "L2",
+     "quotedUnitCents": 4800
+    }
+   }
+  },
+  {
+   "t": 5973,
+   "source": "bus",
+   "type": "decision",
+   "data": {
+    "decisionId": "dec_b7d260ff53834c829294",
+    "verdict": "STEP_UP",
+    "tool": "allowance_checkout",
+    "at": "2026-11-10T17:26:31.730Z",
+    "item": "Northwind LED desk lamp with dimmer",
+    "sku": "NW-LAMP-LED",
+    "qty": 1,
+    "amountCents": 4800,
+    "firstBlock": null,
+    "firstBlockName": null,
+    "reason": "Above your $40.00 ask-me line.",
+    "stepUpReasons": [
+     "R11"
+    ],
+    "summary": "Needs your approval (1 × Northwind LED desk lamp with dimmer, $48.00): Above your $40.00 ask-me line.",
+    "rules": [
+     {
+      "id": "R01",
+      "name": "MANDATE_ACTIVE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "active, linked, until 2026-11-30T23:59:59.000Z",
+      "message": null
+     },
+     {
+      "id": "R02",
+      "name": "TASK_BINDING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "bound to line L2 (desk-lamp), qty 1/1, $48.00 ≤ $50.00",
+      "message": null
+     },
+     {
+      "id": "R03",
+      "name": "CATALOG_INTEGRITY",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "charge computed from registry: 1 × 4800 USD minor units",
+      "message": null
+     },
+     {
+      "id": "R04",
+      "name": "MERCHANT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "Northwind Supply · office-supplies allowed",
+      "message": null
+     },
+     {
+      "id": "R05",
+      "name": "PER_PURCHASE_CAP",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "$48.00 ≤ cap $60.00",
+      "message": null
+     },
+     {
+      "id": "R06",
+      "name": "BUDGET_REMAINING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "reservation fits: $71.98 ≤ $200.00",
+      "message": null
+     },
+     {
+      "id": "R07",
+      "name": "VELOCITY_SPLIT",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "2/8 this hour, $48.00/$100.00 at merchant",
+      "message": null
+     },
+     {
+      "id": "R08",
+      "name": "NO_RECURRING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "not recurring",
+      "message": null
+     },
+     {
+      "id": "R09",
+      "name": "CURRENCY_LOCK",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "USD, integer cents",
+      "message": null
+     },
+     {
+      "id": "R10",
+      "name": "PRICE_DRIFT",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "registry $48.00 within 10% of quoted $48.00",
+      "message": null
+     },
+     {
+      "id": "R11",
+      "name": "STEP_UP_THRESHOLD",
+      "kind": "step_up",
+      "outcome": "STEP_UP",
+      "detail": "$48.00 > ask-me line $40.00",
+      "message": "Above your $40.00 ask-me line."
+     },
+     {
+      "id": "R12",
+      "name": "MONEY_OUT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "purchase path, no money out",
+      "message": null
+     }
+    ],
+    "latencyUs": 1116
+   }
+  },
+  {
+   "t": 5976,
+   "source": "bus",
+   "type": "approval",
+   "data": {
+    "approvalId": "apr_b7d260ff53834c829294",
+    "decisionId": "dec_b7d260ff53834c829294",
+    "status": "PENDING",
+    "amountCents": 4800,
+    "reasons": [
+     "R11"
+    ]
+   }
+  },
+  {
+   "t": 6880,
+   "source": "run",
+   "type": "final",
+   "data": {
+    "type": "final",
+    "step": 7,
+    "text": "Done: cables bought, hub blocked, lamp waiting for your approval."
+   }
+  },
+  {
+   "t": 6881,
+   "source": "run",
+   "type": "stopped",
+   "data": {
+    "type": "stopped",
+    "step": 7,
+    "reason": "final"
+   }
+  },
+  {
+   "t": 6883,
+   "source": "run",
+   "type": "done",
+   "data": {
+    "runId": "run_d1149e1a3f13",
+    "stopReason": "final"
+   }
+  },
+  {
+   "t": 9395,
+   "source": "bus",
+   "type": "purchase",
+   "data": {
+    "decisionId": "dec_b7d260ff53834c829294",
+    "orderId": "ORDER6",
+    "captureId": "CAP15",
+    "status": "COMPLETED",
+    "path": "APPROVAL",
+    "amountCents": 4800
+   }
+  },
+  {
+   "t": 9396,
+   "source": "bus",
+   "type": "approval",
+   "data": {
+    "approvalId": "apr_b7d260ff53834c829294",
+    "decisionId": "dec_b7d260ff53834c829294",
+    "status": "CAPTURED"
+   }
+  },
+  {
+   "t": 11900,
+   "source": "bus",
+   "type": "refund",
+   "data": {
+    "decisionId": "dec_0f71d48c4c264e1c8674",
+    "refundId": "REF18",
+    "status": "COMPLETED",
+    "amountCents": 2398
+   }
+  }
+ ]
+}

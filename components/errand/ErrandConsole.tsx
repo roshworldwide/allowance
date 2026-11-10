@@ -119,7 +119,7 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
 
   return (
     <>
-      <main className="mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
+      <main className="animate-rise mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
         <aside className="space-y-4" aria-label="Allowance and task">
           <AllowanceCard allowance={allowance} owner={owner} busy={busy} onCreate={create} onLink={link} onRevoke={revoke} />
           {allowance?.status === 'ACTIVE' && (

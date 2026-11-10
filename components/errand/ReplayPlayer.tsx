@@ -2,6 +2,7 @@
 
 // Judge mode: plays a recorded run through the same reducer, lane and cards as the live console.
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { TitaniumCard } from '@/components/allowance/TitaniumCard';
 import { FirewallLane, NowCaption } from '@/components/lane/FirewallLane';
 import { Button, usd } from '@/components/ui';
 import { VerdictCard } from '@/components/verdict/VerdictCard';
@@ -63,8 +64,18 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
   const compressed = timeline.some((e) => e.compressed);
 
   return (
-    <main className="mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
+    <main className="animate-rise mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
       <aside className="space-y-4">
+        <TitaniumCard
+          compact
+          amount={usd(replay.meta.allowance.budgetCents - committed).replace(/\.00$/, '')}
+          period="left"
+          lines={[`max ${usd(replay.meta.allowance.perPurchaseCapCents).replace(/\.00$/, '')}`, `ask > ${usd(replay.meta.allowance.stepUpAboveCents).replace(/\.00$/, '')}`]}
+          status={replay.meta.synthetic ? 'PREVIEW' : 'REPLAY'}
+          statusTone={replay.meta.synthetic ? 'block' : 'allow'}
+          vault={replay.meta.synthetic ? 'fake (preview)' : 'linked'}
+          spentRatio={committed / Math.max(1, replay.meta.allowance.budgetCents)}
+        />
         <section className={`glass p-5 ${replay.meta.synthetic ? 'rim-block' : 'rim-accent'}`}>
           <p className={`font-mono text-[10.5px] uppercase tracking-[0.16em] ${replay.meta.synthetic ? 'text-block' : 'text-accent'}`}>
             {replay.meta.synthetic ? 'Synthetic preview · fake PayPal · not a sandbox run' : `Replay of a live sandbox run · ${recorded} IST`}

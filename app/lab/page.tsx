@@ -30,7 +30,7 @@ export default function LabPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar current="lab" />
-      <main className="mx-auto w-full max-w-[1180px] px-4 py-14 sm:px-6">
+      <main className="animate-rise mx-auto w-full max-w-[1180px] px-4 py-14 sm:px-6">
         <p className="eyebrow">Proof, not promises</p>
         <h1 className="display mt-3 text-platinum text-[clamp(44px,6vw,84px)]">Attack Lab</h1>
         <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-muted">The same OpenAI shopping agent, same prompt, same tools for reading the store — once with a typical saved-PayPal payment tool, once behind ALLOWANCE — against attack patterns hidden in product pages, reviews and listings, and against normal errands.</p>

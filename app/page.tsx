@@ -4,6 +4,7 @@ import { TitaniumCard } from '@/components/allowance/TitaniumCard';
 import { Mark } from '@/components/brand/Mark';
 import { CountUp, Reveal, WordReveal } from '@/components/fx/Reveal';
 import { GateCanvas } from '@/components/hero/GateCanvas';
+import { Intro } from '@/components/hero/Intro';
 import { SandboxBadge, TopBar, VerdictChip, type VerdictChipKind } from '@/components/ui';
 import { SITE, pct, readLab } from '@/lib/site';
 
@@ -42,6 +43,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <Intro />
       <TopBar current="home" />
 
       {/* ─────────────── Hero ─────────────── */}

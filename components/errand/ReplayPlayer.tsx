@@ -13,15 +13,27 @@ export type ReplayFile = {
   events: ReplayEvent[];
 };
 
-/** Long real-world waits (e.g. approving on a phone) are compressed so the replay never stalls. */
-function schedule(events: ReplayEvent[], maxGap = 1800) {
+/**
+ * Replay timing: long real-world waits (e.g. approving on a phone) are compressed so the replay never
+ * stalls, and consecutive guard decisions are at least `minDecisionGap` apart so each packet can be followed.
+ */
+function schedule(events: ReplayEvent[], maxGap = 1800, minDecisionGap = 1500) {
   let clock = 0;
   let prev = 0;
+  let lastDecision = -Infinity;
   return events.map((e) => {
     const gap = e.t - prev;
     prev = e.t;
     clock += Math.min(gap, maxGap);
-    return { ...e, at: clock, compressed: gap > maxGap };
+    let stretched = false;
+    if (e.type === 'decision') {
+      if (clock - lastDecision < minDecisionGap) {
+        clock = lastDecision + minDecisionGap;
+        stretched = true;
+      }
+      lastDecision = clock;
+    }
+    return { ...e, at: clock, compressed: gap > maxGap || stretched };
   });
 }
 
@@ -61,7 +73,7 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
           <p className="mt-2 text-[12.5px] text-muted">
             {replay.meta.allowance.name}: {usd(replay.meta.allowance.budgetCents)} · max {usd(replay.meta.allowance.perPurchaseCapCents)} per purchase · ask above {usd(replay.meta.allowance.stepUpAboveCents)} · agent {replay.meta.model}
           </p>
-          {compressed && <p className="mt-1 text-[11.5px] text-muted">Waiting time (e.g. approving on the phone) is shortened.</p>}
+          {compressed && <p className="mt-1 text-[11.5px] text-muted">Timing is adjusted for readability (e.g. the wait while approving on the phone is shortened).</p>}
           <div className="mt-3 flex items-center gap-2">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-label="Replay progress" aria-valuemin={0} aria-valuemax={timeline.length} aria-valuenow={pos}>
               <div className="h-full bg-accent transition-[width]" style={{ width: `${(pos / Math.max(1, timeline.length)) * 100}%` }} />

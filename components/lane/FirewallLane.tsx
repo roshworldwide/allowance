@@ -156,6 +156,7 @@ function Packet({ card, xs, reduce, onGate }: { card: Card; xs: Xs; reduce: bool
   const toward = xs.gate + (xs.paypal - xs.gate) * 0.5;
   // Settled outcomes get their own spots on row B: blocks left of the gate, parked step-ups right of it.
   const parked = stage === 'done' && (phase === 'STEP_UP' || phase === 'DECLINED');
+  const absorbed = stage === 'done' && (phase === 'PAID' || phase === 'APPROVED' || phase === 'REFUNDED');
   const text = parked ? `${shorten(d.item ?? d.tool).slice(0, 14).trim()} · ${usd(d.amountCents)}` : label;
   const extra = phase === 'STEP_UP' && parked ? 104 : (phase === 'PAID' || phase === 'APPROVED') && card.purchase?.captureId ? 84 : 0;
   const pw = text.length * 6.7 + 40 + extra; // monospace 11px ≈ 6.7px per char
@@ -167,8 +168,18 @@ function Packet({ card, xs, reduce, onGate }: { card: Card; xs: Xs; reduce: bool
     <motion.div
       className={`absolute left-0 will-change-transform ${parked ? 'top-[214px]' : 'top-[172px]'}`}
       initial={reduce ? { x: target, opacity: 1 } : { x: xs.clamp(xs.agent), opacity: 0 }}
-      animate={{ x: target, opacity: phase === 'DECLINED' ? 0.5 : 1 }}
-      transition={{ duration: reduce ? 0 : stage === 'travel' ? 0.65 : 0.6, ease: [0.22, 1, 0.36, 1] }}
+      // Paid packets reach PayPal, then rise into the PayPal station (its capture chip stays listed
+      // there), keeping the track clear for the next packet.
+      animate={
+        absorbed
+          ? { x: target, y: -58, opacity: 0, scale: 0.85 }
+          : { x: target, y: 0, opacity: phase === 'DECLINED' ? 0.5 : 1, scale: 1 }
+      }
+      transition={
+        absorbed
+          ? { x: { duration: reduce ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }, default: { duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.1, ease: 'easeIn' } }
+          : { duration: reduce ? 0 : stage === 'travel' ? 0.65 : 0.6, ease: [0.22, 1, 0.36, 1] }
+      }
     >
       <div
         className="flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 font-mono text-[11px] text-text"

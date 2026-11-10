@@ -10,7 +10,7 @@ Submission is gated on this file: every row needs evidence that exists (a file, 
 | **Potential Impact** | Every agentic-commerce product needs this; one `wrap()` around any agent's money tools, including `@paypal/agent-toolkit`'s; built only from PayPal primitives; clear path to production | README "Impact", "Path to production" | 15 s narration + primitives table | 🟨 `wrap()` covers all 47 Agent Toolkit tools (`tests/unit/wrap.test.ts`); README Path to production |
 | **Quality of the Idea** | Safety moves from prompts to capabilities: task-binding + trusted registry, so the guard can't be talked out of a decision; undo as a first-class agent primitive | README "Why it can't be talked out of it" | Injection blocked; "the guard never reads attacker text" | 🟨 README section + THREAT_MODEL; R02 injection block verified in tests and replay |
 | **Presentation** | Under-3-min video, no dead air, numbers on screen, before/after; README passes the 10-second test; judge guide | `docs/VIDEO_SCRIPT.md`, README, `docs/JUDGE_GUIDE.md` | Whole video | ⬜ |
-| **AG Studio prize** | 3+ custom widgets with form config; custom theme; layout; custom agent team mixing built-ins + own tools; "how it's built" shown | `lib/studio/*`, README AG Studio section | Control Room segment + code shot | 🟨 theme, Allowance Ring + form config (verified), agent team with 3 custom tools + 2 tool components, real data; 2 widgets + 4-page report in progress |
+| **AG Studio prize** | 3+ custom widgets with form config; custom theme; layout; custom agent team mixing built-ins + own tools; "how it's built" shown | `lib/studio/*`, README AG Studio section | Control Room segment + code shot | 🟨 custom theme; 3 custom widgets with Form Configuration (Allowance Ring, Verdict Stream, Attack Lab Matrix — verified in edit mode); 4-page report with tabs and drill-through; agent team (own lead + auditor with explain_verdict, simulate_policy, draft_policy_change; 2 Tool Components); real data. Pending: live chat with a real model (needs key) |
 
 ## Definition of Done (§18) checklist
 
@@ -18,7 +18,7 @@ Submission is gated on this file: every row needs evidence that exists (a file, 
 - [x] 2. Guard: 12 rules, full trace, deterministic; ≥ 90 unit tests; property tests green; p95 < 15 ms measured (0.87 ms, `lab/results/guard-latency.json`)
 - [x] 3. Ledger atomic (4-process race test); chain verifies; tamper detected (property test)
 - [ ] 4. Attack Lab run recorded (model/date/seed/sha); numbers on `/lab`, README, video match `latest.json`
-- [ ] 5. Control Room ≥ Minimum Studio; propose-never-apply holds
+- [ ] 5. Control Room ≥ Minimum Studio; propose-never-apply holds — built and verified except the live Auditor chat (needs the OpenAI key)
 - [ ] 6. Firewall Lane 60 fps; Lighthouse/axe bars; 1280×800 and 390×844
 - [ ] 7. Deployed URL works logged-out; replay without keys; live behind passcode; rate limits + spend cap
 - [ ] 8. CI green; README 10-second test; all docs; tools disclosure

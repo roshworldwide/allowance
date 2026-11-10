@@ -60,10 +60,18 @@ async function probe(model: string) {
     });
     const line = JSON.parse(parsed.output_text || '{}') as { maxQty?: number; maxUnitCents?: number };
     const schemaOk = line.maxQty === 2 && line.maxUnitCents === 1500;
+    // AG Studio's OpenAI adapter always sends reasoning.effort: the Control Room needs a reasoning model.
+    let reasoningOk = false;
+    try {
+      await client.responses.create({ model, input: 'Say ok.', max_output_tokens: 300, reasoning: { effort: 'low' } });
+      reasoningOk = true;
+    } catch {
+      reasoningOk = false;
+    }
     const usage = (res.usage?.total_tokens ?? 0) + (parsed.usage?.total_tokens ?? 0);
-    return { model, ok: toolOk && schemaOk, toolOk, schemaOk, ms: Date.now() - started, tokens: usage };
+    return { model, ok: toolOk && schemaOk, toolOk, schemaOk, reasoningOk, ms: Date.now() - started, tokens: usage };
   } catch (e) {
-    return { model, ok: false, toolOk: false, schemaOk: false, ms: Date.now() - started, tokens: 0, error: (e as Error).message.slice(0, 140) };
+    return { model, ok: false, toolOk: false, schemaOk: false, reasoningOk: false, ms: Date.now() - started, tokens: 0, error: (e as Error).message.slice(0, 140) };
   }
 }
 
@@ -83,11 +91,14 @@ async function main() {
   for (const m of preferred) {
     const r = await probe(m);
     results.push(r);
-    console.log(`  ${r.ok ? '✓' : '✗'} ${m.padEnd(28)} tool=${r.toolOk ? 'ok' : 'no'} schema=${r.schemaOk ? 'ok' : 'no'} ${r.ms}ms ${r.tokens} tok${'error' in r && r.error ? `  (${r.error})` : ''}`);
+    console.log(`  ${r.ok ? '✓' : '✗'} ${m.padEnd(28)} tool=${r.toolOk ? 'ok' : 'no'} schema=${r.schemaOk ? 'ok' : 'no'} reasoning=${r.reasoningOk ? 'ok' : 'no'} ${r.ms}ms ${r.tokens} tok${'error' in r && r.error ? `  (${r.error})` : ''}`);
   }
   // Cheapest first: the agent and the lab default to the first model.
-  const rank = (m: string) => (/nano/.test(m) ? 2 : /mini/.test(m) ? 0 : 1);
+  // Reasoning-capable first (AG Studio's default is the first id), then cheapest first.
+  const byModel = new Map(results.map((r) => [r.model, r]));
+  const rank = (m: string) => (byModel.get(m)?.reasoningOk ? 0 : 10) + (/nano/.test(m) ? 2 : /mini/.test(m) ? 0 : 1);
   const good = results.filter((r) => r.ok).map((r) => r.model).sort((a, b) => rank(a) - rank(b));
+  if (good.length && !byModel.get(good[0]!)?.reasoningOk) console.log('note: no reasoning model passed — the Control Room chat (AG Studio adapter) needs one.');
   console.log(`\nSuggested OPENAI_MODELS=${good.join(',') || '(none passed)'}`);
   mkdirSync('data', { recursive: true });
   writeFileSync('data/models.json', JSON.stringify({ probedAt: new Date().toISOString(), suggested: good, results }, null, 2) + '\n');

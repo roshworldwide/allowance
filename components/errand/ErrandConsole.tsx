@@ -119,24 +119,29 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
 
   return (
     <>
-      <main className="animate-rise mx-auto grid w-full max-w-[1480px] gap-5 px-4 py-6 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)_340px]">
-        <aside className="space-y-4" aria-label="Allowance and task">
+      <main className="animate-rise mx-auto w-full max-w-[1100px] px-5 pb-28 pt-14">
+        <header className="text-center">
+          <h1 className="display text-[clamp(36px,5vw,56px)]">Errand</h1>
+          <p className="mx-auto mt-3 max-w-[560px] text-[17px] text-muted sm:text-[19px]">Give your agent an allowance and an errand. Every payment gets a verdict.</p>
+        </header>
+
+        <div className="mt-12 grid items-start gap-5 md:grid-cols-[360px_minmax(0,1fr)]">
           <AllowanceCard allowance={allowance} owner={owner} busy={busy} onCreate={create} onLink={link} onRevoke={revoke} />
-          {allowance?.status === 'ACTIVE' && (
-            <section className="glass spot p-5">
-              <label htmlFor="task" className="eyebrow">
+          {allowance?.status === 'ACTIVE' ? (
+            <section className="glass p-6">
+              <label htmlFor="task" className="text-[15px] font-semibold text-text">
                 Errand
               </label>
-              <textarea id="task" value={task} onChange={(e) => setTask(e.target.value)} rows={3} maxLength={400} disabled={running || confirmed} className="field mt-2.5 w-full resize-none px-3.5 py-2.5 text-[14px] leading-relaxed text-text placeholder:text-muted disabled:opacity-70" />
+              <textarea id="task" value={task} onChange={(e) => setTask(e.target.value)} rows={3} maxLength={400} disabled={running || confirmed} className="field mt-3 w-full resize-none px-4 py-3 text-[17px] leading-relaxed text-text placeholder:text-muted disabled:opacity-70" />
               {!plan && (
-                <Button className="mt-2 w-full" onClick={makePlan} disabled={busy || task.trim().length < 5}>
+                <Button className="mt-4" onClick={makePlan} disabled={busy || task.trim().length < 5}>
                   Turn into a task contract
                 </Button>
               )}
               {plan && <ContractCard plan={plan} />}
               {plan && !confirmed && (
-                <div className="mt-3 flex gap-2">
-                  <Button className="flex-1" onClick={confirm} disabled={busy}>
+                <div className="mt-4 flex items-center gap-5">
+                  <Button onClick={confirm} disabled={busy}>
                     Confirm
                   </Button>
                   <Button tone="ghost" onClick={() => setPlan(null)} disabled={busy}>
@@ -145,34 +150,48 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
                 </div>
               )}
               {confirmed && (
-                <Button className="mt-3 w-full" onClick={send} disabled={busy || running || state.status === 'done'}>
-                  {running ? 'Agent is shopping…' : state.status === 'done' ? 'Errand finished' : 'Send the agent'}
-                </Button>
-              )}
-              {confirmed && state.status === 'done' && (
-                <Button tone="ghost" className="mt-1 w-full" onClick={() => { setPlan(null); dispatch({ source: 'local', type: 'reset', data: null }); }}>
-                  New errand
-                </Button>
+                <div className="mt-4 flex flex-wrap items-center gap-5">
+                  <Button onClick={send} disabled={busy || running || state.status === 'done'}>
+                    {running ? 'Agent is shopping…' : state.status === 'done' ? 'Errand finished' : 'Send the agent'}
+                  </Button>
+                  {state.status === 'done' && (
+                    <Button tone="ghost" onClick={() => { setPlan(null); dispatch({ source: 'local', type: 'reset', data: null }); }}>
+                      New errand
+                    </Button>
+                  )}
+                </div>
               )}
             </section>
+          ) : (
+            <section className="glass flex min-h-[200px] items-center justify-center p-8 text-center">
+              <p className="max-w-[340px] text-[17px] text-muted">{allowance ? 'Link PayPal to activate the allowance. Then give your agent an errand.' : 'Start by creating an allowance.'}</p>
+            </section>
           )}
-          {notice && <p role="status" className="glass rim-accent px-4 py-2.5 text-[13px] text-text">{notice}</p>}
-          <Transcript steps={state.steps} status={state.status} error={state.error} />
-        </aside>
+        </div>
 
-        <section className="min-w-0 space-y-3" aria-label="Firewall">
+        {notice && <p role="status" className="glass mt-5 px-5 py-3 text-[14px] text-text">{notice}</p>}
+
+        <div className="mt-10">
           <FirewallLane cards={state.cards} order={state.order} model={state.model} />
+        </div>
+        <div className="mt-4">
           <NowCaption cards={state.cards} order={state.order} />
-          <Legend />
+        </div>
+
+        <section className="mt-16" aria-label="Verdicts">
+          <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-text">Verdicts</h2>
+          {cards.length === 0 ? (
+            <p className="mt-3 text-[15px] text-muted">Every money-moving tool call the agent makes lands here with its verdict and the rule that decided it.</p>
+          ) : (
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              {cards.map((c) => (
+                <VerdictCard key={c.decision.decisionId} card={c} onUndo={undo} onDecline={decline} onApproveInApp={approveInApp} />
+              ))}
+            </div>
+          )}
         </section>
 
-        <aside className="space-y-3" aria-label="Verdicts">
-          <h2 className="eyebrow">Verdicts {cards.length ? `· ${cards.length}` : ''}</h2>
-          {cards.length === 0 && <p className="rounded-[20px] border border-dashed border-white/10 p-5 text-[13px] leading-relaxed text-muted">Every money-moving tool call the agent makes lands here with its verdict and the rule that decided it.</p>}
-          {cards.map((c) => (
-            <VerdictCard key={c.decision.decisionId} card={c} onUndo={undo} onDecline={decline} onApproveInApp={approveInApp} />
-          ))}
-        </aside>
+        <Transcript steps={state.steps} status={state.status} error={state.error} />
       </main>
       <BudgetBar allowance={allowance} />
     </>
@@ -181,10 +200,10 @@ export function ErrandConsole({ initial, initialNotice = null }: { initial: Erra
 
 function ContractCard({ plan }: { plan: ContractResp }) {
   return (
-    <div className="glass rim-accent mt-3 !rounded-2xl bg-[rgba(10,13,22,0.6)] p-3.5">
+    <div className="mt-4 rounded-2xl bg-surface-2 p-4">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-accent">Task contract</span>
-        <span className="font-mono text-[10px] text-muted">{plan.contract.confirmedAt ? '✓ confirmed · locked' : plan.parser === 'ai' ? 'parsed by AI · check it' : 'parsed without AI (fallback)'}</span>
+        <span className="text-[13px] font-semibold text-text">Task contract</span>
+        <span className="text-[12px] text-muted">{plan.contract.confirmedAt ? '✓ Confirmed · locked' : plan.parser === 'ai' ? 'parsed by AI · check it' : 'parsed without AI (fallback)'}</span>
       </div>
       <ul className="mt-2 space-y-1.5">
         {plan.contract.lines.map((l) => (
@@ -209,9 +228,12 @@ function ContractCard({ plan }: { plan: ContractResp }) {
 function Transcript({ steps, status, error }: { steps: Step[]; status: string; error?: string }) {
   if (!steps.length && status === 'idle') return null;
   return (
-    <section className="glass p-5" aria-label="Agent transcript" aria-live="polite">
-      <h2 className="eyebrow flex items-center gap-2">{status === 'running' && <span className="h-1.5 w-1.5 rounded-full bg-allow breathe shadow-[0_0_8px_var(--al-allow)]" />}Agent</h2>
-      <ol className="mt-2 space-y-1.5 text-[13px]">
+    <details open={status === 'running' || undefined} className="glass mt-10 px-6 py-4" aria-label="Agent transcript" aria-live="polite">
+      <summary className="flex cursor-pointer items-center gap-2 text-[15px] text-accent">
+        {status === 'running' && <span className="h-1.5 w-1.5 rounded-full bg-allow breathe" />}
+        Agent transcript
+      </summary>
+      <ol className="mt-3 space-y-1.5 text-[13px]">
         {steps.map((s) => (
           <li key={s.id} className="leading-snug">
             {s.kind === 'search' && <span className="text-muted">searched <span className="text-text">“{s.query}”</span></span>}
@@ -224,27 +246,7 @@ function Transcript({ steps, status, error }: { steps: Step[]; status: string; e
         {status === 'running' && <li className="shimmer w-24 rounded-full bg-white/[0.04] text-transparent">thinking</li>}
         {error && <li className="text-block">{error}</li>}
       </ol>
-    </section>
-  );
-}
-
-function Legend() {
-  const item = (c: string, icon: string, t: string, d: string) => (
-    <li className="flex items-center gap-2">
-      <span className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-ink" style={{ background: c, boxShadow: `0 0 10px ${c}` }} aria-hidden>
-        {icon}
-      </span>
-      <span className="whitespace-nowrap font-mono text-[11px] font-semibold tracking-[0.08em] text-text">{t}</span>
-      <span className="text-muted">{d}</span>
-    </li>
-  );
-  return (
-    <ul className="glass grid gap-2 px-5 py-3.5 text-[12.5px] sm:grid-cols-2">
-      {item('var(--al-allow)', '✓', 'ALLOW', 'paid from the saved PayPal wallet')}
-      {item('var(--al-stepup)', '!', 'STEP-UP', 'PayPal asks you first')}
-      {item('var(--al-block)', '✕', 'BLOCK', 'stopped, with the rule that fired')}
-      {item('var(--al-refund)', '↺', 'UNDO', 'a real PayPal refund, 10 minutes')}
-    </ul>
+    </details>
   );
 }
 
@@ -255,7 +257,7 @@ function PasscodeGate({ onOk }: { onOk: () => void }) {
   return (
     <main className="mx-auto flex min-h-[75vh] w-full max-w-md flex-col justify-center px-4">
       <form
-        className="glass rim-accent p-7"
+        className="glass p-8"
         onSubmit={async (e) => {
           e.preventDefault();
           setBusy(true);
@@ -266,9 +268,9 @@ function PasscodeGate({ onOk }: { onOk: () => void }) {
           else setErr(r.status === 429 ? 'Too many attempts — wait a minute.' : 'That passcode is not right.');
         }}
       >
-        <h1 className="display text-platinum text-[32px]">Run it live</h1>
+        <h1 className="display text-[36px]">Run it live</h1>
         <p className="mt-3 text-[13.5px] leading-relaxed text-muted">Live runs use real PayPal sandbox payments and a real model. The passcode is in the Devpost testing instructions. No passcode? Watch a recorded run instead.</p>
-        <label htmlFor="pc" className="eyebrow mt-6 block">
+        <label htmlFor="pc" className="mt-6 block text-[13px] font-semibold text-muted">
           Passcode
         </label>
         <input id="pc" type="password" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} className="field mt-1.5 h-11 w-full px-3.5 text-sm text-text" />

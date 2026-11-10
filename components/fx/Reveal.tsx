@@ -12,10 +12,10 @@ export function Reveal({ children, delay = 0, y = 26, className = '', as = 'div'
   return (
     <M
       className={className}
-      initial={reduce ? false : { opacity: 0, y, filter: 'blur(12px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      initial={reduce ? false : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-8% 0px' }}
-      transition={{ duration: 1.1, delay, ease: EASE }}
+      transition={{ duration: 1, delay, ease: EASE }}
     >
       {children}
     </M>
@@ -48,8 +48,8 @@ export function WordReveal({
         <span key={i}>
           <motion.span
             className={`inline-block pb-[0.08em] will-change-transform ${accent.includes(w.replace(/[^\w-]/g, '')) ? accentClassName : wordClassName}`}
-            initial={reduce ? false : { opacity: 0, y: '0.45em', filter: 'blur(14px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={reduce ? false : { opacity: 0, y: '0.3em' }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.15, delay: delay + i * stagger, ease: EASE }}
           >
             {w}

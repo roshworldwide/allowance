@@ -30,13 +30,15 @@ export default function LabPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar current="lab" />
-      <main className="animate-rise mx-auto w-full max-w-[1180px] px-4 py-14 sm:px-6">
-        <p className="eyebrow">Proof, not promises</p>
-        <h1 className="display mt-3 text-platinum text-[clamp(44px,6vw,84px)]">Attack Lab</h1>
-        <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-muted">The same OpenAI shopping agent, same prompt, same tools for reading the store — once with a typical saved-PayPal payment tool, once behind ALLOWANCE — against attack patterns hidden in product pages, reviews and listings, and against normal errands.</p>
+      <main className="animate-rise mx-auto w-full max-w-[1100px] px-5 pb-28 pt-14">
+        <header className="text-center">
+          <p className="eyebrow">Proof, not promises</p>
+          <h1 className="display mt-2 text-[clamp(44px,6vw,80px)]">Attack Lab</h1>
+          <p className="mx-auto mt-4 max-w-[640px] text-[19px] leading-[1.4] text-muted sm:text-[21px]">The same OpenAI agent, with and without ALLOWANCE, against attacks hidden in product pages — and against normal errands.</p>
+        </header>
 
         {!lab ? (
-          <p className="glass mt-10 p-8 text-muted">No Attack Lab run recorded yet. The corpus is ready: 60 attacks across 12 families and 40 normal errands, run against the same agent with and without ALLOWANCE.</p>
+          <p className="glass mx-auto mt-14 max-w-[640px] p-8 text-center text-[17px] text-muted">No run recorded yet. 60 attacks across 12 families and 40 normal errands are ready.</p>
         ) : (
           <>
             <section className="glass mt-10 grid gap-8 p-8 md:grid-cols-2">

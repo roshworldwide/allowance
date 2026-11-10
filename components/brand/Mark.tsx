@@ -10,7 +10,7 @@ export function Mark({ size = 22, className = '' }: { size?: number; className?:
       <defs>
         <linearGradient id="al-mark" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#8e97b0" />
+          <stop offset="1" stopColor="#a1a1a6" />
         </linearGradient>
       </defs>
       <circle cx="12" cy="12" r="11.2" fill="none" stroke="url(#al-mark)" strokeWidth="0.9" opacity="0.55" />
@@ -24,9 +24,9 @@ export function Mark({ size = 22, className = '' }: { size?: number; className?:
 
 export function Wordmark({ className = '' }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <Mark size={22} />
-      <span className="wordmark text-platinum text-[13px]">ALLOWANCE</span>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
+      <Mark size={18} />
+      <span className="wordmark text-[12px] text-text">ALLOWANCE</span>
     </span>
   );
 }

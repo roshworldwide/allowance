@@ -46,11 +46,10 @@ export function FirewallLane({ cards, order, model }: { cards: Record<string, Ca
   const latest = recent.length ? cards[recent.at(-1)!] : undefined;
 
   return (
-    <section aria-label="Firewall Lane" className="glass relative overflow-hidden !rounded-[26px]">
+    <section aria-label="Firewall Lane" className="glass relative overflow-hidden">
       <div ref={box} className="relative w-full" style={{ height: H }}>
         {/* backdrop: fine grid + gate glow */}
-        <div aria-hidden className="absolute inset-0 opacity-[0.35] [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_75%)]" />
-        <div aria-hidden className="absolute rounded-full" style={{ left: xs.gate - 220, top: CY - 220, width: 440, height: 440, background: 'radial-gradient(closest-side, rgba(169,184,255,0.10), transparent)' }} />
+        <div aria-hidden className="absolute rounded-full" style={{ left: xs.gate - 220, top: CY - 220, width: 440, height: 440, background: 'radial-gradient(closest-side, rgba(255,255,255,0.05), transparent)' }} />
 
         {/* track */}
         <div aria-hidden className="absolute h-px" style={{ left: xs.agent, width: Math.max(0, xs.paypal - xs.agent), top: CY }}>
@@ -90,7 +89,7 @@ export function FirewallLane({ cards, order, model }: { cards: Record<string, Ca
         </AnimatePresence>
 
         {!recent.length && (
-          <p className="absolute inset-x-0 bottom-5 text-center font-mono text-[11px] tracking-[0.18em] text-muted uppercase">Waiting for the agent’s first money-moving tool call</p>
+          <p className="absolute inset-x-0 bottom-6 text-center text-[13px] text-muted">Waiting for the agent’s first money-moving tool call</p>
         )}
       </div>
       <p className="sr-only" aria-live="polite">
@@ -110,8 +109,7 @@ export function NowCaption({ cards, order }: { cards: Record<string, Card>; orde
   const tone = phase === 'BLOCK' || phase === 'FAILED' ? COLORS.BLOCK : phase === 'STEP_UP' ? COLORS.STEP_UP : phase === 'REFUNDED' ? COLORS.REFUND : phase === 'DECLINED' ? 'var(--al-muted)' : COLORS.ALLOW;
   const word = phase === 'BLOCK' ? 'Blocked' : phase === 'STEP_UP' ? 'PayPal asks you' : phase === 'REFUNDED' ? 'Undone — refunded' : phase === 'APPROVED' ? 'Approved in PayPal · paid' : phase === 'PAID' ? 'Allowed · paid from the vault' : phase === 'DECLINED' ? 'Declined' : phase === 'FAILED' ? 'Payment failed' : 'Allowed';
   return (
-    <div className="glass relative overflow-hidden !rounded-[22px] px-6 py-5" aria-hidden>
-      <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full blur-3xl" style={{ background: tone, opacity: 0.16 }} />
+    <div className="glass relative overflow-hidden px-7 py-6" aria-hidden>
       <AnimatePresence mode="wait">
         <motion.div
           key={`${d.decisionId}-${phase}`}
@@ -122,7 +120,7 @@ export function NowCaption({ cards, order }: { cards: Record<string, Card>; orde
           className="relative"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.2em]" style={{ color: tone }}>
+            <span className="text-[13px] font-semibold" style={{ color: tone }}>
               {word}
             </span>
             <span className="flex items-center gap-1">
@@ -141,10 +139,10 @@ export function NowCaption({ cards, order }: { cards: Record<string, Card>; orde
             </span>
           </div>
           <p className="mt-2 flex items-baseline justify-between gap-4">
-            <span className="text-[clamp(18px,1.7vw,24px)] font-semibold leading-snug tracking-[-0.02em] text-platinum">{d.item ? `${d.qty ?? 1} × ${shorten(d.item)}` : d.tool}</span>
-            <span className="font-mono text-[clamp(18px,1.7vw,24px)] tabular text-text">{usd(d.amountCents)}</span>
+            <span className="text-[clamp(20px,2vw,28px)] font-semibold leading-snug tracking-[-0.022em] text-text">{d.item ? `${d.qty ?? 1} × ${shorten(d.item)}` : d.tool}</span>
+            <span className="text-[clamp(20px,2vw,28px)] font-semibold tabular tracking-[-0.022em] text-text">{usd(d.amountCents)}</span>
           </p>
-          <p className="mt-1.5 text-[14px] leading-relaxed" style={{ color: phase === 'BLOCK' || phase === 'STEP_UP' ? tone : 'var(--al-muted)' }}>
+          <p className="mt-2 text-[17px] leading-[1.45]" style={{ color: phase === 'BLOCK' || phase === 'STEP_UP' ? tone : 'var(--al-muted)' }}>
             {phase === 'APPROVED'
               ? `You approved it in PayPal — captured ${last.purchase?.captureId ?? ''}.`
               : phase === 'REFUNDED'
@@ -159,8 +157,8 @@ export function NowCaption({ cards, order }: { cards: Record<string, Card>; orde
 
 function Station({ x, title, sub, badge, icon, children }: { x: number; title: string; sub: string; badge?: boolean; icon: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <div className="glass absolute w-[118px] -translate-x-1/2 !rounded-2xl bg-[rgba(10,13,22,0.75)] px-3 py-2.5 text-center" style={{ left: x, top: CY - 44 }}>
-      <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[#dfe4f2] shadow-[0_0_16px_-6px_rgba(200,210,255,0.6)]">{icon}</div>
+    <div className="absolute w-[118px] -translate-x-1/2 rounded-2xl bg-surface-2 px-3 py-2.5 text-center" style={{ left: x, top: CY - 44 }}>
+      <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-text">{icon}</div>
       <div className="mt-1.5 text-[13px] font-semibold tracking-[-0.01em] text-text">{title}</div>
       <div className={`mx-auto mt-0.5 w-fit max-w-full truncate rounded-full px-1.5 font-mono text-[9.5px] ${badge ? 'border border-stepup/40 text-stepup' : 'text-muted'}`}>{sub}</div>
       {children}

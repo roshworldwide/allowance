@@ -42,7 +42,7 @@ export function VerdictCard({
       initial={reduce ? false : { opacity: 0, x: 24, filter: 'blur(8px)' }}
       animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className={`glass spot ${rim} !rounded-[20px] bg-[rgba(10,13,22,0.6)] p-4`}
+      className={`glass ${rim} p-5`}
     >
       <div className="flex items-start justify-between gap-2">
         <VerdictChip kind={phase} />
@@ -50,13 +50,13 @@ export function VerdictCard({
           {new Date(d.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </time>
       </div>
-      <h3 className="mt-3 text-[14px] font-medium leading-snug tracking-[-0.005em] text-text">
+      <h3 className="mt-3 text-[15px] font-semibold leading-snug tracking-[-0.015em] text-text">
         {d.item ? `${d.qty ?? 1} × ${d.item}` : <span className="font-mono">{d.tool}</span>}
-        <span className="float-right ml-2 font-mono text-[15px] text-platinum tabular">{usd(d.amountCents)}</span>
+        <span className="float-right ml-2 text-[15px] font-semibold tabular text-text">{usd(d.amountCents)}</span>
       </h3>
       <p className={`mt-1 text-[13px] leading-snug ${phase === 'BLOCK' ? 'text-block' : phase === 'STEP_UP' ? 'text-stepup' : 'text-muted'}`}>{d.summary}</p>
       {card.explanation && (
-        <p className="mt-2.5 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-[13px] leading-snug text-text">
+        <p className="mt-3 rounded-xl bg-surface-2 px-3 py-2 text-[13px] leading-snug text-text">
           {card.explanation}
           <span className="ml-1.5 whitespace-nowrap font-mono text-[10px] text-muted">AI-written from the rule trace</span>
         </p>
@@ -82,7 +82,7 @@ export function VerdictCard({
         )}
       </div>
 
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="mt-2 flex w-full items-center justify-between text-left font-mono text-[11px] text-muted hover:text-text">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="mt-3 flex w-full items-center justify-between text-left text-[12px] text-muted hover:text-text">
         <span>
           rule trace · {fired.length ? fired.map((r) => r.id).join(' ') + ' fired' : 'all clear'} · {(d.latencyUs / 1000).toFixed(2)} ms
         </span>
@@ -115,7 +115,7 @@ function UndoButton({ capturedAt, windowSec, busy, onUndo }: { capturedAt: numbe
   const mm = String(Math.floor(left / 60)).padStart(2, '0');
   const ss = String(left % 60).padStart(2, '0');
   return (
-    <Button tone="quiet" size="sm" onClick={onUndo} disabled={busy} className="ml-auto !border-refund/50 !text-refund shadow-[0_0_24px_-10px_var(--al-refund)]">
+    <Button tone="quiet" size="sm" onClick={onUndo} disabled={busy} className="ml-auto !text-refund">
       ↺ Undo <span className="font-mono">{mm}:{ss}</span>
     </Button>
   );
@@ -126,7 +126,7 @@ function StepUpBox({ card, busy, setBusy, onDecline, onApproveInApp }: { card: C
   const [svg, setSvg] = useState('');
   useEffect(() => {
     if (!a.approvePage) return;
-    void QRCode.toString(a.approvePage, { type: 'svg', margin: 1, color: { dark: '#05070D', light: '#EEF1F8' } }).then(setSvg);
+    void QRCode.toString(a.approvePage, { type: 'svg', margin: 1, color: { dark: '#000000', light: '#F5F5F7' } }).then(setSvg);
   }, [a.approvePage]);
   const run = (fn?: (id: string) => Promise<void>) => async () => {
     if (!fn) return;
@@ -138,8 +138,8 @@ function StepUpBox({ card, busy, setBusy, onDecline, onApproveInApp }: { card: C
     }
   };
   return (
-    <div className="mt-3 flex gap-3 rounded-2xl border border-stepup/35 bg-[linear-gradient(180deg,rgba(246,195,91,0.08),rgba(246,195,91,0.02))] p-3 shadow-[0_0_40px_-18px_var(--al-stepup)]">
-      {svg ? <div className="h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl ring-1 ring-stepup/40 shadow-[0_0_24px_-6px_var(--al-stepup)]" role="img" aria-label="QR code to approve on your phone" dangerouslySetInnerHTML={{ __html: svg }} /> : <div className="h-[92px] w-[92px] shrink-0 rounded-lg bg-surface-2" />}
+    <div className="mt-3 flex gap-3 rounded-2xl bg-surface-2 p-3">
+      {svg ? <div className="h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl" role="img" aria-label="QR code to approve on your phone" dangerouslySetInnerHTML={{ __html: svg }} /> : <div className="h-[92px] w-[92px] shrink-0 rounded-lg bg-surface-2" />}
       <div className="min-w-0 text-[12.5px]">
         <p className="font-medium text-stepup">PayPal is asking you</p>
         <p className="mt-0.5 text-muted">Scan to approve on your phone, in PayPal (sandbox).</p>

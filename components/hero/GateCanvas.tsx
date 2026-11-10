@@ -14,11 +14,11 @@ type Ring = { x: number; y: number; r: number; life: number; col: RGB };
 type Tag = { x: number; y: number; text: string; life: number; col: RGB };
 
 const C = {
-  plat: [226, 232, 248] as RGB,
-  allow: [52, 227, 160] as RGB,
-  step: [246, 195, 91] as RGB,
-  block: [255, 77, 109] as RGB,
-  accent: [169, 184, 255] as RGB,
+  plat: [245, 245, 247] as RGB,
+  allow: [48, 209, 88] as RGB,
+  step: [255, 214, 10] as RGB,
+  block: [255, 69, 58] as RGB,
+  accent: [41, 151, 255] as RGB,
 };
 const rgba = (c: RGB, a: number) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
 const mix = (a: RGB, b: RGB, k: number): RGB => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
@@ -38,7 +38,7 @@ const ITEMS: [Kind, string, string][] = [
   ['step', '$52.00', 'R11 · ask me above $40'],
 ];
 
-export function GateCanvas({ className = '' }: { className?: string }) {
+export function GateCanvas({ className = '', centered = false }: { className?: string; centered?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -63,9 +63,15 @@ export function GateCanvas({ className = '' }: { className?: string }) {
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       mobile = w < 900;
-      gx = mobile ? w * 0.5 : w * 0.73;
-      gy = mobile ? Math.min(h * 0.3, 260) : h * 0.5;
-      R = Math.max(90, Math.min(mobile ? w * 0.3 : Math.min(w, h) * 0.26, 230));
+      if (centered) {
+        gx = w * 0.5;
+        gy = h * 0.47;
+        R = Math.max(80, Math.min(Math.min(w, h) * 0.3, 200));
+      } else {
+        gx = mobile ? w * 0.5 : w * 0.73;
+        gy = mobile ? Math.min(h * 0.3, 260) : h * 0.5;
+        R = Math.max(90, Math.min(mobile ? w * 0.3 : Math.min(w, h) * 0.26, 230));
+      }
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -222,8 +228,8 @@ export function GateCanvas({ className = '' }: { className?: string }) {
 
       // halo
       const halo = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 2.1);
-      halo.addColorStop(0, rgba(C.accent, 0.1 + flash.k * 0.08));
-      halo.addColorStop(0.45, rgba(flash.k > 0.05 ? flash.col : C.accent, 0.05 + flash.k * 0.12));
+      halo.addColorStop(0, rgba(C.accent, 0.05 + flash.k * 0.04));
+      halo.addColorStop(0.45, rgba(flash.k > 0.05 ? flash.col : C.accent, 0.025 + flash.k * 0.06));
       halo.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = halo;
       ctx.fillRect(0, 0, w, h);
@@ -333,7 +339,7 @@ export function GateCanvas({ className = '' }: { className?: string }) {
 
       // packets with light trails (on wide screens they emerge from behind the headline)
       ctx.font = '500 11px ui-monospace, SFMono-Regular, Menlo, monospace';
-      const emerge = (x: number) => (mobile ? 1 : Math.max(0, Math.min(1, (x - w * 0.42) / (w * 0.1))));
+      const emerge = (x: number) => (centered ? Math.max(0, Math.min(1, x / (w * 0.12))) : mobile ? 1 : Math.max(0, Math.min(1, (x - w * 0.42) / (w * 0.1))));
       for (const p of packets) {
         const vis = p.state === 'travel' ? emerge(p.x) : 1;
         if (vis <= 0.01) continue;
@@ -398,9 +404,9 @@ export function GateCanvas({ className = '' }: { className?: string }) {
       }
 
       // caption under the ring
-      ctx.font = '500 10px ui-monospace, SFMono-Regular, Menlo, monospace';
-      ctx.fillStyle = 'rgba(140,149,171,0.75)';
-      const cap = 'ALLOWANCE · 12 RULES · DETERMINISTIC';
+      ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(134,134,139,0.9)';
+      const cap = '12 rules · deterministic';
       ctx.fillText(cap, cx - ctx.measureText(cap).width / 2, cy + R + 64);
     };
 
@@ -455,7 +461,7 @@ export function GateCanvas({ className = '' }: { className?: string }) {
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('pointermove', onMove);
     };
-  }, []);
+  }, [centered]);
 
   return <canvas ref={ref} className={className} aria-hidden />;
 }

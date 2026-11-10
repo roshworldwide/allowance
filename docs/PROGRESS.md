@@ -4,12 +4,12 @@
 
 | | |
 |---|---|
-| **Now** | Waiting on keys for S0/S1/lab — Tue 23:35 IST |
-| **Done** | M0 (except key-dependent spikes) · **M1** guard (12 rules, atomic ledger, chain, wrap; p95 0.87 ms) · catalog + **corpus 60+40** · **M2 code complete** (agent loop, vault link, executor, step-up poller, undo, routes, passcode/rate-limit/spend-cap, webhooks) · **M3** Errand console + Firewall Lane + verdict cards + phone approve page + replay (verified in Chromium at 1280×800 and 390×844) · **M4 runner ready** (needs key) · **M5** Control Room on real data + simulate_policy / draft_policy_change + proposal card · landing + /lab · README + all docs (numbers auto-synced) · CI + 6 e2e (prod build, axe) · render.yaml |
-| **In flight** | nothing (all key-free work done) |
-| **Next (needs keys)** | S0 models → OPENAI_MODELS · S1 Vault link + $1 charge/refund · lab:quick → full lab · record replays · G1 repo · G3 deploy |
-| **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1**: the repo push was blocked by the session's auto-mode classifier — Roshan runs the one `gh repo create` command (docs/SUBMISSION_CHECKLIST.md) or allows it |
-| **Latest numbers** | 161 vitest tests green (unit, property, integration) + 6 e2e · guard p95 0.87 ms · no lab run yet |
+| **Now** | All key-free work complete — Tue 23:55 IST. Waiting on keys (then `npm run go`) and on Roshan's G1 push |
+| **Done** | M0 · **M1** guard (p95 0.87 ms) · corpus 60+40 · **M2** code (vault link, executor, step-up poller, undo, routes, security, webhooks) · **M3** Errand + Firewall Lane + cards + phone page + replay · **M4** runner/metrics · **M5** Control Room: 4 custom widgets (Allowance Ring, Verdict Stream, Attack Lab Matrix, Chain Seal) with Form Configuration, 4-page report, drill-through, live data, PayPal Transaction Search, Auditor (explain_verdict, simulate_policy, draft_policy_change, 2 Tool Components) · **M6** landing, /lab, README + all docs (numbers auto-synced), CI, 6 e2e + axe, render.yaml, DEPLOY + SUBMISSION_CHECKLIST, `npm run go`, `npm run media` |
+| **In flight** | 10-second test (fresh reviewer) |
+| **Next (needs keys)** | `npm run go` (S0, S1, smoke, lab quick + full, docs:sync) → record hero run → `npm run media` → G3 deploy → video (G4) → self-judge → G2 → G5 |
+| **Blockers (need Roshan)** | 1) keys in `allowance/.env.local` · 2) **G1**: run the `gh repo create …` command in docs/SUBMISSION_CHECKLIST.md (my attempt was blocked by the session's auto-mode classifier) |
+| **Latest numbers** | 165 vitest tests + 6 e2e green · guard p95 0.87 ms · no lab run yet · holdout: not run (logged cut) |
 
 ## Milestones
 
@@ -21,7 +21,7 @@
 | M2 Real money path + first deploy (G3) | Wed 09:00–13:00 | code complete, tested vs fake PayPal; live sandbox + deploy wait on keys/G3 |
 | M3 Experience | Wed 13:00–17:30 | ✅ done Tue 23:10 (verified in browser) |
 | M4 Attack Lab | Wed 17:30–21:00 | runner + metrics ready; run waits on OpenAI key |
-| M5 Control Room | Wed 21:00–Thu 01:30 | ✅ Minimum Studio built (3 widgets + form config, 4 pages, auditor + 3 tools + 2 tool components); live chat needs key |
+| M5 Control Room | Wed 21:00–Thu 01:30 | ✅ beyond Minimum Studio (4 widgets incl. Chain Seal, live data, Transaction Search); live chat needs key |
 | M6 Ship-ready · **feature freeze Thu 12:00** | Thu 08:00–12:00 | docs, CI, e2e, render.yaml done early |
 | M7 Video | Thu 12:00–17:00 | — |
 | M8 Submission pack | Thu 17:00–21:00 | — |
@@ -39,3 +39,4 @@
 - **Tue 22:40** Holdout author refused by a safety filter before writing anything; independence intact; awaiting Roshan's decision.
 - **Tue 23:00–23:30** M2 service + routes, M3 UI, M4 runner, M5 real data + policy tools, landing, /lab, webhooks, CI, e2e, docs — all committed.
 - **Tue 23:35** Studio widgets + 4-page report committed; removed invented Attack Lab numbers from sample data.
+- **Tue 23:55** Transaction Search ledger, live Control Room, current-allowance ring, Chain Seal, media capture, go orchestrator, deploy + submission docs committed. G1 push blocked by the session classifier.

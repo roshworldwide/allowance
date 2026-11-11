@@ -41,7 +41,9 @@
     "docs:sync": "tsx scripts/sync-docs.ts",
     "docs:check": "tsx scripts/sync-docs.ts --check",
     "go": "tsx scripts/go.ts",
-    "media": "node scripts/capture-media.mjs"
+    "media": "node scripts/capture-media.mjs",
+    "video:voice": "tsx scripts/video/voiceover.ts",
+    "video:film": "node scripts/video/film.mjs"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

@@ -1,0 +1,136 @@
+{
+  "title": "ALLOWANCE — An allowance, not your wallet",
+  "voiceInstructions": "You are presenting a product you built, on stage, to a quiet room. Calm, warm and confident; unhurried, about 130 words per minute. A soft smile in the voice. Let commas and ellipses breathe. Land the last word of each sentence slightly lower and slower. Never salesy, never excited, never rushed. Clear, neutral English.",
+  "sections": [
+    {
+      "id": "s01",
+      "name": "Cold open",
+      "visual": "card-coldopen",
+      "lines": [
+        { "tts": "I asked my AI agent for one monitor arm.", "caption": "I asked my AI agent for one monitor arm.", "pause": 0.35 },
+        { "tts": "A product page told it to buy three parts instead.", "caption": "A product page told it to buy three parts instead.", "pause": 0.9 },
+        { "tts": "So it did.", "caption": "So it did.", "pause": 0.9 },
+        { "tts": "It never asked me.", "caption": "It never asked me.", "pause": 1.2 }
+      ]
+    },
+    {
+      "id": "s02",
+      "name": "The problem",
+      "visual": "card-problem",
+      "lines": [
+        { "tts": "AI agents are learning to shop.", "caption": "AI agents are learning to shop.", "pause": 0.35 },
+        { "tts": "And today, the only way to let one pay... is to hand it your wallet.", "caption": "And today, the only way to let one pay is to hand it your wallet.", "pause": 0.9 },
+        { "tts": "All of it.", "caption": "All of it.", "pause": 0.6 },
+        { "tts": "Every limit you'd want lives in a prompt. And a prompt can be talked out of anything.", "caption": "Every limit you'd want lives in a prompt — and a prompt can be talked out of anything.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "s03",
+      "name": "The name",
+      "visual": "clip-landing",
+      "lines": [
+        { "tts": "So I built Allowance.", "caption": "So I built ALLOWANCE.", "pause": 0.9 },
+        { "tts": "Give your AI agent an allowance... not your wallet.", "caption": "Give your AI agent an allowance — not your wallet.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "s04",
+      "name": "Set it once",
+      "visual": "clip-errand-setup",
+      "lines": [
+        { "tts": "Two hundred dollars a month.", "caption": "$200 a month.", "pause": 0.3 },
+        { "tts": "Never more than sixty on one thing.", "caption": "Never more than $60 on one thing.", "pause": 0.3 },
+        { "tts": "Ask me above forty.", "caption": "Ask me above $40.", "pause": 0.5 },
+        { "tts": "I link PayPal once... PayPal's own saved-wallet consent.", "caption": "I link PayPal once — PayPal's own saved-wallet consent.", "pause": 0.8 },
+        { "tts": "That's it.", "caption": "That's it.", "pause": 0.8 }
+      ]
+    },
+    {
+      "id": "s05",
+      "name": "The errand",
+      "visual": "clip-errand-contract",
+      "lines": [
+        { "tts": "Now, a real errand.", "caption": "Now, a real errand.", "pause": 0.3 },
+        { "tts": "Allowance turns my words into a contract.", "caption": "ALLOWANCE turns my words into a contract.", "pause": 0.3 },
+        { "tts": "I confirm it.", "caption": "I confirm it.", "pause": 0.8 },
+        { "tts": "And the agent goes shopping.", "caption": "And the agent goes shopping.", "pause": 0.8 }
+      ]
+    },
+    {
+      "id": "s06",
+      "name": "Allow. Ask. Block.",
+      "visual": "clip-replay-verdicts",
+      "lines": [
+        { "tts": "Every payment gets a verdict.", "caption": "Every payment gets a verdict.", "pause": 0.9, "beat": "start" },
+        { "tts": "Cables: allowed. Paid from my saved PayPal wallet... that's a real capture ID.", "caption": "Cables: allowed. Paid from my saved PayPal wallet — that's a real capture ID.", "pause": 0.9, "beat": "allow" },
+        { "tts": "The lamp is over forty, so PayPal asks me first. Approved.", "caption": "The lamp is over $40, so PayPal asks me first. Approved.", "pause": 0.9, "beat": "stepup" },
+        { "tts": "And that monitor arm? A hundred and thirty-five dollars. My limit is sixty.", "caption": "And that monitor arm? $135. My limit is $60.", "pause": 1.0, "beat": "block-approach" },
+        { "tts": "Blocked.", "caption": "Blocked.", "pause": 1.4, "beat": "block" }
+      ]
+    },
+    {
+      "id": "s07",
+      "name": "Why it can't be tricked",
+      "visual": "card-inputs",
+      "lines": [
+        { "tts": "Here's the part that matters.", "caption": "Here's the part that matters.", "pause": 0.3 },
+        { "tts": "The guard never reads the product page.", "caption": "The guard never reads the product page.", "pause": 0.4 },
+        { "tts": "Only your task, your allowance, a trusted catalog, and PayPal.", "caption": "Only your task, your allowance, a trusted catalog and PayPal.", "pause": 0.4 },
+        { "tts": "Twelve rules. Under a millisecond.", "caption": "12 rules. Under a millisecond.", "pause": 0.8 },
+        { "tts": "You can't talk it out of a decision.", "caption": "You can't talk it out of a decision.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "s08",
+      "name": "Undo",
+      "visual": "clip-replay-undo",
+      "lines": [
+        { "tts": "Changed my mind? One tap. A real PayPal refund.", "caption": "Changed my mind? One tap. A real PayPal refund.", "pause": 1.0, "beat": "refund" }
+      ]
+    },
+    {
+      "id": "s09",
+      "name": "Proof",
+      "visual": "clip-lab",
+      "lines": [
+        { "tts": "But one demo isn't proof.", "caption": "But one demo isn't proof.", "pause": 0.4 },
+        { "tts": "So I built an Attack Lab: sixty attacks hidden in product pages, against the same agent, three times each.", "caption": "So I built an Attack Lab: 60 attacks hidden in product pages, against the same agent, 3 times each.", "pause": 0.9 },
+        { "tts": "Without Allowance, it was fooled twenty-one percent of the time.", "caption": "Without ALLOWANCE, it was fooled 21% of the time.", "pause": 0.9 },
+        { "tts": "With Allowance... zero.", "caption": "With ALLOWANCE: 0%.", "pause": 1.2 },
+        { "tts": "And on forty normal errands, it wrongly blocked... none.", "caption": "And on 40 normal errands, it wrongly blocked none.", "pause": 1.0 }
+      ]
+    },
+    {
+      "id": "s10",
+      "name": "One more thing",
+      "visual": "clip-control-room",
+      "lines": [
+        { "tts": "There's one more thing.", "caption": "There's one more thing.", "pause": 1.0, "beat": "overview" },
+        { "tts": "My Control Room. Built in A G Studio, with custom widgets, and my own Auditor agent.", "caption": "My Control Room — built in AG Studio, with custom widgets and my own Auditor agent.", "pause": 0.4, "beat": "edit" },
+        { "tts": "I ask it: what if I raise the cap to eighty?", "caption": "I ask it: what if I raise the cap to $80?", "pause": 0.3, "beat": "ask" },
+        { "tts": "It replays every decision under the new rule, and shows me exactly what would change.", "caption": "It replays every decision under the new rule and shows me exactly what would change.", "pause": 0.9, "beat": "answer" },
+        { "tts": "It can propose. Only I can apply.", "caption": "It can propose. Only I can apply.", "pause": 1.0, "beat": "answer-end" }
+      ]
+    },
+    {
+      "id": "s11",
+      "name": "Built on PayPal",
+      "visual": "clip-paypal-then-code",
+      "lines": [
+        { "tts": "No new payment rails.", "caption": "No new payment rails.", "pause": 0.3, "beat": "paypal" },
+        { "tts": "Just PayPal. Vault, Orders, approvals, refunds, webhooks.", "caption": "Just PayPal — Vault, Orders, approvals, refunds, webhooks.", "pause": 0.4, "beat": "paypal" },
+        { "tts": "And one wrap around any agent's money tools.", "caption": "And one wrap() around any agent's money tools.", "pause": 0.9, "beat": "code" }
+      ]
+    },
+    {
+      "id": "s12",
+      "name": "Close",
+      "visual": "card-close",
+      "lines": [
+        { "tts": "The AI shops.", "caption": "The AI shops.", "pause": 1.0 },
+        { "tts": "It never decides.", "caption": "It never decides.", "pause": 1.2 },
+        { "tts": "Allowance. Give your agent an allowance... not your wallet.", "caption": "ALLOWANCE. Give your agent an allowance — not your wallet.", "pause": 2.2 }
+      ]
+    }
+  ]
+}

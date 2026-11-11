@@ -48,7 +48,7 @@ let unknown = 0;
 for (const f of FILES) {
   if (!existsSync(f)) continue;
   const before = readFileSync(f, 'utf8');
-  const after = before.replace(/<!--lab:([A-Za-z]+)-->([\s\S]*?)<!--\/lab-->/g, (_m, key: string) => {
+  const after = before.replace(/<!--lab:([A-Za-z0-9]+)-->([\s\S]*?)<!--\/lab-->/g, (_m, key: string) => {
     const v = values[key];
     if (v === undefined) {
       unknown++;

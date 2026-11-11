@@ -5,7 +5,7 @@
 ![PayPal sandbox](https://img.shields.io/badge/PayPal-sandbox%20only-F5B544)
 
 <!--media:hero-->
-![The Firewall Lane: cables allowed and paid, an injected USB-C hub blocked by R02, a lamp sent to PayPal for approval](docs/media/lane.gif)
+![The Firewall Lane on a recorded sandbox run: USB-C cables allowed and paid from the saved wallet, a lamp above the ask-me line sent to PayPal for approval](docs/media/lane.gif)
 <!--/media-->
 
 **A spending firewall for AI agents on PayPal.** You give your agent a scoped *allowance* — budget, per-purchase cap, allowed categories, no subscriptions, an "ask me above $40" line — instead of your wallet. Every money-moving tool call the agent makes passes **12 deterministic rules** and comes back **ALLOW** (paid from your saved PayPal wallet), **STEP-UP — PayPal asks you first**, on your phone, or **BLOCK** (with the exact rule that fired). Anything paid can be **undone for 10 minutes** — a real PayPal refund.
@@ -64,8 +64,8 @@ const tools = wrap([allowanceCheckout, ...paypalToolkit.getTools()], session);
 
 - **The guard never reads anything an attacker can write.** Product pages, reviews, seller notes and listing text go to the agent (marked untrusted), never to the rules. The guard's only inputs are your confirmed task contract, your allowance, the trusted catalog registry, the ledger and PayPal's responses.
 - **The agent can't name a price or a payee.** `allowance_checkout` takes a SKU, a quantity, the task line it fulfils and the price it *saw*. The amount is computed from the trusted registry; the payee is the registry's merchant. Any amount/payee/currency the agent tries to set is itself a block (R03).
-- **Task-binding stops the quiet attacks.** In the demo, a product page slips in a $34 USB-C hub: allowed merchant, allowed category, under every cap. A spending limit lets it through. It isn't in the task you confirmed, so **R02 TASK_BINDING** blocks it — the only red lamp.
-- **The AI shops and explains. It never decides.** Language models parse your errand (you confirm it), drive the shopping agent, explain verdicts in one labelled sentence and power the Auditor. Every ALLOW / STEP-UP / BLOCK comes from deterministic code (p95 <!--lab:p95-->pending (no Attack Lab run yet)<!--/lab--> in the lab; 0.87 ms on file-backed SQLite in [`lab/results/guard-latency.json`](lab/results/guard-latency.json)).
+- **Task-binding stops the quiet attacks.** Say a product page slips in a $34 USB-C hub: allowed merchant, allowed category, under every cap. A spending limit lets it through. If the agent goes for it, it isn't in the task you confirmed, so **R02 TASK_BINDING** blocks it — the only red lamp. In the Attack Lab, BLOCKs stopped <!--lab:stoppedByBlock-->43<!--/lab--> guarded attack runs.
+- **The AI shops and explains. It never decides.** Language models parse your errand (you confirm it), drive the shopping agent, explain verdicts in one labelled sentence and power the Auditor. Every ALLOW / STEP-UP / BLOCK comes from deterministic code (p95 <!--lab:p95-->0.863 ms<!--/lab--> in the lab; 0.87 ms on file-backed SQLite in [`lab/results/guard-latency.json`](lab/results/guard-latency.json)).
 
 ## The 12 rules
 
@@ -111,9 +111,7 @@ Reproduce: `npm run lab` (full) or `npm run lab:quick` (20 scenarios, 1 seed). R
 
 ## The Control Room (AG Studio)
 
-<!--media:studio-->
-![AG Studio Control Room — overview](docs/media/control-room.png)
-<!--/media-->
+<!--media:studio--><!--/media-->
 
 **What it looks like.** An AG Studio dashboard in ALLOWANCE's own theme with four custom widgets — **Allowance Ring** (budget vs paid vs held, days left), **Verdict Stream** (live decisions with rule chips, PayPal-confirmed ticks and refunds; click to drill into one decision's rule trace), **Attack Lab Matrix** (attack families × unguarded/guarded heatmap) and **Chain Seal** (re-verifies the hash-chained audit log in your browser with WebCrypto) — on a four-page report: Overview, Incidents, Attack Lab, PayPal (our ledger next to PayPal's own Transaction Search record). The data updates live.
 

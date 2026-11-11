@@ -7,7 +7,7 @@
 Needs: python3 + Pillow, ffmpeg/ffprobe with libass. Every visual is cut to the length of its voice-over line, so
 picture and voice stay in sync whatever the voice's pace.
 """
-import argparse, json, math, os, shutil, subprocess, sys, wave
+import argparse, hashlib, json, math, os, shutil, subprocess, sys, wave
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 FPS = 30
@@ -31,6 +31,7 @@ ap.add_argument('--video', default=None)
 ap.add_argument('--work', default='/tmp/allowance-video')
 ap.add_argument('--preview', default='')
 ap.add_argument('--no-captions', action='store_true')
+ap.add_argument('--no-mux', action='store_true', help='only render (and cache) the sections')
 args = ap.parse_args()
 REPO = args.repo
 VIDEO = args.video or os.path.join(os.path.dirname(REPO), 'video')
@@ -167,7 +168,34 @@ def load_clip(name):
     tl['len'] = tl['tEnd'] - tl['t0']
     return tl
 
-CLIPS = {n: load_clip(n) for n in ['landing', 'errand', 'replay', 'lab', 'control']}
+MASTERS = os.path.join(VIDEO, 'clips', 'masters.json')
+
+def load_masters():
+    """Whole-tab recordings (getDisplayMedia) + named windows with marks, from video/clips/masters.json.
+    Each clip becomes a constant-frame-rate 1920×1080 source: the browser's own edge overlay is cropped away
+    (`fit`, or a per-clip `crop`), a static mouse pointer can be removed (`delogo`), and the result is letterboxed."""
+    spec = json.load(open(MASTERS))
+    out = {}
+    for name, c in spec['clips'].items():
+        tk = spec['takes'][c['take']]
+        a, b = c['from'], c['to']
+        vf = []
+        if tk.get('delogo') and not c.get('crop'):
+            x, y, w, h = tk['delogo']
+            vf.append(f'delogo=x={x}:y={y}:w={w}:h={h}')
+        x, y, w, h = c.get('crop') or tk['fit']
+        vf += [f'crop={w}:{h}:{x}:{y}', f'scale={W}:{H}:force_original_aspect_ratio=decrease:flags=lanczos',
+               f'pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=black', f'fps={FPS}', 'format=yuv420p']
+        key = hashlib.sha1(json.dumps([tk, c], sort_keys=True).encode()).hexdigest()[:8]
+        src = os.path.join(WORK, f'src-{name}-{key}.mp4')
+        if not os.path.exists(src):
+            run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', f'{a:.3f}', '-t', f'{b - a:.3f}', '-i', os.path.join(VIDEO, 'clips', tk['file']),
+                 '-vf', ','.join(vf), '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '12', src])
+        out[name] = {'src': src, 'len': b - a, 'm': {k: v - a for k, v in c['marks'].items()}}
+    return out
+
+MASTER_MODE = os.path.exists(MASTERS)
+CLIPS = load_masters() if MASTER_MODE else {n: load_clip(n) for n in ['landing', 'errand', 'replay', 'lab', 'control']}
 for n, c in CLIPS.items():
     if c:
         print(f"clip {n}: {c['len']:.1f}s marks={','.join(c['m'].keys())}")
@@ -181,8 +209,20 @@ def seg_path():
 
 ENC = ['-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', str(FPS)]
 
-def cut(clip, a, b, dur, max_speed=3.0, crop=None):
-    """A segment of exactly `dur` s from clip window [a, b]: natural speed + freeze if short, sped up if long."""
+# Frame budget: segments are whole frames, so carry the rounding over within a section instead of letting
+# every cut round up (which drifted the picture ~0.2 s behind the voice by the end).
+_acc = {'t': 0.0, 'n': 0}
+def reset_frames():
+    _acc['t'], _acc['n'] = 0.0, 0
+def nframes(dur):
+    _acc['t'] += dur
+    n = max(1, int(round(_acc['t'] * FPS)) - _acc['n'])
+    _acc['n'] += n
+    return n
+
+def cut(clip, a, b, dur, max_speed=3.0, crop=None, min_speed=1.0):
+    """A segment of exactly `dur` s from clip window [a, b]: sped up if long; if short, slowed down to
+    `min_speed` at most, then the last frame is held."""
     a = max(0.0, a)
     b = min(clip['len'], max(b, a + 0.2))
     span = b - a
@@ -192,13 +232,15 @@ def cut(clip, a, b, dur, max_speed=3.0, crop=None):
         speed = min(speed, max_speed)
         span = min(span, dur * speed)
         vf.append(f'setpts=(PTS-STARTPTS)/{speed:.4f}')
+    elif speed < 1.0 and min_speed < 1.0:
+        vf.append(f'setpts=(PTS-STARTPTS)/{max(speed, min_speed):.4f}')
     else:
         vf.append('setpts=PTS-STARTPTS')
     if crop:
         x, y, w, h = crop
         vf.append(f'crop={w}:{h}:{x}:{y},scale={W}:{H}:flags=lanczos')
-    vf.append(f'tpad=stop_mode=clone:stop_duration={dur + 1:.3f}')
-    vf.append(f'trim=duration={dur:.4f},setpts=PTS-STARTPTS,fps={FPS}')
+    vf.append(f'fps={FPS},tpad=stop_mode=clone:stop_duration={dur + 1:.3f}')
+    vf.append(f'trim=end_frame={nframes(dur)},setpts=PTS-STARTPTS')
     out = seg_path()
     run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', f'{a:.3f}', '-t', f'{span + 0.05:.3f}', '-i', clip['src'], '-vf', ','.join(vf), '-an'] + ENC + [out])
     return out
@@ -244,7 +286,7 @@ def center_text(img, y, text, f, fill, a=1.0):
 def render_card(fn, dur, local_lines):
     """fn(img, t, L) draws frame at time t (s from section start); L = [(start, dur)] of the section's lines."""
     out = seg_path()
-    n = int(round(dur * FPS))
+    n = nframes(dur)
     p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-'] + ENC + [out], stdin=subprocess.PIPE)
     for k in range(n):
         img = Image.new('RGBA', (W, H), INK + (255,))
@@ -259,6 +301,32 @@ def L_of(sid):
     ls = sec_lines(sid)
     s0 = ls[0]['start']
     return [(l['start'] - s0, l['dur']) for l in ls]
+
+# --------------------------------------------------------------------------------------------- Ken Burns on a still
+_stills = {}
+def still(clip, t):
+    p = os.path.join(WORK, f"still-{os.path.basename(clip['src'])[:-4]}-{t:.2f}.png")
+    if p not in _stills:
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', f'{t:.3f}', '-i', clip['src'], '-frames:v', '1', p])
+        _stills[p] = Image.open(p).convert('RGB')
+    return _stills[p]
+
+def box(cx, cy, w):
+    """A 16:9 view of width w centred on (cx, cy), kept inside the frame."""
+    h = w * 9 / 16
+    x0 = min(max(cx - w / 2, 0), W - w)
+    y0 = min(max(cy - h / 2, 0), H - h)
+    return (x0, y0, x0 + w, y0 + h)
+
+def kb(clip, t, dur, b0, b1, move=1.0):
+    """A slow, eased camera move across one frame of the footage (b0 → b1, boxes from box())."""
+    im = still(clip, t)
+    def fn(img, tt, L):
+        k = min(1.0, tt / max(dur * move, 1e-6))
+        k = 0.5 - 0.5 * math.cos(math.pi * k)
+        bx = tuple(p + (q - p) * k for p, q in zip(b0, b1))
+        img.paste(im.resize((W, H), Image.BICUBIC, box=bx))
+    return render_card(fn, dur, [])
 
 def card_coldopen(img, t, L):
     draw_text(img, (110, 90), 'ATTACK LAB  ·  UNGUARDED AGENT  ·  SIMULATED MONEY', font('Medium', 22, True), MUTED, alpha_in(t, 0.0))
@@ -389,11 +457,69 @@ def sec_dur(sid):
 def clip_or_none(name):
     return CLIPS.get(name)
 
+def build_master(s):
+    """The edit for the two whole-tab recordings (masters.json). Coordinates are in the 1920×1080 source frame."""
+    sid = s['id']
+    ls = sec_lines(sid)
+    D = sec_dur(sid)
+    sl = [l['slot'] for l in ls]
+    C = CLIPS
+    if sid == 's03':
+        st = C['landing']['m']['loaded'] + 0.15
+        return [cut(C['landing'], st, st + D, D)]
+    if sid == 's04':  # the allowance: created live, then a slow camera over its limits and the PayPal wallet
+        e = C['errand']; m = e['m']; t = m['still']
+        b_card, b_cap, b_ask, b_wal = box(560, 560, 1100), box(548, 650, 720), box(548, 690, 620), box(548, 735, 580)
+        return [cut(e, m['create'] - 0.2, m['live'] + 0.9, sl[0]),
+                kb(e, t, sl[1], b_card, b_cap),
+                kb(e, t, sl[2], b_cap, b_ask),
+                kb(e, t, sl[3], b_ask, b_wal),
+                kb(e, t, sl[4], b_wal, box(960, 540, W), move=0.8)]
+    if sid == 's05':
+        e = C['errand']; m = e['m']; lv = C['live']
+        return [cut(e, m['type'] - 0.2, m['contract-click'] + 0.2, sl[0]),
+                cut(e, m['contract'] - 0.3, m['contract'] + 2.8, sl[1]),
+                cut(e, m['confirmed'] - 1.1, m['confirmed'] + 0.6, sl[2]),
+                cut(lv, lv['m']['send'] - 0.85, lv['m']['send'] + 1.9, sl[3])]
+    if sid == 's06':  # replay (allow, step-up → approved), then the live run's real BLOCK
+        r = C['replay']; m = r['m']; lv = C['live']; lm = lv['m']
+        z = (96, 54, 1728, 972)
+        return [cut(r, m['lane'], m['allow'] - 0.5, sl[0], min_speed=0.6),
+                cut(r, m['allow'] - 0.5, m['stepup'] - 0.1, sl[1], min_speed=0.5),
+                cut(r, m['stepup'] - 0.1, m['approved'] + 1.0, sl[2]),
+                cut(lv, lm['block'] - 2.8, lm['block'] - 0.01, sl[3], min_speed=0.5, crop=z),
+                # hold on the red "Blocked · $135.00 · limit $60.00" panel, before the page scrolls on
+                cut(lv, lm['block'] - 0.01, lm['block'] + 0.75, sl[4], crop=(160, 90, 1600, 900))]
+    if sid == 's08':  # live undo → a real PayPal refund
+        lv = C['live']; lm = lv['m']
+        return [cut(lv, lm['undo-click'] - 0.9, lm['refunded'] + 1.5, D, min_speed=0.85, crop=(720, 120, 1200, 675))]
+    if sid == 's09':
+        lab = C['lab']; m = lab['m']
+        b_all, b_mid, b_red, b_green = box(960, 540, W), box(960, 500, 1500), box(640, 440, 800), box(1262, 440, 800)
+        return [cut(lab, m['start'], m['top'], sl[0]),
+                kb(lab, m['top'], sl[1], b_all, b_mid),
+                kb(lab, m['top'], sl[2], b_mid, b_red),
+                kb(lab, m['top'], sl[3], b_red, b_green, move=0.45),
+                kb(lab, m['bottom'], sl[4], box(540, 530, 960), box(540, 520, 720))]
+    if sid == 's10':
+        c = C['control']; m = c['m']; an = C['answer']; am = an['m']
+        a0 = am['answer']
+        return [cut(c, m['overview'] - 0.2, m['overview'] - 0.2 + sl[0], sl[0]),
+                cut(c, m['edit'] - 0.2, m['ask'] - 0.5, sl[1], min_speed=0.5),
+                cut(c, m['ask'] - 0.4, m['ask'] + 2.9, sl[2], crop=(0, 480, 960, 540)),
+                cut(an, a0, a0 + sl[3], sl[3]),
+                cut(an, a0 + sl[3], am['answer-end'], sl[4])]
+    return None
+
 def build_section(s):
     sid, vis = s['id'], s['visual']
     ls = sec_lines(sid)
     D = sec_dur(sid)
     L = L_of(sid)
+    if MASTER_MODE:
+        segs = build_master(s)
+        if segs:
+            return segs
     if sid == 's01':
         return [render_card(card_coldopen, D, L)]
     if sid == 's02':
@@ -485,15 +611,37 @@ def build_section(s):
     return [render_card(lambda img, t, L_: center_text(img, H // 2, f"[{s['name']} — footage missing]", font('Medium', 48), MUTED), D, L)]
 
 preview = set(filter(None, args.preview.split(',')))
+
+# Each section is rendered once and cached in WORK, keyed by its timing, the footage spec and the code that
+# draws it — so a long edit can be built across several runs (--no-mux) and re-muxed quickly.
+import inspect
+_CODE = ''.join(inspect.getsource(f) for f in (build_master, build_section, cut, kb, render_card)) + \
+        ''.join(inspect.getsource(v) for k, v in sorted(globals().items()) if k.startswith('card_') and callable(v))
+def section_file(s):
+    key = json.dumps([s, [round(l['slot'], 3) for l in sec_lines(s['id'])], args.voice,
+                      open(MASTERS).read() if MASTER_MODE else '', _CODE])
+    return os.path.join(WORK, f"sec-{s['id']}-{hashlib.sha1(key.encode()).hexdigest()[:10]}.mp4")
+
 segments = []
 # lead-in black
 segments.append(render_card(lambda img, t, L_: None, LEAD, []))
 for s in script['sections']:
     if preview and s['id'] not in preview:
         continue
-    segs = build_section(s)
-    segments.extend(segs)
-    print(f"✓ {s['id']} {s['name']}: {len(segs)} segment(s), {sec_dur(s['id']):.2f}s")
+    p = section_file(s)
+    if os.path.exists(p):
+        print(f"· {s['id']} {s['name']}: cached")
+    else:
+        reset_frames()
+        segs = build_section(s)
+        lst = p + '.txt'
+        with open(lst, 'w') as fh:
+            fh.writelines(f"file '{q}'\n" for q in segs)
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', lst, '-c', 'copy', p])
+        print(f"✓ {s['id']} {s['name']}: {len(segs)} segment(s), {sec_dur(s['id']):.2f}s")
+    segments.append(p)
+if args.no_mux:
+    raise SystemExit(0)
 
 # --------------------------------------------------------------------------------------------- audio
 voice = os.path.join(WORK, 'voice.wav')
@@ -556,9 +704,16 @@ if not args.no_captions:
     for fn in ('Geist-Regular.ttf', 'Geist-Medium.ttf'):
         shutil.copy(os.path.join(FONT_DIR, fn), fonts_tmp)
     vf += f",subtitles={ass}:fontsdir={fonts_tmp}"
+# two-pass loudness: measure the voice-over, then normalise linearly to −14 LUFS / −1.5 dBTP
+ST = 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo'  # measure what ships: the stereo mix
+meas = subprocess.run(['ffmpeg', '-hide_banner', '-i', voice, '-af', f'{ST},loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'],
+                      capture_output=True, text=True).stderr
+mj = json.loads(meas[meas.rindex('{'):meas.rindex('}') + 1])
+ln = (f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={mj['input_i']}:measured_TP={mj['input_tp']}:measured_LRA={mj['input_lra']}"
+      f":measured_thresh={mj['input_thresh']}:offset={mj['target_offset']}:linear=true")
 run(['ffmpeg', '-y', '-loglevel', 'error', '-i', pic, '-i', voice,
-     '-filter_complex', f'[0:v]{vf}[v];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a]',
-     '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p', '-r', str(FPS),
+     '-filter_complex', f'[0:v]{vf}[v];[1:a]{ST},{ln},{ST}[a]',
+     '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-r', str(FPS),
      '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', final])
 d = float(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', final]))
 print(f"\n→ {final}  ({int(d // 60)}:{d % 60:04.1f}, {os.path.getsize(final) / 1e6:.1f} MB)")

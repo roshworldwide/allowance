@@ -2,6 +2,7 @@
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
 import { SESSION_COOKIE, clientIp, liveAccess, rateLimit } from '@/lib/security/access';
+import { readJsonObject } from '@/lib/security/body';
 import { latestMandateForSession } from '@/lib/store/repo';
 import { ctx } from './context';
 
@@ -24,14 +25,10 @@ export function sessionMandate(live: Live) {
   return latestMandateForSession(ctx().db, live.sessionId);
 }
 
+/** The JSON body as an object, or null when it is too large (never read past `maxBytes`), invalid or not an object. */
 export async function readJson<T>(req: Request, maxBytes = 16_000): Promise<T | null> {
-  const text = await req.text();
-  if (text.length > maxBytes) return null;
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    return null;
-  }
+  const r = await readJsonObject(req, maxBytes);
+  return r.tooLarge ? null : (r.value as T | null);
 }
 
 /** A Server-Sent Events response fed by `start(send)`; closes when start resolves or the client leaves. */

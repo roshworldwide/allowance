@@ -6,6 +6,7 @@
 import type { NextRequest } from 'next/server';
 import { MAX_BODY_BYTES, MAX_OUTPUT_TOKENS, OPENAI_RESPONSES_URL, allowedModels, openAiKey } from '@/lib/ai/config';
 import { SESSION_COOKIE, aiBudget, clientIp, estimateUsd, liveAccess, markQuotaExhausted, rateLimit, recordSpend } from '@/lib/security/access';
+import { readBodyText } from '@/lib/security/body';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,8 +52,9 @@ export async function POST(request: NextRequest) {
   const models = allowedModels();
   if (!apiKey || models.length === 0) return error(503, 'The Control Room assistant is not configured (AG_STUDIO_OPENAI_API_KEY and OPENAI_MODELS).');
 
-  const raw = await request.text();
-  if (raw.length > MAX_BODY_BYTES) return error(413, 'Conversation too long. Start a new chat.');
+  const read = await readBodyText(request, MAX_BODY_BYTES);
+  if (!read.ok) return error(413, 'Conversation too long. Start a new chat.');
+  const raw = read.text;
   let body: Record<string, unknown>;
   try {
     const parsed: unknown = JSON.parse(raw);

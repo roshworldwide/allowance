@@ -4,20 +4,23 @@ import { NextResponse } from 'next/server';
 import { ctx, emit } from '@/lib/allowance/context';
 import { pollApprovals } from '@/lib/allowance/executor';
 import { verifyWebhook, type WebhookEvent } from '@/lib/paypal/webhooks';
+import { clientIp, rateLimit } from '@/lib/security/access';
+import { readJsonObject } from '@/lib/security/body';
 import { markPayPalConfirmed, setMandateStatus } from '@/lib/store/repo';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  // Public endpoint: each request costs a PayPal verification call and a row, so it is rate-limited
+  // per IP (far above PayPal's own delivery rate) and never reads more than 200 KB.
+  const rl = rateLimit('webhook', clientIp(req));
+  if (!rl.ok) return NextResponse.json({ ok: false }, { status: 429, headers: { 'Retry-After': String(rl.retryAfterSec) } });
   const webhookId = process.env.PAYPAL_WEBHOOK_ID;
-  const raw = await req.text();
-  if (!webhookId || raw.length > 200_000) return NextResponse.json({ ok: false }, { status: 400 });
-  let event: WebhookEvent;
-  try {
-    event = JSON.parse(raw) as WebhookEvent;
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 400 });
-  }
+  if (!webhookId) return NextResponse.json({ ok: false }, { status: 400 });
+  const body = await readJsonObject(req, 200_000);
+  if (body.tooLarge) return NextResponse.json({ ok: false }, { status: 413 });
+  if (!body.value || typeof body.value.id !== 'string' || typeof body.value.event_type !== 'string') return NextResponse.json({ ok: false }, { status: 400 });
+  const event = body.value as unknown as WebhookEvent;
   const { db, paypal, chain } = ctx();
   let verified = false;
   try {

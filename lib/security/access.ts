@@ -65,7 +65,9 @@ const LIMITS: Record<string, { capacity: number; perMinute: number }> = {
   ai: { capacity: 30, perMinute: 15 },
   allowance: { capacity: 30, perMinute: 30 },
   auth: { capacity: 5, perMinute: 3 },
+  webhook: { capacity: 60, perMinute: 60 },
 };
+const MAX_BUCKETS = 10_000;
 
 export function rateLimit(name: keyof typeof LIMITS, ip: string, now = Date.now()): { ok: boolean; retryAfterSec: number } {
   const l = LIMITS[name]!;
@@ -73,14 +75,21 @@ export function rateLimit(name: keyof typeof LIMITS, ip: string, now = Date.now(
   const b = buckets.get(k) ?? { tokens: l.capacity, at: now };
   b.tokens = Math.min(l.capacity, b.tokens + ((now - b.at) / 60_000) * l.perMinute);
   b.at = now;
-  if (buckets.size > 10_000) buckets.clear();
-  if (b.tokens < 1) {
-    buckets.set(k, b);
-    return { ok: false, retryAfterSec: Math.ceil(((1 - b.tokens) / l.perMinute) * 60) };
-  }
-  b.tokens -= 1;
+  const ok = b.tokens >= 1;
+  if (ok) b.tokens -= 1;
   buckets.set(k, b);
-  return { ok: true, retryAfterSec: 0 };
+  if (buckets.size > MAX_BUCKETS) evictBuckets(now);
+  return ok ? { ok: true, retryAfterSec: 0 } : { ok: false, retryAfterSec: Math.ceil(((1 - b.tokens) / l.perMinute) * 60) };
+}
+
+/** Over the cap, forget the clients with the most allowance left: a throttled client is never the one forgotten. */
+function evictBuckets(now: number) {
+  const fill = (k: string, b: Bucket) => {
+    const l = LIMITS[k.slice(0, k.indexOf(':'))]!;
+    return Math.min(l.capacity, b.tokens + ((now - b.at) / 60_000) * l.perMinute) / l.capacity;
+  };
+  const fullest = [...buckets].map(([k, b]) => [k, fill(k, b)] as const).sort((x, y) => y[1] - x[1]);
+  for (const [k] of fullest.slice(0, buckets.size - Math.floor(MAX_BUCKETS * 0.9))) buckets.delete(k);
 }
 
 export function clientIp(req: Request): string {

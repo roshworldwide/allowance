@@ -95,9 +95,18 @@ export function payPalExecutor(mandateId: string): MoneyExecutor {
 
 /**
  * Captures approved step-ups. Runs on an interval and whenever the approval page reports back, so a
- * capture never depends on the phone's redirect landing.
+ * capture never depends on the phone's redirect landing. One poll at a time: the interval, the phone
+ * page and a webhook asking together share the poll in flight (one PayPal capture call, not one each).
  */
-export async function pollApprovals(): Promise<void> {
+export function pollApprovals(): Promise<void> {
+  const g = globalThis as unknown as { __allowancePoll?: Promise<void> };
+  g.__allowancePoll ??= pollApprovalsOnce().finally(() => {
+    g.__allowancePoll = undefined;
+  });
+  return g.__allowancePoll;
+}
+
+async function pollApprovalsOnce(): Promise<void> {
   const { db, paypal, ledger } = ctx();
   for (const a of pendingApprovals(db)) {
     if (a.mode !== 'PAYPAL' || !a.order_id) continue;

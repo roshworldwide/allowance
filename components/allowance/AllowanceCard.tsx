@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { Button, usd } from '@/components/ui';
+import { istDayMonth } from '@/lib/time';
 import { TitaniumCard } from './TitaniumCard';
 
 export type PublicAllowance = {
@@ -50,7 +51,7 @@ export function AllowanceCard({
     );
   }
   const active = allowance.status === 'ACTIVE';
-  const ends = new Date(allowance.periodEnd).toLocaleDateString([], { day: 'numeric', month: 'short' });
+  const ends = istDayMonth(allowance.periodEnd);
   const tone = active ? 'allow' : allowance.status === 'REVOKED' ? 'block' : 'stepup';
   const spent = allowance.budgetCents ? (allowance.committedCents + allowance.reservedCents) / allowance.budgetCents : 0;
   return (

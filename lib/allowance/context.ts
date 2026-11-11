@@ -57,6 +57,9 @@ export function emit(e: Omit<LiveEvent, 'at'>) {
  * by `npm run spike:vault`.
  */
 function seedDemoVault(db: Db) {
+  // E2E runs in the same folder as the owner's dev setup; never let them inherit the owner's saved
+  // wallet (they assert the unlinked "PENDING LINK" state and must not touch a real sandbox token).
+  if (process.env.E2E === '1') return;
   const fromEnv = process.env.DEMO_VAULT_TOKEN_ID;
   if (fromEnv) {
     kv.set(db, 'demo_vault_token', fromEnv);

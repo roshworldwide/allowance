@@ -5,6 +5,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { FirewallLane, NowCaption } from '@/components/lane/FirewallLane';
 import { usd } from '@/components/ui';
 import { VerdictCard } from '@/components/verdict/VerdictCard';
+import { istStamp } from '@/lib/time';
 import { errandReducer, initialErrand, type Step } from './state';
 
 type ReplayEvent = { t: number; source: 'run' | 'bus'; type: string; data: unknown };
@@ -57,7 +58,7 @@ export function ReplayPlayer({ replay }: { replay: ReplayFile }) {
     return () => timers.current.forEach(clearTimeout);
   }, [timeline, run]);
 
-  const recorded = new Date(replay.meta.recordedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const recorded = istStamp(replay.meta.recordedAt);
   const cards = [...state.order].reverse().map((id) => state.cards[id]!).filter((c) => c?.decision);
   const committed = cards.filter((c) => c.purchase?.status === 'COMPLETED' && c.refund?.status !== 'COMPLETED').reduce((s, c) => s + c.decision.amountCents, 0);
   const compressed = timeline.some((e) => e.compressed);

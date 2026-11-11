@@ -521,6 +521,17 @@
     "status": "COMPLETED",
     "amountCents": 2398
    }
+  },
+  {
+   "t": 351859,
+   "source": "bus",
+   "type": "refund",
+   "data": {
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "refundId": "38F6150592101081L",
+    "status": "COMPLETED",
+    "amountCents": 4800
+   }
   }
  ]
 }

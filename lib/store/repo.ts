@@ -69,11 +69,17 @@ export function updateMandatePolicy(db: Db, id: string, p: Pick<Mandate, 'budget
 }
 
 // --- Contracts --------------------------------------------------------------------------------------
+// Line ids are per contract ("L1", "L2", …) but contract_lines.id is a global primary key, so rows are
+// stored as "<contractId>:<lineId>" and the prefix is stripped on read. Rows written before this change
+// (plain "L1") still read back unchanged.
+const lineRowId = (contractId: string, lineId: string) => `${contractId}:${lineId}`;
+const lineIdFromRow = (contractId: string, rowId: string) => (rowId.startsWith(`${contractId}:`) ? rowId.slice(contractId.length + 1) : rowId);
+
 export function insertContract(db: Db, c: TaskContract, taskText: string) {
   db.transaction(() => {
     db.prepare('INSERT INTO task_contracts (id, mandate_id, task_text, confirmed_at, created_at) VALUES (?,?,?,?,?)').run(c.id, c.mandateId, taskText, c.confirmedAt, now());
     const ins = db.prepare('INSERT INTO contract_lines (id, contract_id, category, product_type, description, max_qty, max_unit_cents) VALUES (?,?,?,?,?,?,?)');
-    for (const l of c.lines) ins.run(l.id, c.id, l.category, l.productType, l.description, l.maxQty, l.maxUnitCents);
+    for (const l of c.lines) ins.run(lineRowId(c.id, l.id), c.id, l.category, l.productType, l.description, l.maxQty, l.maxUnitCents);
   })();
 }
 
@@ -83,7 +89,7 @@ export function getContract(db: Db, id: string): (TaskContract & { taskText: str
   const lines = db
     .prepare<[string], { id: string; category: string; product_type: string; description: string; max_qty: number; max_unit_cents: number }>('SELECT * FROM contract_lines WHERE contract_id = ? ORDER BY id')
     .all(id)
-    .map((l) => ({ id: l.id, category: l.category, productType: l.product_type, description: l.description, maxQty: l.max_qty, maxUnitCents: l.max_unit_cents }));
+    .map((l) => ({ id: lineIdFromRow(id, l.id), category: l.category, productType: l.product_type, description: l.description, maxQty: l.max_qty, maxUnitCents: l.max_unit_cents }));
   return { id: c.id, mandateId: c.mandate_id, confirmedAt: c.confirmed_at, lines, taskText: c.task_text };
 }
 

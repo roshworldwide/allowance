@@ -111,7 +111,10 @@ Reproduce: `npm run lab` (full) or `npm run lab:quick` (20 scenarios, 1 seed). R
 
 ## The Control Room (AG Studio)
 
-<!--media:studio--><!--/media-->
+<!--media:studio-->
+![AG Studio Control Room — overview](docs/media/control-room.png)
+![AG Studio Control Room — PayPal ledger next to ours](docs/media/control-room-paypal.png)
+<!--/media-->
 
 **What it looks like.** An AG Studio dashboard in ALLOWANCE's own theme with four custom widgets — **Allowance Ring** (budget vs paid vs held, days left), **Verdict Stream** (live decisions with rule chips, PayPal-confirmed ticks and refunds; click to drill into one decision's rule trace), **Attack Lab Matrix** (attack families × unguarded/guarded heatmap) and **Chain Seal** (re-verifies the hash-chained audit log in your browser with WebCrypto) — on a four-page report: Overview, Incidents, Attack Lab, PayPal (our ledger next to PayPal's own Transaction Search record). The data updates live.
 

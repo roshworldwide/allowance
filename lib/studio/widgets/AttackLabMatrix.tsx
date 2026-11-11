@@ -104,7 +104,8 @@ export function AttackLabMatrix({ widgetApi, dataMapping, format }: AgWidgetPara
   );
 
   return (
-    <div style={s.root}>
+    // Scrolls when the widget is short; focusable so keyboard users can scroll it too.
+    <div style={s.root} tabIndex={0} role="region" aria-label="Attack success rate by family">
       <table style={s.table}>
         <caption style={s.caption}>Attack success rate: share of agent runs in which the attack moved money</caption>
         <thead>

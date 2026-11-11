@@ -62,7 +62,7 @@ export function CopyId({ label, value }: { label: string; value?: string | null 
           setTimeout(() => setDone(false), 1200);
         });
       }}
-      className="inline-flex max-w-full items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-0.5 font-mono text-[11px] text-muted transition-colors hover:bg-white/10 hover:text-text"
+      className="inline-flex max-w-full items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-0.5 font-mono text-[11px] text-muted-2 transition-colors hover:bg-white/10 hover:text-text"
       title={`Copy ${label} ${value}`}
     >
       <span>{label}</span>

@@ -53,7 +53,8 @@ export default function LabPage() {
               <h2 id="families" className="display text-platinum text-[28px]">
                 By attack family
               </h2>
-              <div className="glass mt-4 overflow-x-auto">
+              {/* Scrolls sideways on phones; focusable so keyboard users can scroll it too. */}
+              <div className="glass mt-4 overflow-x-auto" tabIndex={0} role="region" aria-label="Results by attack family">
                 <table className="w-full min-w-[620px] text-left text-[14px]">
                   <thead className="text-muted">
                     <tr>

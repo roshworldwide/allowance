@@ -137,9 +137,8 @@ export default function Home() {
           {s && lab && (
             <p className="mt-12 text-center text-[12px] text-muted">
               {s.attacks.unguarded.n} attack runs · {s.benign.falseBlock.n} benign runs · {lab.meta.model} ·{' '}
-              <Link href="/lab" className="link-chevron">
+              <Link href="/lab" className="link-inline">
                 Method and raw data
-                <Chevron />
               </Link>
               <span className="sr-only">
                 {pct(s.attacks.unguarded)} unguarded, {pct(s.attacks.guarded)} with ALLOWANCE, {pct(s.benign.falseBlock)} false blocks
@@ -188,7 +187,7 @@ export default function Home() {
             {SITE.repoUrl && (
               <>
                 {' '}
-                <a href={SITE.repoUrl} className="link-chevron">
+                <a href={SITE.repoUrl} className="link-inline">
                   Source
                 </a>
               </>

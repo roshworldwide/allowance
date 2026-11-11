@@ -63,7 +63,8 @@ function SealBody({ rows, keys, showLast, showHashes }: { rows: Record<string, u
   const brokenAt = check && !check.ok ? check.brokenAt : undefined;
 
   return (
-    <div style={s.root}>
+    // Scrolls as the event list grows; focusable so keyboard users can scroll it too.
+    <div style={s.root} tabIndex={0} role="region" aria-label="Audit chain">
       <Seal check={check} total={rows.length} />
       {latest.length > 0 && (
         <ol style={s.list} aria-label="Latest audit events, newest first">

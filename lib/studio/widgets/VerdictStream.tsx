@@ -10,7 +10,7 @@
 // without that context the widget sets the property itself.
 // Docs: https://www.ag-grid.com/studio/archive/3.1.0/react/drill-through/
 
-import { use, type CSSProperties } from 'react';
+import { use, useId, type CSSProperties } from 'react';
 import type { AgDataMappingDefinition, AgFilter, AgWidgetField, AgWidgetParams } from 'ag-studio';
 import { AgIncompleteDataMappingOverlay, AgNoDataOverlay } from 'ag-studio-react';
 import type { ControlRoomContext, VerdictStreamDefinition, VerdictStreamWidget } from '../registry';
@@ -22,6 +22,7 @@ const MAX_ROWS = 200;
 type Slot = keyof VerdictStreamWidget['dataMapping'];
 
 export function VerdictStream({ widgetApi, dataMapping, format, api, context }: AgWidgetParams<VerdictStreamWidget>) {
+  const hintId = useId(); // a hook: stays above the early returns
   const style = { ...DEFAULTS, ...format?.style };
   const field = (slot: Slot) => dataMapping[slot]?.[0];
   const idField = field('id');
@@ -73,6 +74,13 @@ export function VerdictStream({ widgetApi, dataMapping, format, api, context }: 
           </button>
         </p>
       )}
+      {/* A row's accessible name is its visible text (WCAG 2.5.3); what a click does is its description. */}
+      <span id={`${hintId}-one`} hidden>
+        Show only this decision and its rule trace
+      </span>
+      <span id={`${hintId}-all`} hidden>
+        Show all decisions
+      </span>
       <ol style={s.list} aria-label="Decisions, newest first">
         {rows.map((row) => {
           const id = text(idField, row);
@@ -104,7 +112,7 @@ export function VerdictStream({ widgetApi, dataMapping, format, api, context }: 
           return (
             <li key={id} style={{ ...s.row, borderLeftColor: accent, ...(selected ? s.selected : {}) }} aria-current={selected || undefined}>
               {style.clickToDrill ? (
-                <button type="button" style={s.button} onClick={() => drillTo(selected ? null : id)} aria-label={`${String(verdict)} ${item || id} ${amount}. ${selected ? 'Show all decisions' : 'Show only this decision and its rule trace'}`}>
+                <button type="button" style={s.button} onClick={() => drillTo(selected ? null : id)} aria-describedby={`${hintId}-${selected ? 'all' : 'one'}`}>
                   {body}
                 </button>
               ) : (

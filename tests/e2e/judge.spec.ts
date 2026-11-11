@@ -46,6 +46,8 @@ test('Attack Lab page renders (results or the honest empty state)', async ({ pag
   await page.goto('/lab');
   await expect(page.getByRole('heading', { name: 'Attack Lab' })).toBeVisible();
   await noSeriousA11y(page);
+  await page.setViewportSize({ width: 390, height: 844 }); // phone: the family table scrolls sideways
+  await noSeriousA11y(page);
 });
 
 test('Control Room loads AG Studio with the Allowance Ring', async ({ page }) => {

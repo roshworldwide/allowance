@@ -13,6 +13,7 @@
   --al-line: #2c2c2e; /* hairlines */
   --al-text: #f5f5f7;
   --al-muted: #86868b;
+  --al-muted-2: #a1a1a6; /* muted text on raised fills (chips): #86868b drops below 4.5:1 there */
   --al-accent: #2997ff; /* link blue on dark */
   --al-accent-fill: #0071e3; /* button blue */
   --al-allow: #30d158;
@@ -32,6 +33,7 @@
   --color-line: var(--al-line);
   --color-text: var(--al-text);
   --color-muted: var(--al-muted);
+  --color-muted-2: var(--al-muted-2);
   --color-accent: var(--al-accent);
   --color-allow: var(--al-allow);
   --color-stepup: var(--al-stepup);
@@ -161,6 +163,12 @@ body {
   }
   .link-chevron:hover {
     text-decoration: underline;
+  }
+  /* A link inside a sentence: underlined, since blue alone is too close to the grey text around it. */
+  .link-inline {
+    color: var(--al-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .hairline {

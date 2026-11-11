@@ -1,0 +1,106 @@
+{
+  "id": "7T860626PF0050348",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {}
+  },
+  "purchase_units": [
+    {
+      "reference_id": "spike-1794340626281",
+      "amount": {
+        "currency_code": "USD",
+        "value": "1.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "1.00"
+          },
+          "shipping": {
+            "currency_code": "USD",
+            "value": "0.00"
+          }
+        }
+      },
+      "description": "ALLOWANCE spike S1 test charge",
+      "custom_id": "spike-mandate",
+      "invoice_id": "spike-1794340626281",
+      "items": [
+        {
+          "name": "ALLOWANCE test charge",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "1.00"
+          },
+          "quantity": "1",
+          "sku": "SPIKE-001",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "payments": {
+        "captures": [
+          {
+            "id": "3GU81833PG7577903",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "1.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "1.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.52"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "0.48"
+              }
+            },
+            "invoice_id": "spike-1794340626281",
+            "custom_id": "spike-mandate",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/3GU81833PG7577903",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/3GU81833PG7577903/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/7T860626PF0050348",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-11-10T19:57:08Z",
+            "update_time": "2026-11-10T19:57:08Z"
+          }
+        ]
+      }
+    }
+  ],
+  "create_time": "2026-11-10T19:57:07Z",
+  "update_time": "2026-11-10T19:57:08Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/7T860626PF0050348",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

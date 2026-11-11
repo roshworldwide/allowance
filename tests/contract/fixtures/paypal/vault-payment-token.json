@@ -1,0 +1,31 @@
+{
+  "id": "tok_…274m",
+  "customer": {
+    "id": "tok_…KBOn"
+  },
+  "payment_source": {
+    "paypal": {
+      "description": "ALLOWANCE — agent allowance (spike S1)",
+      "usage_pattern": "IMMEDIATE",
+      "permit_multiple_payment_tokens": false,
+      "usage_type": "MERCHANT",
+      "customer_type": "CONSUMER"
+    }
+  },
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v3/vault/payment-tokens/tok_…274m",
+      "rel": "self",
+      "method": "GET",
+      "encType": "application/json"
+    },
+    {
+      "href": "https://api.sandbox.paypal.com/v3/vault/payment-tokens/tok_…274m",
+      "rel": "delete",
+      "method": "DELETE",
+      "encType": "application/json"
+    }
+  ],
+  "create_time": "2026-11-10T19:57:05.877Z",
+  "update_time": "2026-11-10T19:57:05.877Z"
+}

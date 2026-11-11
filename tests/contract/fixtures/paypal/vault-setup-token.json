@@ -1,0 +1,30 @@
+{
+  "id": "tok_…850K",
+  "customer": {
+    "id": "tok_…KBOn"
+  },
+  "status": "PAYER_ACTION_REQUIRED",
+  "payment_source": {
+    "paypal": {
+      "description": "ALLOWANCE — agent allowance (spike S1)",
+      "usage_pattern": "IMMEDIATE",
+      "permit_multiple_payment_tokens": false,
+      "usage_type": "MERCHANT",
+      "customer_type": "CONSUMER"
+    }
+  },
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v3/vault/setup-tokens/tok_…850K",
+      "rel": "self",
+      "method": "GET",
+      "encType": "application/json"
+    },
+    {
+      "href": "https://www.sandbox.paypal.com/agreements/approve?approval_session_id=tok_…850K",
+      "rel": "approve",
+      "method": "GET",
+      "encType": "application/json"
+    }
+  ]
+}

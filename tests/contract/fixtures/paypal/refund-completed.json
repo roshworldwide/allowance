@@ -1,0 +1,25 @@
+{
+  "id": "2AM57790CY497704A",
+  "amount": {
+    "currency_code": "USD",
+    "value": "1.00"
+  },
+  "note_to_payer": "Undone in ALLOWANCE (spike S1)",
+  "invoice_id": "spike-1794340626281",
+  "custom_id": "spike-mandate",
+  "status": "COMPLETED",
+  "create_time": "2026-11-10T11:57:12-08:00",
+  "update_time": "2026-11-10T11:57:12-08:00",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/payments/refunds/2AM57790CY497704A",
+      "rel": "self",
+      "method": "GET"
+    },
+    {
+      "href": "https://api.sandbox.paypal.com/v2/payments/captures/3GU81833PG7577903",
+      "rel": "up",
+      "method": "GET"
+    }
+  ]
+}

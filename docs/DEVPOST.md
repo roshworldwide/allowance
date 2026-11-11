@@ -53,7 +53,7 @@ paypal, paypal-agent-toolkit, paypal-vault, paypal-orders-api, openai, ag-grid, 
 - Everything is PayPal **sandbox only**; merchants are simulated.
 
 ## Tools used (disclosure)
-Claude Code (coding assistant) and Claude (UI design and video editing help); OpenAI models for the agent, task parsing, explanations and the Control Room agents; ElevenLabs (Eleven v4, "Lohi" library voice) for the demo video's AI voice-over, reading our own script; footage is the live app; PayPal REST APIs and @paypal/agent-toolkit (sandbox); AG Studio (trial licence); Next.js and the libraries listed in the README.
+Claude Code (coding assistant) and Claude (UI design and video editing help); OpenAI models for the agent, task parsing, explanations and the Control Room agents; ElevenLabs (Eleven v4, "Lohi" library voice) for the demo video's AI voice-over, reading our own script; footage is the live app (4K tab captures); the background music is an original score generated in code; PayPal REST APIs and @paypal/agent-toolkit (sandbox); AG Studio (trial licence); Next.js and the libraries listed in the README.
 
 ## Sponsor tools
 AG Grid — AG Studio (Best Use of AG Studio).

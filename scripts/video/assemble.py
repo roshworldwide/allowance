@@ -108,7 +108,8 @@ _split_cache = {}
 def line_audio(sid, i):
     """The voice line as a clean 48 kHz mono WAV, with leading/trailing silence trimmed so the script's own
     pauses set the rhythm. Accepts one file per line (s06-04.wav/.mp3, any TTS) or one file per section (s06.mp3)."""
-    src = find_audio(f'{sid}-{i + 1:02d}')
+    stem = next(s_ for s_ in script['sections'] if s_['id'] == sid)['lines'][i].get('audio') or f'{sid}-{i + 1:02d}'
+    src = find_audio(stem)
     if not src:
         if find_audio(sid):
             if sid not in _split_cache:
@@ -116,7 +117,7 @@ def line_audio(sid, i):
                 _split_cache[sid] = split_section(sid, n)
             return _split_cache[sid][i]
         raise SystemExit(f'missing voice line {sid}-{i + 1:02d} (or section file {sid}.mp3) in {vo_dir}')
-    dst = os.path.join(WORK, f'vo-{args.voice}-{sid}-{i + 1:02d}.wav')
+    dst = os.path.join(WORK, f'vo-{args.voice}-{stem}.wav')
     if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
         run(['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-af', TRIM, '-ar', '48000', '-ac', '1', dst])
     return dst
@@ -356,6 +357,9 @@ def card_problem(img, t, L):
         (L[1][0], 'Today, you give them your wallet.', None),
         (L[2][0], 'All of it.', None),
         (L[3][0], 'Every limit lives in a prompt.', 'A prompt can be talked out of anything.'),
+    ] if len(L) == 4 else [
+        (L[0][0], 'Today, you give them your wallet.', None),
+        (L[1][0], 'Every limit lives in a prompt.', 'A prompt can be talked out of anything.'),
     ]
     for k, (st, text, sub) in enumerate(beats):
         end = beats[k + 1][0] if k + 1 < len(beats) else 1e9

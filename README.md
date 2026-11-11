@@ -160,7 +160,7 @@ Env vars are documented in [`env.example`](env.example). The app refuses to star
 ## Tools disclosure
 
 - **Claude Code** (Anthropic) was used as a coding assistant to build this project, and Claude (Cowork) helped design the UI and edit the demo video.
-- **Demo video voice-over**: AI-generated with **ElevenLabs** (Eleven v4, the "Lohi" voice from the ElevenLabs Voice Library) reading our own script (`scripts/video/`). The footage is the live app, filmed by `npm run video:film`.
+- **Demo video**: the voice-over is AI-generated with **ElevenLabs** (Eleven v4, the "Lohi" voice from the ElevenLabs Voice Library) reading our own script (`scripts/video/script.json`). The footage is the live app on Render, recorded in Chrome as 4K tab captures; the edit (`scripts/video/assemble4k.py`) adds camera moves and title cards, and the quiet background music is an original score generated in code (`scripts/video/score.py`).
 - **OpenAI** models: the shopping agent (Responses API with function calling), task parsing (structured outputs), one-sentence verdict explanations, and the Control Room's agent team (via AG Studio's OpenAI adapter and our server proxy). Model ids are in `lab/results/latest.json` and `OPENAI_MODELS`.
 - **PayPal**: REST APIs (Vault v3 payment tokens, Orders v2, Payments/Refunds, Webhooks, Transaction Search) and **@paypal/agent-toolkit** 1.11.0 — sandbox only.
 - **AG Studio** 3.1.0 (AG Grid) on its trial licence; AG Grid/Charts are bundled by Studio.

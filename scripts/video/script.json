@@ -35,24 +35,16 @@
       "visual": "card-problem",
       "lines": [
         {
-          "tts": "AI agents are learning to shop.",
-          "caption": "AI agents are learning to shop.",
-          "pause": 0.35
-        },
-        {
           "tts": "And today, the only way to let one pay... is to hand it your wallet.",
           "caption": "And today, the only way to let one pay is to hand it your wallet.",
-          "pause": 0.75
-        },
-        {
-          "tts": "All of it.",
-          "caption": "All of it.",
-          "pause": 0.6
+          "pause": 0.6,
+          "audio": "s02-02"
         },
         {
           "tts": "Every limit you'd want lives in a prompt. And a prompt can be talked out of anything.",
           "caption": "Every limit you'd want lives in a prompt — and a prompt can be talked out of anything.",
-          "pause": 0.85
+          "pause": 0.85,
+          "audio": "s02-04"
         }
       ]
     },
@@ -255,31 +247,43 @@
           "tts": "There's one more thing.",
           "caption": "There's one more thing.",
           "pause": 0.85,
-          "beat": "overview"
+          "beat": "overview",
+          "audio": "s10-01"
         },
         {
           "tts": "My Control Room. Built in A G Studio, with custom widgets, and my own Auditor agent.",
           "caption": "My Control Room — built in AG Studio, with custom widgets and my own Auditor agent.",
-          "pause": 0.4,
-          "beat": "edit"
+          "pause": 0.5,
+          "beat": "edit",
+          "audio": "s10-02"
+        },
+        {
+          "tts": "This one re-checks every hash in the audit log... right in your browser.",
+          "caption": "This one re-checks every hash in the audit log, right in your browser.",
+          "pause": 0.6,
+          "beat": "seal",
+          "audio": "s10-06"
         },
         {
           "tts": "I ask it: what if I raise the cap to eighty?",
           "caption": "I ask it: what if I raise the cap to $80?",
           "pause": 0.3,
-          "beat": "ask"
+          "beat": "ask",
+          "audio": "s10-03"
         },
         {
           "tts": "It replays every decision under the new rule, and shows me exactly what would change.",
           "caption": "It replays every decision under the new rule and shows me exactly what would change.",
           "pause": 0.75,
-          "beat": "answer"
+          "beat": "answer",
+          "audio": "s10-04"
         },
         {
           "tts": "It can propose. Only I can apply.",
           "caption": "It can propose. Only I can apply.",
           "pause": 0.85,
-          "beat": "answer-end"
+          "beat": "answer-end",
+          "audio": "s10-05"
         }
       ]
     },

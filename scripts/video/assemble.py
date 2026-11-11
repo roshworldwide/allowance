@@ -59,25 +59,65 @@ def run(cmd):
 # --------------------------------------------------------------------------------------------- voice-over
 script = json.load(open(os.path.join(REPO, 'scripts/video/script.json')))
 vo_dir = os.path.join(VIDEO, 'vo', args.voice)
-manifest = json.load(open(os.path.join(vo_dir, 'manifest.json')))
 def wav_dur(p):
     with wave.open(p) as w:
         return w.getnframes() / w.getframerate()
 
-def line_audio(sid, i):
-    """The voice line as a clean 48 kHz mono WAV (accepts .wav or .mp3 from any TTS provider), with the
-    leading/trailing silence trimmed so the script's own pauses set the rhythm."""
-    for ext in ('wav', 'mp3'):
-        src = os.path.join(vo_dir, f"{sid}-{i + 1:02d}.{ext}")
-        if os.path.exists(src):
+TRIM = ('silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,'
+        'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.08,areverse')
+
+def find_audio(stem):
+    for ext in ('wav', 'mp3', 'm4a'):
+        p = os.path.join(vo_dir, f'{stem}.{ext}')
+        if os.path.exists(p):
+            return p
+    return None
+
+def split_section(sid, n):
+    """A whole-section recording (e.g. ElevenLabs s06.mp3 with a break between lines) → n line WAVs,
+    cut at the n−1 longest pauses."""
+    src = find_audio(sid)
+    full = os.path.join(WORK, f'vo-{args.voice}-{sid}-full.wav')
+    run(['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-ar', '48000', '-ac', '1', full])
+    total = wav_dur(full)
+    gaps = []
+    for noise, d in (('-40dB', 0.5), ('-35dB', 0.35), ('-30dB', 0.25)):
+        out = subprocess.run(['ffmpeg', '-hide_banner', '-i', full, '-af', f'silencedetect=noise={noise}:d={d}', '-f', 'null', '-'],
+                             capture_output=True, text=True).stderr
+        st = [float(x.split('silence_start: ')[1].split()[0]) for x in out.splitlines() if 'silence_start: ' in x]
+        en = [float(x.split('silence_end: ')[1].split()[0]) for x in out.splitlines() if 'silence_end: ' in x]
+        gaps = [(a, b) for a, b in zip(st, en) if a > 0.15 and b < total - 0.15]  # ignore lead-in/out
+        if len(gaps) >= n - 1:
             break
-    else:
-        raise SystemExit(f'missing voice line {sid}-{i + 1:02d} in {vo_dir}')
+    if len(gaps) < n - 1:
+        raise SystemExit(f'{os.path.basename(src)}: found {len(gaps)} pauses but needs {n - 1} to split {n} lines. '
+                         f'Re-export it with the <break time="1.2s" /> tags, or send one file per line ({sid}-01.mp3 …).')
+    cuts = sorted(sorted(gaps, key=lambda g: g[1] - g[0], reverse=True)[: n - 1])
+    bounds = [0.0] + [(a + b) / 2 for a, b in cuts] + [total]
+    parts = []
+    for k in range(n):
+        dst = os.path.join(WORK, f'vo-{args.voice}-{sid}-{k + 1:02d}.wav')
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-i', full, '-af',
+             f'atrim={bounds[k]:.3f}:{bounds[k + 1]:.3f},asetpts=PTS-STARTPTS,{TRIM}', '-ar', '48000', '-ac', '1', dst])
+        parts.append(dst)
+    print(f'  split {os.path.basename(src)} into {n} lines: ' + ', '.join(f'{wav_dur(p):.1f}s' for p in parts))
+    return parts
+
+_split_cache = {}
+def line_audio(sid, i):
+    """The voice line as a clean 48 kHz mono WAV, with leading/trailing silence trimmed so the script's own
+    pauses set the rhythm. Accepts one file per line (s06-04.wav/.mp3, any TTS) or one file per section (s06.mp3)."""
+    src = find_audio(f'{sid}-{i + 1:02d}')
+    if not src:
+        if find_audio(sid):
+            if sid not in _split_cache:
+                n = len(next(s for s in script['sections'] if s['id'] == sid)['lines'])
+                _split_cache[sid] = split_section(sid, n)
+            return _split_cache[sid][i]
+        raise SystemExit(f'missing voice line {sid}-{i + 1:02d} (or section file {sid}.mp3) in {vo_dir}')
     dst = os.path.join(WORK, f'vo-{args.voice}-{sid}-{i + 1:02d}.wav')
     if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
-        trim = ('silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,'
-                'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.08,areverse')
-        run(['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-af', trim, '-ar', '48000', '-ac', '1', dst])
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-af', TRIM, '-ar', '48000', '-ac', '1', dst])
     return dst
 
 LEAD = 0.5  # black before the first word

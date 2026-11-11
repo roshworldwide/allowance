@@ -17,6 +17,10 @@ const base = (argv.find((a) => a.startsWith('http')) ?? 'https://allowance-8i38.
 const onlyArg = argv[argv.indexOf('--only') + 1];
 const only = argv.includes('--only') && onlyArg ? new Set(onlyArg.split(',')) : null;
 const OUT = path.resolve(process.cwd(), '..', 'video', 'clips');
+// Laptop-sized layout (1440×810 CSS px) rendered at 4/3 device pixels → crisp 1920×1080 frames.
+const VW = 1440;
+const VH = 810;
+const DSF = 4 / 3;
 const W = 1920;
 const H = 1080;
 const ERRAND = 'Get me two USB-C cables under $15 each, a desk lamp under $50 and a monitor arm under $150.';
@@ -61,7 +65,7 @@ async function scene(page, name, fn) {
   const tEnd = now();
   await cdp.send('Page.stopScreencast').catch(() => {});
   await cdp.detach().catch(() => {});
-  writeFileSync(path.join(dir, 'timeline.json'), JSON.stringify({ base, t0, tEnd, width: W, height: H, frames, marks, boxes, error }, null, 2));
+  writeFileSync(path.join(dir, 'timeline.json'), JSON.stringify({ base, t0, tEnd, width: W, height: H, dsf: DSF, frames, marks, boxes, error }, null, 2));
   console.log(`✓ ${name}: ${frames.length} frames, ${(tEnd - t0).toFixed(1)} s${error ? ' (with an error — see above)' : ''}`);
 }
 
@@ -84,7 +88,7 @@ async function main() {
     await sleep(3000);
   }
   const browser = await chromium.launch();
-  const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, reducedMotion: 'no-preference', colorScheme: 'dark' });
+  const ctx = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: DSF, reducedMotion: 'no-preference', colorScheme: 'dark' });
   const page = await ctx.newPage();
 
   // Warm every page once so the takes don't film a cold load.
@@ -131,6 +135,7 @@ async function main() {
     mark('contract-click');
     await page.getByRole('button', { name: 'Turn into a task contract' }).click();
     await page.getByRole('button', { name: 'Confirm' }).waitFor({ timeout: 60_000 });
+    await page.getByRole('button', { name: 'Confirm' }).evaluate((el) => el.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     mark('contract');
     await box('main', page.locator('main').first());
     await sleep(3000);
@@ -147,6 +152,11 @@ async function main() {
     mark('start');
     const lane = page.locator('section[aria-label="Firewall Lane"]');
     await lane.waitFor({ timeout: 20_000 });
+    await sleep(1200);
+    // Bring the lane and the caption under it into frame (the task quote scrolls just out of view).
+    await lane.evaluate((el) => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }));
+    await sleep(900);
+    mark('lane');
     await box('lane', lane);
     const beats = [
       ['allow', /ALLOW · PAID/],
@@ -179,11 +189,10 @@ async function main() {
     mark('start');
     await sleep(5500);
     mark('scroll');
-    await page.evaluate(() => {
-      const h = [...document.querySelectorAll('h2')].find((e) => /By attack family/.test(e.textContent ?? ''));
-      h?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    await sleep(5000);
+    await page.evaluate(() => document.querySelector('section[aria-label="Normal errands"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+    await sleep(1200);
+    mark('benign');
+    await sleep(4000);
   });
 
   // 5 · Control Room: overview → PayPal tab → Edit mode (widgets + AI Assistant) → ask the Auditor.

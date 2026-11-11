@@ -40,7 +40,8 @@ It prints `PAYPAL_WEBHOOK_ID=…` → paste it into Render → **Save, rebuild a
   ```bash
   for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w "%{http_code} " -X POST -H 'content-type: application/json' -H "X-Forwarded-For: 10.0.0.$i" --data '{"passcode":"wrong"}' https://allowance-xxxx.onrender.com/api/auth/passcode; done; echo
   ```
-  Expect `401 401 401 401 401 429`. Six `401`s mean Render passed the fake header to the app as your IP, so anyone could dodge the limits. Tell Claude before G2: the fix is one line in `clientIp` (`lib/security/access.ts`). Wait a minute before you enter the real passcode.
+  Expect `401 401 401 401 401 429`. Six `401`s mean Render passed the fake header to the app as your IP, so anyone could dodge the limits. Wait a minute before you enter the real passcode.
+  *Checked on the live service, Wed 11 Nov:* the first run gave six `401`s (Render appends to `X-Forwarded-For` without clearing it), so `clientIp` now trusts Cloudflare's `True-Client-IP` / `CF-Connecting-IP`, then the **last** `X-Forwarded-For` hop. Re-run: `401 401 401 401 401 429`; forged `True-Client-IP` values stay in the same bucket, and a forged `CF-Connecting-IP` is refused by Cloudflare (403).
 
 ## Notes
 - Free services sleep after ~15 minutes idle; the first visit takes about a minute (disclosed on the landing page and in Devpost).

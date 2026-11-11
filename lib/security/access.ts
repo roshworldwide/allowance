@@ -92,8 +92,21 @@ function evictBuckets(now: number) {
   for (const [k] of fullest.slice(0, buckets.size - Math.floor(MAX_BUCKETS * 0.9))) buckets.delete(k);
 }
 
+/**
+ * The caller's IP for rate limiting. Render's proxy appends to X-Forwarded-For without clearing what the
+ * client sent, so the FIRST entry is forgeable (verified on the live service: six wrong passcodes with six
+ * different fake X-Forwarded-For values were never limited). Order of trust:
+ *  1. True-Client-IP / CF-Connecting-IP — set by Cloudflare at the edge in front of *.onrender.com,
+ *     overwriting anything the client sent;
+ *  2. the LAST X-Forwarded-For entry — the address the nearest proxy actually saw;
+ *  3. X-Real-IP, then 'local' (dev server, tests).
+ */
 export function clientIp(req: Request): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'local';
+  const h = req.headers;
+  const edge = h.get('true-client-ip')?.trim() || h.get('cf-connecting-ip')?.trim();
+  if (edge) return edge;
+  const xff = h.get('x-forwarded-for')?.split(',').map((s) => s.trim()).filter(Boolean);
+  return xff?.at(-1) || h.get('x-real-ip')?.trim() || 'local';
 }
 
 // --- Daily OpenAI spend cap ----------------------------------------------------------------------

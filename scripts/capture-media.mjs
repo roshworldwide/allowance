@@ -32,8 +32,9 @@ if (await page.getByText('No recorded sandbox run yet.').count()) {
 const lane = page.locator('section[aria-label="Firewall Lane"]');
 await lane.waitFor();
 const box = await lane.boundingBox();
-// Let the replay run; grab a mid-run still when the BLOCK card is on screen.
-await page.getByText('Blocked by R02').first().waitFor({ timeout: 30_000 }).catch(() => {});
+// Let the replay run; grab a mid-run still at the key moment: a BLOCK card if the run has one, otherwise
+// the step-up (the recorded hero run is ALLOW cables + STEP-UP lamp, with no injected hub).
+await page.getByText('Blocked by R02').or(page.getByText('Needs your approval')).first().waitFor({ timeout: 30_000 }).catch(() => {});
 const blockAt = (Date.now() - started) / 1000;
 await page.waitForTimeout(1200);
 await page.screenshot({ path: path.join(out, 'errand-lane.png') });
@@ -80,7 +81,7 @@ if (out === 'docs/media') {
   const { existsSync, readFileSync, writeFileSync } = await import('node:fs');
   const img = (f, alt) => (existsSync(path.join(out, f)) ? `![${alt}](docs/media/${f})` : '');
   const blocks = {
-    hero: img('lane.gif', 'The Firewall Lane: cables allowed and paid, an injected USB-C hub blocked by R02, a lamp sent to PayPal for approval'),
+    hero: img('lane.gif', 'The Firewall Lane on a recorded sandbox run: USB-C cables allowed and paid from the saved wallet, a lamp above the ask-me line sent to PayPal for approval'),
     studio: [img('control-room.png', 'AG Studio Control Room — overview'), img('control-room-paypal.png', 'AG Studio Control Room — PayPal ledger next to ours')].filter(Boolean).join('\n'),
   };
   const readme = readFileSync('README.md', 'utf8').replace(/<!--media:(\w+)-->[\s\S]*?<!--\/media-->/g, (m, k) => (k in blocks ? `<!--media:${k}-->${blocks[k] ? `\n${blocks[k]}\n` : ''}<!--/media-->` : m));

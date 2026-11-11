@@ -4,7 +4,9 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-7C9CFF)
 ![PayPal sandbox](https://img.shields.io/badge/PayPal-sandbox%20only-F5B544)
 
-<!--media:hero--><!--/media-->
+<!--media:hero-->
+![The Firewall Lane: cables allowed and paid, an injected USB-C hub blocked by R02, a lamp sent to PayPal for approval](docs/media/lane.gif)
+<!--/media-->
 
 **A spending firewall for AI agents on PayPal.** You give your agent a scoped *allowance* — budget, per-purchase cap, allowed categories, no subscriptions, an "ask me above $40" line — instead of your wallet. Every money-moving tool call the agent makes passes **12 deterministic rules** and comes back **ALLOW** (paid from your saved PayPal wallet), **STEP-UP — PayPal asks you first**, on your phone, or **BLOCK** (with the exact rule that fired). Anything paid can be **undone for 10 minutes** — a real PayPal refund.
 
@@ -109,7 +111,9 @@ Reproduce: `npm run lab` (full) or `npm run lab:quick` (20 scenarios, 1 seed). R
 
 ## The Control Room (AG Studio)
 
-<!--media:studio--><!--/media-->
+<!--media:studio-->
+![AG Studio Control Room — overview](docs/media/control-room.png)
+<!--/media-->
 
 **What it looks like.** An AG Studio dashboard in ALLOWANCE's own theme with four custom widgets — **Allowance Ring** (budget vs paid vs held, days left), **Verdict Stream** (live decisions with rule chips, PayPal-confirmed ticks and refunds; click to drill into one decision's rule trace), **Attack Lab Matrix** (attack families × unguarded/guarded heatmap) and **Chain Seal** (re-verifies the hash-chained audit log in your browser with WebCrypto) — on a four-page report: Overview, Incidents, Attack Lab, PayPal (our ledger next to PayPal's own Transaction Search record). The data updates live.
 

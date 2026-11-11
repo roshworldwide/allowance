@@ -12,7 +12,7 @@ Give your AI agent an allowance, not your wallet. A spending firewall for agents
 Agents can now spend money. Today, giving one PayPal access means giving it your wallet — a free-form "pay" tool, a saved payment method, and a prompt asking it to behave. We wanted the opposite: an allowance an agent can't break, built only from PayPal's own primitives.
 
 ## What it does
-You give your agent an allowance — "$200 this month · max $60 per purchase · office supplies and electronics · no subscriptions · ask me above $40" — and link PayPal once through a Vault saved-wallet consent. Your errand becomes a task contract you confirm. Every money-moving tool call the agent makes then passes 12 deterministic rules and comes back ALLOW (paid from your saved PayPal wallet), STEP-UP (PayPal asks you on your phone) or BLOCK (with the exact rule). Anything paid can be undone for 10 minutes with a real PayPal refund. An Attack Lab proves it: the same OpenAI agent with and without ALLOWANCE — attack success <!--lab:unguardedAsr-->pending (no Attack Lab run yet)<!--/lab--> → <!--lab:guardedAsr-->pending (no Attack Lab run yet)<!--/lab-->, false blocks <!--lab:falseBlock-->pending (no Attack Lab run yet)<!--/lab--> on normal errands. An AG Studio Control Room with custom widgets and an Auditor agent explains every verdict and simulates policy changes against recorded agent behaviour — and can only propose, never apply.
+You give your agent an allowance — "$200 this month · max $60 per purchase · office supplies and electronics · no subscriptions · ask me above $40" — and link PayPal once through a Vault saved-wallet consent. Your errand becomes a task contract you confirm. Every money-moving tool call the agent makes then passes 12 deterministic rules and comes back ALLOW (paid from your saved PayPal wallet), STEP-UP (PayPal asks you on your phone) or BLOCK (with the exact rule). Anything paid can be undone for 10 minutes with a real PayPal refund. An Attack Lab proves it: the same OpenAI agent with and without ALLOWANCE — attack success <!--lab:unguardedAsr-->21%<!--/lab--> → <!--lab:guardedAsr-->0%<!--/lab-->, false blocks <!--lab:falseBlock-->0%<!--/lab--> on normal errands. An AG Studio Control Room with custom widgets and an Auditor agent explains every verdict and simulates policy changes against recorded agent behaviour — and can only propose, never apply.
 
 ## How we built it
 - **PayPal (sandbox):** Vault v3 payment tokens (setup token → approval → payment token, `usage_type: MERCHANT`), Orders v2 with `payment_source.paypal.vault_id` for agent purchases, normal Orders v2 checkouts for step-ups (captured by a poller + `CHECKOUT.ORDER.APPROVED` webhook), Refunds for undo, `PayPal-Request-Id` idempotency on every POST, signature-verified Webhooks, and the **PayPal Agent Toolkit** whose money-moving tools sit behind the same guard.
@@ -28,7 +28,7 @@ You give your agent an allowance — "$200 this month · max $60 per purchase ·
 
 ## Accomplishments that we're proud of
 - The guard never reads attacker-writable text, and the agent can't name a price or a payee.
-- <!--lab:prevented-->pending (no Attack Lab run yet)<!--/lab--> of unauthorised spend prevented in the Attack Lab; every number reproducible from `lab/results/latest.json`.
+- <!--lab:prevented-->$1245.54<!--/lab--> of unauthorised spend prevented in the Attack Lab; every number reproducible from `lab/results/latest.json`.
 - A Control Room agent that can replay recorded decisions against a new policy — and is designed to never apply changes itself.
 
 ## What we learned

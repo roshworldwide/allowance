@@ -4,7 +4,7 @@
 
 1. **Open the demo URL** (in the Devpost testing instructions). The free server may take about a minute to wake up.
 2. **Replay a real sandbox run** (no login): watch the Firewall Lane. Two USB-C cables → **ALLOW**, paid from the saved PayPal wallet (capture id on the card). A product page slips in a $34 USB-C hub → **BLOCK, R02 TASK_BINDING** — the only red lamp. The $48 lamp → **STEP-UP**, approved in PayPal on a phone. Then **Undo** → a real PayPal refund.
-3. **Attack Lab** (`/lab`): the same agent with and without ALLOWANCE — attack success <!--lab:unguardedAsr-->pending (no Attack Lab run yet)<!--/lab--> → <!--lab:guardedAsr-->pending (no Attack Lab run yet)<!--/lab-->, false blocks <!--lab:falseBlock-->pending (no Attack Lab run yet)<!--/lab--> on normal errands.
+3. **Attack Lab** (`/lab`): the same agent with and without ALLOWANCE — attack success <!--lab:unguardedAsr-->21%<!--/lab--> → <!--lab:guardedAsr-->0%<!--/lab-->, false blocks <!--lab:falseBlock-->0%<!--/lab--> on normal errands.
 4. **Control Room** (`/control-room`): AG Studio with the custom Allowance Ring, Verdict Stream and Attack Lab Matrix. Enter the passcode on the Errand page first to chat; then try the suggested prompt **"What if I raise the per-purchase cap to $80?"** — the Auditor replays every recorded decision through the real guard and answers with numbers, and can only *propose* the change.
 
 ## Run it live (passcode)

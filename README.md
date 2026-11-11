@@ -10,9 +10,9 @@
 
 | Attacks that fooled the unguarded agent | Attacks that got past ALLOWANCE | Normal errands falsely blocked |
 |:---:|:---:|:---:|
-| **<!--lab:unguardedAsr-->pending (no Attack Lab run yet)<!--/lab-->** (<!--lab:unguardedFrac-->pending (no Attack Lab run yet)<!--/lab--> runs) | **<!--lab:guardedAsr-->pending (no Attack Lab run yet)<!--/lab-->** (<!--lab:guardedFrac-->pending (no Attack Lab run yet)<!--/lab-->) | **<!--lab:falseBlock-->pending (no Attack Lab run yet)<!--/lab-->** (<!--lab:falseBlockFrac-->pending (no Attack Lab run yet)<!--/lab-->) |
+| **<!--lab:unguardedAsr-->21%<!--/lab-->** (<!--lab:unguardedFrac-->38/180<!--/lab--> runs) | **<!--lab:guardedAsr-->0%<!--/lab-->** (<!--lab:guardedFrac-->0/180<!--/lab-->) | **<!--lab:falseBlock-->0%<!--/lab-->** (<!--lab:falseBlockFrac-->0/120<!--/lab-->) |
 
-<sub>Attack Lab: the same OpenAI agent (<!--lab:model-->pending (no Attack Lab run yet)<!--/lab-->) with and without ALLOWANCE, <!--lab:scenarios-->pending (no Attack Lab run yet)<!--/lab--> scenarios × <!--lab:seeds-->pending (no Attack Lab run yet)<!--/lab--> seeds, run <!--lab:date-->pending (no Attack Lab run yet)<!--/lab-->. Numbers are generated from [`lab/results/latest.json`](lab/results/latest.json) by `npm run docs:sync`.</sub>
+<sub>Attack Lab: the same OpenAI agent (<!--lab:model-->gpt-5.4-mini<!--/lab-->) with and without ALLOWANCE, <!--lab:scenarios-->100<!--/lab--> scenarios × <!--lab:seeds-->3<!--/lab--> seeds, run <!--lab:date-->2026-11-10<!--/lab-->. Numbers are generated from [`lab/results/latest.json`](lab/results/latest.json) by `npm run docs:sync`.</sub>
 
 **▶ Watch** the 3-minute demo · **Try it**: replay a recorded sandbox run (no login) or run it live (passcode in the Devpost testing instructions) · **[Judge guide](docs/JUDGE_GUIDE.md)** (90 seconds)
 
@@ -97,13 +97,13 @@ The same OpenAI shopping agent — same system prompt, same model, same tools fo
 
 | Result | Value |
 |---|---|
-| Attack success, unguarded | **<!--lab:unguardedAsr-->pending (no Attack Lab run yet)<!--/lab-->** (<!--lab:unguardedFrac-->pending (no Attack Lab run yet)<!--/lab-->) |
-| Attack success, with ALLOWANCE | **<!--lab:guardedAsr-->pending (no Attack Lab run yet)<!--/lab-->** (<!--lab:guardedFrac-->pending (no Attack Lab run yet)<!--/lab-->) |
-| Unauthorised spend prevented | <!--lab:prevented-->pending (no Attack Lab run yet)<!--/lab--> |
-| Guarded attack runs stopped by a BLOCK / that needed the person (step-up) | <!--lab:stoppedByBlock-->pending (no Attack Lab run yet)<!--/lab--> / <!--lab:reachedStepUp-->pending (no Attack Lab run yet)<!--/lab--> |
-| Normal errands falsely blocked · needing a step-up · completed | <!--lab:falseBlock-->pending (no Attack Lab run yet)<!--/lab--> · <!--lab:friction-->pending (no Attack Lab run yet)<!--/lab--> · <!--lab:completion-->pending (no Attack Lab run yet)<!--/lab--> |
+| Attack success, unguarded | **<!--lab:unguardedAsr-->21%<!--/lab-->** (<!--lab:unguardedFrac-->38/180<!--/lab-->) |
+| Attack success, with ALLOWANCE | **<!--lab:guardedAsr-->0%<!--/lab-->** (<!--lab:guardedFrac-->0/180<!--/lab-->) |
+| Unauthorised spend prevented | <!--lab:prevented-->$1245.54<!--/lab--> |
+| Guarded attack runs stopped by a BLOCK / that needed the person (step-up) | <!--lab:stoppedByBlock-->43<!--/lab--> / <!--lab:reachedStepUp-->0<!--/lab--> |
+| Normal errands falsely blocked · needing a step-up · completed | <!--lab:falseBlock-->0%<!--/lab--> · <!--lab:friction-->35%<!--/lab--> · <!--lab:completion-->100%<!--/lab--> |
 | Holdout (written independently, never tuned on): unguarded · guarded | <!--lab:holdoutUnguarded-->not run<!--/lab--> · <!--lab:holdoutGuarded-->not run<!--/lab--> |
-| Run | <!--lab:model-->pending (no Attack Lab run yet)<!--/lab-->, <!--lab:seeds-->pending (no Attack Lab run yet)<!--/lab--> seeds, <!--lab:date-->pending (no Attack Lab run yet)<!--/lab-->, git <!--lab:gitSha-->pending (no Attack Lab run yet)<!--/lab-->, ~<!--lab:cost-->pending (no Attack Lab run yet)<!--/lab--> |
+| Run | <!--lab:model-->gpt-5.4-mini<!--/lab-->, <!--lab:seeds-->3<!--/lab--> seeds, <!--lab:date-->2026-11-10<!--/lab-->, git <!--lab:gitSha-->34efab7<!--/lab-->, ~<!--lab:cost-->$2.49<!--/lab--> |
 
 Reproduce: `npm run lab` (full) or `npm run lab:quick` (20 scenarios, 1 seed). Raw results: [`lab/results/latest.json`](lab/results/latest.json).
 

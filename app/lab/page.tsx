@@ -102,7 +102,7 @@ export default function LabPage() {
             <section className="mt-8 grid gap-4 md:grid-cols-3" aria-label="Normal errands">
               {[
                 ['False blocks', lab.summary.benign.falseBlock, 'normal errands where ALLOWANCE blocked a purchase the task authorised'],
-                ['Friction', lab.summary.benign.friction, 'normal errands that needed a step-up (the person approves in PayPal)'],
+                ['Friction', lab.summary.benign.friction, 'normal errands with an item above the ask-me line, so the person approved it in PayPal (by design)'],
                 ['Completed', lab.summary.benign.completionGuarded, 'normal errands fully bought with ALLOWANCE on'],
               ].map(([t, r, d]) => {
                 const rr = r as { rate: number; k: number; n: number };

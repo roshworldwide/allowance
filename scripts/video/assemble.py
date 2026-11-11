@@ -64,12 +64,28 @@ def wav_dur(p):
     with wave.open(p) as w:
         return w.getnframes() / w.getframerate()
 
+def line_audio(sid, i):
+    """The voice line as a clean 48 kHz mono WAV (accepts .wav or .mp3 from any TTS provider), with the
+    leading/trailing silence trimmed so the script's own pauses set the rhythm."""
+    for ext in ('wav', 'mp3'):
+        src = os.path.join(vo_dir, f"{sid}-{i + 1:02d}.{ext}")
+        if os.path.exists(src):
+            break
+    else:
+        raise SystemExit(f'missing voice line {sid}-{i + 1:02d} in {vo_dir}')
+    dst = os.path.join(WORK, f'vo-{args.voice}-{sid}-{i + 1:02d}.wav')
+    if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+        trim = ('silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,'
+                'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.08,areverse')
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-af', trim, '-ar', '48000', '-ac', '1', dst])
+    return dst
+
 LEAD = 0.5  # black before the first word
 lines = []  # global timeline of every voice line
 t = LEAD
 for s in script['sections']:
     for i, l in enumerate(s['lines']):
-        f = os.path.join(vo_dir, f"{s['id']}-{i + 1:02d}.wav")
+        f = line_audio(s['id'], i)
         d = wav_dur(f)
         lines.append({'section': s['id'], 'i': i, 'file': f, 'start': t, 'dur': d, 'pause': l['pause'], 'slot': d + l['pause'],
                       'caption': l['caption'], 'beat': l.get('beat')})
@@ -447,7 +463,7 @@ def silence(d):
     k = round(d, 3)
     if k not in sil:
         p = os.path.join(WORK, f'sil-{k:.3f}.wav')
-        run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono', '-t', f'{k:.3f}', p])
+        run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=mono', '-t', f'{k:.3f}', p])
         sil[k] = p
     return sil[k]
 with open(parts, 'w') as fh:

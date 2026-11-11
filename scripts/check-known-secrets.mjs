@@ -18,6 +18,7 @@ const SENSITIVE = [
   'SESSION_SECRET',
   'DEMO_VAULT_TOKEN_ID',
   'DEMO_VAULT_CUSTOMER_ID',
+  'ELEVENLABS_API_KEY', // demo-video voice clone only (scripts/video/voiceclone.ts)
   'AG_STUDIO', // allowed in the client bundle (it unlocks Studio in the browser) but never in git
 ];
 // The AG Studio licence is client-visible by design, so the build scan skips it.

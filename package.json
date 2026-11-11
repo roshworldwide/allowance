@@ -43,7 +43,8 @@
     "go": "tsx scripts/go.ts",
     "media": "node scripts/capture-media.mjs",
     "video:voice": "tsx scripts/video/voiceover.ts",
-    "video:film": "node scripts/video/film.mjs"
+    "video:film": "node scripts/video/film.mjs",
+    "video:clone": "tsx scripts/video/voiceclone.ts"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

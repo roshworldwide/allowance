@@ -1,0 +1,526 @@
+{
+ "meta": {
+  "task": "Get me two USB-C cables under $15 each and a desk lamp under $50.",
+  "model": "gpt-5.4-mini",
+  "allowance": {
+   "name": "Office errands",
+   "budgetCents": 20000,
+   "perPurchaseCapCents": 6000,
+   "stepUpAboveCents": 4000
+  },
+  "contract": {
+   "id": "tc_27dfaa15c2d545d9",
+   "mandateId": "mnd_ceccbdb0775d4c0c",
+   "confirmedAt": "2026-11-11T03:43:03.334Z",
+   "lines": [
+    {
+     "id": "L1",
+     "category": "electronics",
+     "productType": "usb-c-cable",
+     "description": "USB-C cables",
+     "maxQty": 2,
+     "maxUnitCents": 1500
+    },
+    {
+     "id": "L2",
+     "category": "office-supplies",
+     "productType": "desk-lamp",
+     "description": "desk lamp",
+     "maxQty": 1,
+     "maxUnitCents": 5000
+    }
+   ]
+  },
+  "mandate": {
+   "id": "mnd_ceccbdb0775d4c0c",
+   "name": "Office errands",
+   "status": "ACTIVE",
+   "currency": "USD",
+   "budgetCents": 20000,
+   "periodStart": "2026-11-11T03:42:00.000Z",
+   "periodEnd": "2026-11-30T23:59:59.000Z",
+   "perPurchaseCapCents": 6000,
+   "stepUpAboveCents": 4000,
+   "stepUpOnNewMerchant": false,
+   "allowedCategories": [
+    "office-supplies",
+    "electronics"
+   ],
+   "allowedMerchants": "ANY_IN_CATEGORY",
+   "allowRecurring": false,
+   "velocity": {
+    "maxPerHour": 8,
+    "maxPerMerchantWindowCents": 10000,
+    "windowMinutes": 60
+   },
+   "priceDriftPct": 10,
+   "undoWindowSec": 600,
+   "killSwitch": false,
+   "vaultLinked": true
+  },
+  "id": "2026-11-11-03-43-5d4c0c",
+  "recordedAt": "2026-11-11T03:43:17.547Z"
+ },
+ "events": [
+  {
+   "t": 2,
+   "source": "run",
+   "type": "run",
+   "data": {
+    "type": "run",
+    "runId": "run_2754d469cf7d",
+    "model": "gpt-5.4-mini"
+   }
+  },
+  {
+   "t": 3438,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 1,
+    "callId": "call_xuyznilW01xTy6Nvf4k087we",
+    "name": "search_catalog",
+    "args": {
+     "query": "usb-c cable"
+    }
+   }
+  },
+  {
+   "t": 3443,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 1,
+    "callId": "call_0d2AOp7lGsbXfzNOrvLdgDOG",
+    "name": "search_catalog",
+    "args": {
+     "query": "desk lamp"
+    }
+   }
+  },
+  {
+   "t": 5800,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 2,
+    "callId": "call_TrC9seVAAaPQNnVz9NqbfX4X",
+    "name": "view_product",
+    "args": {
+     "sku": "VW-CBL-USBC-1M"
+    }
+   }
+  },
+  {
+   "t": 5802,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 2,
+    "callId": "call_NhgdQDxg3KS7bYpasaqTTFdd",
+    "name": "view_product",
+    "args": {
+     "sku": "NW-LAMP-LED"
+    }
+   }
+  },
+  {
+   "t": 8332,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 3,
+    "callId": "call_19GKeecvgWwH8xDrpYGMPzSp",
+    "name": "allowance_checkout",
+    "args": {
+     "sku": "VW-CBL-USBC-1M",
+     "qty": 2,
+     "contractLineId": "L1",
+     "quotedUnitCents": 1199
+    }
+   }
+  },
+  {
+   "t": 8349,
+   "source": "bus",
+   "type": "decision",
+   "data": {
+    "decisionId": "dec_adf37ef3253c489d87c5",
+    "verdict": "ALLOW",
+    "tool": "allowance_checkout",
+    "at": "2026-11-11T03:43:25.892Z",
+    "item": "Volt & Wire USB-C to USB-C cable, 1 m",
+    "sku": "VW-CBL-USBC-1M",
+    "qty": 2,
+    "amountCents": 2398,
+    "firstBlock": null,
+    "firstBlockName": null,
+    "reason": "",
+    "stepUpReasons": [],
+    "summary": "Allowed: 2 × Volt & Wire USB-C to USB-C cable, 1 m, $23.98.",
+    "rules": [
+     {
+      "id": "R01",
+      "name": "MANDATE_ACTIVE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "active, linked, until 2026-11-30T23:59:59.000Z",
+      "message": null
+     },
+     {
+      "id": "R02",
+      "name": "TASK_BINDING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "bound to line L1 (usb-c-cable), qty 2/2, $11.99 ≤ $15.00",
+      "message": null
+     },
+     {
+      "id": "R03",
+      "name": "CATALOG_INTEGRITY",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "charge computed from registry: 2 × 1199 USD minor units",
+      "message": null
+     },
+     {
+      "id": "R04",
+      "name": "MERCHANT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "Volt & Wire · electronics allowed",
+      "message": null
+     },
+     {
+      "id": "R05",
+      "name": "PER_PURCHASE_CAP",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "$23.98 ≤ cap $60.00",
+      "message": null
+     },
+     {
+      "id": "R06",
+      "name": "BUDGET_REMAINING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "reservation fits: $23.98 ≤ $200.00",
+      "message": null
+     },
+     {
+      "id": "R07",
+      "name": "VELOCITY_SPLIT",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "1/8 this hour, $23.98/$100.00 at merchant",
+      "message": null
+     },
+     {
+      "id": "R08",
+      "name": "NO_RECURRING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "not recurring",
+      "message": null
+     },
+     {
+      "id": "R09",
+      "name": "CURRENCY_LOCK",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "USD, integer cents",
+      "message": null
+     },
+     {
+      "id": "R10",
+      "name": "PRICE_DRIFT",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "registry $11.99 within 10% of quoted $11.99",
+      "message": null
+     },
+     {
+      "id": "R11",
+      "name": "STEP_UP_THRESHOLD",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "$23.98 ≤ ask-me line $40.00",
+      "message": null
+     },
+     {
+      "id": "R12",
+      "name": "MONEY_OUT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "purchase path, no money out",
+      "message": null
+     }
+    ],
+    "latencyUs": 9895,
+    "intent": {
+     "kind": "PURCHASE",
+     "toolName": "allowance_checkout",
+     "overrides": {},
+     "rawArgsHash": "b3bb2bc012f76e728a00038ca782ebb63fa0925d17c48afd808d1ce46b6ac625",
+     "sku": "VW-CBL-USBC-1M",
+     "qty": 2,
+     "contractLineId": "L1",
+     "quotedUnitCents": 1199
+    }
+   }
+  },
+  {
+   "t": 11113,
+   "source": "bus",
+   "type": "purchase",
+   "data": {
+    "decisionId": "dec_adf37ef3253c489d87c5",
+    "orderId": "4G882609BG6757503",
+    "captureId": "0CV82630SV6988245",
+    "status": "COMPLETED",
+    "path": "VAULT",
+    "amountCents": 2398
+   }
+  },
+  {
+   "t": 11114,
+   "source": "run",
+   "type": "tool_call",
+   "data": {
+    "type": "tool_call",
+    "step": 3,
+    "callId": "call_Il6recDUDvvmfXSVq2DfDf3l",
+    "name": "allowance_checkout",
+    "args": {
+     "sku": "NW-LAMP-LED",
+     "qty": 1,
+     "contractLineId": "L2",
+     "quotedUnitCents": 4800
+    }
+   }
+  },
+  {
+   "t": 11116,
+   "source": "bus",
+   "type": "decision",
+   "data": {
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "verdict": "STEP_UP",
+    "tool": "allowance_checkout",
+    "at": "2026-11-11T03:43:28.662Z",
+    "item": "Northwind LED desk lamp with dimmer",
+    "sku": "NW-LAMP-LED",
+    "qty": 1,
+    "amountCents": 4800,
+    "firstBlock": null,
+    "firstBlockName": null,
+    "reason": "Above your $40.00 ask-me line.",
+    "stepUpReasons": [
+     "R11"
+    ],
+    "summary": "Needs your approval (1 × Northwind LED desk lamp with dimmer, $48.00): Above your $40.00 ask-me line.",
+    "rules": [
+     {
+      "id": "R01",
+      "name": "MANDATE_ACTIVE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "active, linked, until 2026-11-30T23:59:59.000Z",
+      "message": null
+     },
+     {
+      "id": "R02",
+      "name": "TASK_BINDING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "bound to line L2 (desk-lamp), qty 1/1, $48.00 ≤ $50.00",
+      "message": null
+     },
+     {
+      "id": "R03",
+      "name": "CATALOG_INTEGRITY",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "charge computed from registry: 1 × 4800 USD minor units",
+      "message": null
+     },
+     {
+      "id": "R04",
+      "name": "MERCHANT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "Northwind Supply · office-supplies allowed",
+      "message": null
+     },
+     {
+      "id": "R05",
+      "name": "PER_PURCHASE_CAP",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "$48.00 ≤ cap $60.00",
+      "message": null
+     },
+     {
+      "id": "R06",
+      "name": "BUDGET_REMAINING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "reservation fits: $71.98 ≤ $200.00",
+      "message": null
+     },
+     {
+      "id": "R07",
+      "name": "VELOCITY_SPLIT",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "2/8 this hour, $48.00/$100.00 at merchant",
+      "message": null
+     },
+     {
+      "id": "R08",
+      "name": "NO_RECURRING",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "not recurring",
+      "message": null
+     },
+     {
+      "id": "R09",
+      "name": "CURRENCY_LOCK",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "USD, integer cents",
+      "message": null
+     },
+     {
+      "id": "R10",
+      "name": "PRICE_DRIFT",
+      "kind": "step_up",
+      "outcome": "PASS",
+      "detail": "registry $48.00 within 10% of quoted $48.00",
+      "message": null
+     },
+     {
+      "id": "R11",
+      "name": "STEP_UP_THRESHOLD",
+      "kind": "step_up",
+      "outcome": "STEP_UP",
+      "detail": "$48.00 > ask-me line $40.00",
+      "message": "Above your $40.00 ask-me line."
+     },
+     {
+      "id": "R12",
+      "name": "MONEY_OUT_SCOPE",
+      "kind": "block",
+      "outcome": "PASS",
+      "detail": "purchase path, no money out",
+      "message": null
+     }
+    ],
+    "latencyUs": 574,
+    "intent": {
+     "kind": "PURCHASE",
+     "toolName": "allowance_checkout",
+     "overrides": {},
+     "rawArgsHash": "9d20e50b909613b3f0b88ca0c54ec9525faa0de9a17ecab9abb811bc16815ee8",
+     "sku": "NW-LAMP-LED",
+     "qty": 1,
+     "contractLineId": "L2",
+     "quotedUnitCents": 4800
+    }
+   }
+  },
+  {
+   "t": 11938,
+   "source": "bus",
+   "type": "approval",
+   "data": {
+    "approvalId": "apr_fd6c3993a05a4acc80be",
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "status": "PENDING",
+    "amountCents": 4800,
+    "reasons": [
+     "R11"
+    ]
+   }
+  },
+  {
+   "t": 12662,
+   "source": "bus",
+   "type": "explanation",
+   "data": {
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "text": "Your purchase of the Northwind LED desk lamp was stepped up because it was above your $40.00 ask-me line."
+   }
+  },
+  {
+   "t": 13993,
+   "source": "run",
+   "type": "final",
+   "data": {
+    "type": "final",
+    "step": 4,
+    "text": "Bought:\n- 2 × Volt & Wire USB-C to USB-C cable, 1 m — $11.99 each\n  - Total: $23.98\n\nWaiting for approval:\n- Northwind LED desk lamp with dimmer — $48.00\n  - The checkout is waiting for your approval because it triggered a step-up check.\n\nCouldn’t complete yet:\n- The desk lamp purchase is not finalized until you approve it."
+   }
+  },
+  {
+   "t": 13994,
+   "source": "run",
+   "type": "stopped",
+   "data": {
+    "type": "stopped",
+    "step": 4,
+    "reason": "final"
+   }
+  },
+  {
+   "t": 13995,
+   "source": "run",
+   "type": "done",
+   "data": {
+    "runId": "run_2754d469cf7d",
+    "stopReason": "final",
+    "finalText": "Bought:\n- 2 × Volt & Wire USB-C to USB-C cable, 1 m — $11.99 each\n  - Total: $23.98\n\nWaiting for approval:\n- Northwind LED desk lamp with dimmer — $48.00\n  - The checkout is waiting for your approval because it triggered a step-up check.\n\nCouldn’t complete yet:\n- The desk lamp purchase is not finalized until you approve it."
+   }
+  },
+  {
+   "t": 209786,
+   "source": "bus",
+   "type": "purchase",
+   "data": {
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "orderId": "8J4946068R303350J",
+    "captureId": "50Y197235E1850051",
+    "status": "COMPLETED",
+    "path": "APPROVAL",
+    "amountCents": 4800
+   }
+  },
+  {
+   "t": 209787,
+   "source": "bus",
+   "type": "approval",
+   "data": {
+    "approvalId": "apr_fd6c3993a05a4acc80be",
+    "decisionId": "dec_fd6c3993a05a4acc80be",
+    "status": "CAPTURED"
+   }
+  },
+  {
+   "t": 250016,
+   "source": "bus",
+   "type": "refund",
+   "data": {
+    "decisionId": "dec_adf37ef3253c489d87c5",
+    "refundId": "88F90988VP374034T",
+    "status": "COMPLETED",
+    "amountCents": 2398
+   }
+  }
+ ]
+}

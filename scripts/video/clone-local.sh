@@ -20,6 +20,8 @@ if [ ! -x "$ENV/bin/python" ]; then
   echo "Creating the voice environment (Python 3.11)…"
   uv venv --python 3.11 "$ENV"
 fi
-uv pip install --quiet --python "$ENV/bin/python" "chatterbox-tts==0.1.7"
+# setuptools: Resemble's watermarker (resemble-perth) imports pkg_resources, which uv venvs don't include
+# and setuptools 81+ drops. Without it the watermarker loads as None and the model refuses to start.
+uv pip install --quiet --python "$ENV/bin/python" "chatterbox-tts==0.1.7" "setuptools<81"
 
 exec "$ENV/bin/python" scripts/video/clone_local.py "$@"

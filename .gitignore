@@ -34,3 +34,6 @@ npm-debug.log*
 .claude/worktrees/
 /lab/results/raw/
 /lab/results/runs/*.partial.json
+
+# Python (video scripts)
+__pycache__/
